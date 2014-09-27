@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Demo Instance</title>
+        
+        <link type="text/css" rel="stylesheet" href="style.css">
+    </head>
+
+    <body id="cas" style="zoom: 1">
+        <form id="fm1" class="fm-v clearfix">
+             
+
+            <div id="head">
+                <h1>
+                    Demonstration
+                </h1>
+            </div>
+            
+            
+            <div id="main">
+                <div id="click" class="form-action">
+                    <button type="button" class="btn btn-three" onclick="start_creation()">Create instance</button>
+                </div>
+                <table id="step" style="visibility:hidden">
+                    <tr>
+                        <td>Cr&eacute;ation de votre instance</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Lancement de votre instance</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>D&eacute;marage du syt&egrave;me</td>
+                        <td></td>
+                    </tr>
+                </table>
+                <div style="visibility:hidden" id="message_fin">Vous pouvez vous connecter à <span id="instance_address"></span></div>
+            </div>
+
+
+<script>
+    var instance_id = null
+    function getXMLHttpRequest() {
+        var xhr = null;
+
+        if (window.XMLHttpRequest || window.ActiveXObject) {
+            if (window.ActiveXObject) {
+                try {
+                    xhr = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch(e) {
+                    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+            } else {
+                xhr = new XMLHttpRequest();
+            }
+        } else {
+            alert("Votre navigateur ne supporte pas l'objet XMLHTTPRequest...");
+            return null;
+        }
+
+        return xhr;
+    }
+
+    function set_step_status(id,status)
+    {
+        var row = document.getElementById('step').children[0].children[id-1].children[1];
+        if ( status == "progress") {
+            row.innerHTML = 'In progress....';
+        } else if ( status == 'done' ) {
+            row.innerHTML = 'Done';
+        } else if ( status == 'error' ) {
+            row.innerHTML = 'Error';
+        }
+    }
+
+    function contact_step(id,url)
+    {
+        var xhr = getXMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+                var rep = JSON.parse(xhr.responseText);
+                if(id == 1){
+                    instance_id = rep["id"];
+                    set_step_status(id,'done');
+                    contact_step(2,'/instance/'+instance_id);
+                }else if(id == 2){
+                    if(rep['instance_up'] != true){
+                        contact_step(2,'/instance/'+instance_id);
+                    }else{
+                        set_step_status(id,'done');
+                        contact_step(3,'/instance/'+instance_id);
+                    }
+                }else if(id == 3){
+                    if(rep['system_up'] != true){
+                        contact_step(3,'/instance/'+instance_id);
+                    }else{
+                        set_step_status(id,'done');
+                        document.getElementById('message_fin').style.visibility='visible';
+                        document.getElementById('instance_address').innerHTML = '<a href="'+rep['demo_address']+'">'+rep['demo_address']+'</a>' ;
+
+                    }
+                }
+            }else if (xhr.readyState == 4 && (xhr.status != 200 && xhr.status != 0)) {
+                set_step_status(id,'error');
+                alert("Error : "+rep);
+            }
+        };
+
+        set_step_status(id,'progress');
+        xhr.open("GET", url, true);
+        xhr.send(null);
+    }
+
+    function start_creation()
+    {
+        contact_step(1,"/instance/start");
+        document.getElementById('click').style.visibility='hidden';
+        document.getElementById('step').style.visibility='visible';
+    }
+</script>
+
+</form></body></html>
