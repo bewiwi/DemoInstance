@@ -1,0 +1,28 @@
+<div class="jumbotron text-center">
+	<h1>Instance</h1>
+
+    <div id="main">
+        <div id="click" class="form-action">
+            <button type="button">Create instance</button>
+        </div>
+        <div ng-controller="Instance">
+            <p>The ID is {{cloud_instance.id}}</p>
+        </div>
+        <table id="step" style="visibility:hidden">
+            <tr>
+                <td>Cr&eacute;ation de votre instance</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Lancement de votre instance</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>D&eacute;marage du syt&egrave;me</td>
+                <td></td>
+            </tr>
+        </table>
+        <div style="visibility:hidden" id="message_fin">Vous pouvez vous connecter à <span id="instance_address"></span></div>
+    </div>
+	<p>{{ message }}</p>
+</div>

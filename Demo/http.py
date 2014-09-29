@@ -4,6 +4,7 @@ from Demo.demo_config import DemoConfig
 from Demo.demo import Demo
 import re
 import json
+import os
 import logging
 
 
@@ -71,20 +72,17 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header('Content-type', mimetype)
 
     def do_GET(self):
+        str_path = self.path.split('?')[0]
         try:
             self.config = DemoConfig()
             self.demo = Demo(self.config)
 
-            if self.path=="/":
+            if self.path == "/":
                 self.send_file('index.html')
                 return
 
-            if self.path.endswith(".jpg") \
-                    or self.path.endswith(".png") \
-                    or self.path.endswith(".css") \
-                    or self.path.endswith(".gif") \
-                    or self.path.endswith(".js"):
-                self.send_file(self.path)
+            if os.path.isfile('web/'+str_path):
+                self.send_file(str_path)
                 return
 
             if self.path =="/instance/start":

@@ -1,0 +1,13 @@
+{
+    "name": "demo-front",
+    "version": "1.0.0",
+    "dependencies": {
+        "angular": "~1.2.x",
+        "angular-route": "~1.2.x",
+        "angular-resource": "~1.2.x",
+        "bootstrap": "3.1.1",
+        "jquery": "2.1.0",
+        "components-font-awesome": "4.2.0"
+    }
+}
+
