@@ -1,28 +1,43 @@
-<div class="jumbotron text-center">
+<div class="jumbotron text-center" ng-controller="instanceController">
 	<h1>Instance</h1>
 
-    <div id="main">
-        <div id="click" class="form-action">
-            <button type="button">Create instance</button>
+    <div class="row">
+        <div ng-show="!cloud_instance">
+            <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">Create instance</button>
         </div>
-        <div ng-controller="Instance">
-            <p>The ID is {{cloud_instance.id}}</p>
+
+        <div class="col-md-6 col-md-offset-3" ng-show="cloud_instance">
+            <table class="table">
+                <tr>
+                    <th>Cr&eacute;ation de votre instance</th>
+                    <td>
+                        <i ng-show="!cloud_instance.id" class="fa fa-spin fa-refresh fa-2x"></i>
+                        <i ng-show="cloud_instance.id" class="fa fa-check fa-2x"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Lancement de votre instance</th>
+                    <td>
+                        <div ng-show="cloud_instance.id">
+                            <i ng-show="!state.instance_up" class="fa fa-spin fa-refresh fa-2x"></i>
+                            <i ng-show="state.instance_up" class="fa fa-check fa-2x"></i>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>D&eacute;marage du syt&egrave;me</th>
+                    <td>
+                        <div ng-show="state.instance_up">
+                            <i ng-show="!state.system_up" class="fa fa-spin fa-refresh fa-2x"></i>
+                            <i ng-show="state.system_up" class="fa fa-check fa-2x"></i>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <div ng-show="state.demo_address" class="alert alert-success">
+                Vous pouvez vous connecter à <a class="alert-link" href="{{ state.demo_address }}">{{ state.demo_address }}</a>
+            </div>
         </div>
-        <table id="step" style="visibility:hidden">
-            <tr>
-                <td>Cr&eacute;ation de votre instance</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Lancement de votre instance</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>D&eacute;marage du syt&egrave;me</td>
-                <td></td>
-            </tr>
-        </table>
-        <div style="visibility:hidden" id="message_fin">Vous pouvez vous connecter à <span id="instance_address"></span></div>
     </div>
-	<p>{{ message }}</p>
 </div>
