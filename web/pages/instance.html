@@ -1,9 +1,9 @@
 <div class="jumbotron text-center" ng-controller="instanceController">
-	<h1>Instance</h1>
+	<h1>Your instance</h1>
 
     <div class="row">
         <div ng-show="!cloud_instance">
-            <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">Create instance</button>
+            <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">Create instance of {{ image.name }}</button>
         </div>
 
         <div class="col-md-6 col-md-offset-3" ng-show="cloud_instance">

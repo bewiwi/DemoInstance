@@ -1,5 +1,7 @@
-<div class="jumbotron text-center">
-	<h1>Image</h1>
-	
-	<p>{{ message }}</p>
+<div class="jumbotron text-center clearfix" ng-controller="imageController">
+	<h1>Select image</h1>
+    <div class="well col-md-3" ng-repeat="(key,image) in images" ng-click="redirect_instance(key)">
+        <p>{{ image.name }}</p>
+        <p>{{ image.desc }}</p>
+    </div>
 </div>

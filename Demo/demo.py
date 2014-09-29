@@ -25,8 +25,18 @@ class Demo():
         interfaces = info['addresses'].keys()
         return info['addresses'][interfaces[0]][0]['addr']
 
+    def get_instance_type(self,instance):
+        info = self.get_instance_info(instance)
+        query = self.database.session.query(Instance).filter(
+            Instance.openstack_id == info['id']
+        )
+        data_instance = query.first()
+        return data_instance.image_key
+
     def get_instance_soft_address(self,instance):
-        return self.placeholder_apply(self.config.instance_soft_url,instance)
+        return self.placeholder_apply(
+            self.config.images[self.get_instance_type(instance)].instance_soft_url,
+            instance)
 
     def get_instance_life_time(self, instance):
         info = self.get_instance_info(instance)
@@ -59,26 +69,28 @@ class Demo():
         else:
             return False
 
-    def create_instance(self):
+    def create_instance(self,image_key):
         logging.info("Create Instance")
-        logging.debug("Image id : %s", self.config.image_id)
-        logging.debug("Flavor id : %s", self.config.flavor_id)
+        logging.debug("Image id : %s", self.config.images[image_key].image_id)
+        logging.debug("Flavor id : %s", self.config.images[image_key].flavor_id)
 
         #Add a demand
         database_instance = Instance()
         database_instance.status = 'ASK'
         database_instance.launched_at = datetime.datetime.now()
         database_instance.life_time = 10
-
+        database_instance.image_key = image_key
         self.database.session.add(database_instance)
         self.database.session.commit()
 
         raise_exception = False
-        if self.database_count_active_instance() <= self.config.max_instance:
-            new_instance = self.nova.servers.create(self.config.instance_prefix + 'test',
-                                                self.config.image_id,
-                                                self.config.flavor_id)
-            self.database_insert_server(new_instance, 'CREATED', self.config.instance_time)
+        if self.database_count_active_instance() <= self.config.images[image_key].max_instance:
+            new_instance = self.nova.servers.create(self.config.images[image_key].instance_prefix + 'test',
+                                                self.config.images[image_key].image_id,
+                                                self.config.images[image_key].flavor_id)
+            self.database_insert_server(new_instance, status='CREATED',
+                                        life_time=self.config.images[image_key].instance_time,
+                                        image_key=image_key)
         else:
             raise_exception = True
 
@@ -93,7 +105,10 @@ class Demo():
 
     def check_system_up(self, instance):
         ip = self.get_instance_ip(instance)
-        url = self.placeholder_apply(self.config.instance_check_url,instance)
+
+        url = self.placeholder_apply(
+            self.config.images[self.get_instance_type(instance)].instance_check_url,
+            instance)
 
         try:
             code = urllib2.urlopen(url).getcode()
@@ -105,7 +120,7 @@ class Demo():
             return True
         return False
 
-    def database_insert_server(self, instance, status=None, life_time=None):
+    def database_insert_server(self, instance, status=None, life_time=None,image_key=None):
         info = self.get_instance_info(instance)
         logging.debug('Insert instance %s', info['id'])
 
@@ -124,6 +139,9 @@ class Demo():
 
         if info.has_key('name'):
             data_instance.name = info['name']
+
+        if image_key:
+            data_instance.image_key = image_key
 
         if life_time is not None:
             data_instance.life_time = life_time

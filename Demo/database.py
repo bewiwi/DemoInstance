@@ -20,6 +20,7 @@ class Instance(Base):
     id = Column(types.Integer, primary_key=True)
     openstack_id = Column(String(255), unique=True)
     name = Column(String(255))
+    image_key = Column(String(255))
     status = Column(String(255), nullable=False)
     launched_at = Column(types.DATETIME)
     life_time = Column(types.Integer, nullable=False)

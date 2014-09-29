@@ -7,8 +7,7 @@
 
 			// route for the home page
 			.when('/', {
-				templateUrl : 'pages/image.html',
-				controller  : 'mainController'
+				templateUrl : 'pages/image.html'
 			})
 
 			// route for the about page
@@ -17,23 +16,16 @@
 				controller  : 'aboutController'
 			})
 
+            .when('/instance/:image_name', {
+                templateUrl : 'pages/instance.html'
+            })
+
 			// route for the contact page
 			.when('/instance', {
-				templateUrl : 'pages/instance.html',
-				controller  : 'contactController'
+				templateUrl : 'pages/instance.html'
 			});
-	});
-
-	// create the controller and inject Angular's $scope
-	demoApp.controller('mainController', function($scope) {
-		// create a message to display in our view
-		$scope.message = 'Everyone come and see how good I look!';
 	});
 
 	demoApp.controller('aboutController', function($scope) {
 		$scope.message = 'Look! I am an about page.';
-	});
-
-	demoApp.controller('contactController', function($scope) {
-		$scope.message = 'Contact us! JK. This is just a demo.';
 	});

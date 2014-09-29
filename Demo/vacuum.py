@@ -33,8 +33,8 @@ class Vacuum(threading.Thread):
                 if data_instance.openstack_id == info['id']:
                     on_cloud = True
                     break
-            if not on_cloud:
-                logging.info('%s is not present on cloud',data_instance.id)
+            if not on_cloud and data_instance.openstack_id:
+                logging.info('%s is not present on cloud anymore',data_instance.id)
                 self.demo.database_remove_server(data_instance)
         self.database.session.close()
 

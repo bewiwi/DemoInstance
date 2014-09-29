@@ -10,6 +10,10 @@ import logging
 
 class Handler(BaseHTTPRequestHandler):
 
+    def init_class(self):
+        self.config = DemoConfig()
+        self.demo = Demo(self.config)
+
     def send_file(self,file):
         f = open('web/'+file)
         self.send_response(200)
@@ -19,8 +23,8 @@ class Handler(BaseHTTPRequestHandler):
         f.close()
         return
 
-    def instance_create(self):
-        id = self.demo.create_instance()
+    def instance_create(self,image_key):
+        id = self.demo.create_instance(image_key)
         rep={'id' : id}
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
@@ -53,6 +57,28 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(info))
         return
 
+    def images_info(self):
+        http_images = {}
+        for name in self.config.images.keys():
+            image = self.config.images[name]
+            data = { 'name' : image.name, 'desc' : image.desc}
+            http_images[name] = data
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(http_images))
+        return
+
+    def image_info(self, image_key):
+        http_images = {}
+        image = self.config.images[image_key]
+        data = {'name': image.name, 'desc': image.desc}
+        http_image = data
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(http_image))
+        return
 
     def set_mime(self):
         mimetype = None
@@ -74,8 +100,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         str_path = self.path.split('?')[0]
         try:
-            self.config = DemoConfig()
-            self.demo = Demo(self.config)
+            self.init_class()
 
             if self.path == "/":
                 self.send_file('index.html')
@@ -85,8 +110,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_file(str_path)
                 return
 
-            if self.path =="/instance/start":
-                self.instance_create()
+            if self.path =="/image":
+                self.images_info()
                 return
 
             match = re.match("/instance/(.*)", self.path)
@@ -94,6 +119,10 @@ class Handler(BaseHTTPRequestHandler):
                 self.instance_info(match.group(1))
                 return
 
+            match = re.match("/image/(.*)", self.path)
+            if match:
+                self.image_info(match.group(1))
+                return
             self.send_response(404)
 
         except Exception as e:
@@ -102,6 +131,14 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(e.message)
         return
+
+    def do_PUT(self):
+        self.init_class()
+        match = re.match("/instance/(.*)", self.path)
+        if match:
+            self.instance_create(match.group(1))
+            return
+        self.send_response(404)
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""

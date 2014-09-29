@@ -1,12 +1,22 @@
-demoApp.controller('instanceController', function($scope, $http, $interval) {
+demoApp.controller('instanceController', function($scope, $http, $interval,$routeParams,$location) {
     var errorCallback = function(error) {
         $scope.error = error;
     };
 
+    if(! $routeParams.image_name) {
+        $location.path('/');
+    }
+
+    $http.get('/image/'+$routeParams.image_name).
+        success(function(data) {
+            $scope.image = data;
+        }).
+        error(errorCallback())
+
     $scope.createInstance = function() {
         $scope.cloud_instance = {};
 
-        $http.get('/instance/start').
+        $http.put('/instance/'+ $routeParams.image_name).
             success(function(data) {
                 $scope.cloud_instance = data;
 
