@@ -18,7 +18,7 @@
 			})
 
 			// route for the contact page
-			.when('/contact', {
+			.when('/instance', {
 				templateUrl : 'pages/instance.html',
 				controller  : 'contactController'
 			});

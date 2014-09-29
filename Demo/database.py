@@ -11,7 +11,7 @@ class DemoData():
         engine = create_engine(config.database_connection, echo=False)
         Base.metadata.create_all(engine)
         Base.metadata.bind = engine
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=engine, autocommit=False,autoflush=True,expire_on_commit=True)
         self.session = Session()
 
 

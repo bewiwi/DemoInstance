@@ -6,6 +6,7 @@ import urllib2
 import datetime
 from demo_exception import *
 
+
 class Demo():
     def __init__(self, config):
         self.config = config
@@ -73,7 +74,7 @@ class Demo():
         self.database.session.commit()
 
         raise_exception = False
-        if self.database_count_active_instance() >= 3:
+        if self.database_count_active_instance() <= self.config.max_instance:
             new_instance = self.nova.servers.create(self.config.instance_prefix + 'test',
                                                 self.config.image_id,
                                                 self.config.flavor_id)
@@ -89,7 +90,6 @@ class Demo():
             raise DemoExceptionToMuchInstance()
 
         return self.get_instance_info(new_instance)['id']
-
 
     def check_system_up(self, instance):
         ip = self.get_instance_ip(instance)
@@ -133,12 +133,14 @@ class Demo():
         return data_instance
 
     def database_remove_server(self, database_instance):
-        logging.info('DELETE instance %s', database_instance.id)
+        logging.info('DELETE instance %s', database_instance.openstack_id)
 
         # nova
-        instance = self.get_instance(database_instance.id)
+        instance = self.get_instance(database_instance.openstack_id)
         if instance:
             instance.delete()
+        else:
+            logging.debug('Instance %s not in cloud',database_instance.openstack_id)
 
         #database
         database_instance.status = 'DELETED'
@@ -147,8 +149,9 @@ class Demo():
 
     def database_count_active_instance(self):
         query = self.database.session.query(Instance).filter(
-            Instance.status == 'DELETED'
+            Instance.status != 'DELETED'
         )
+        logging.debug('%s actives instances', query.count())
         return query.count()
 
     def placeholder_apply(self, param, instance):

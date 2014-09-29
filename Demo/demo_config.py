@@ -19,6 +19,7 @@ class DemoConfig:
         self.instance_check_url = config.get("INSTANCE","check_url")
         self.instance_soft_url = config.get("INSTANCE","soft_url")
         self.instance_time = config.get("INSTANCE","time")
+        self.max_instance = config.get("INSTANCE","max_instance")
         self.http_port=config.getint("HTTP","port")
         self.database_connection=config.get("DATABASE","connection")
         self.log_level=config.get("DEFAULT","log_level")

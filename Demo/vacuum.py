@@ -18,20 +18,25 @@ class Vacuum(threading.Thread):
     def check_old_instance(self):
         logging.debug('CHECK OLD INSTANCE')
         query = self.database.session.query(Instance).filter(Instance.status != 'DELETED')
+        logging.debug("%s count",query.count())
         instances = self.demo.get_instances()
         for data_instance in query.all():
             destroy_at = data_instance.launched_at + datetime.timedelta(0, 0, 0, 0, data_instance.life_time)
+            logging.debug('%s must be destroy at %s', data_instance.openstack_id ,destroy_at)
             if destroy_at < datetime.datetime.now():
-                logging.info('%s is to old',data_instance.id)
+                logging.info('%s is to old',data_instance.openstack_id)
                 self.demo.database_remove_server(data_instance)
+
             on_cloud = False
             for instance in instances:
                 info = self.demo.get_instance_info(instance)
-                if data_instance.id == info['id']:
+                if data_instance.openstack_id == info['id']:
                     on_cloud = True
-            if on_cloud == False:
+                    break
+            if not on_cloud:
                 logging.info('%s is not present on cloud',data_instance.id)
                 self.demo.database_remove_server(data_instance)
+        self.database.session.close()
 
     def run(self):
         while not self.stop:

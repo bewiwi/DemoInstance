@@ -16,7 +16,7 @@ demoApp.controller('instanceController', function($scope, $http, $interval) {
                             success(function(data) {
                                 $scope.state = data;
 
-                                if ($scope.state.demo_address) {
+                                if ($scope.state.system_up) {
                                     $interval.cancel(refreshInterval);
                                 }
                             }).

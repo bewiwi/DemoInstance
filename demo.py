@@ -8,10 +8,6 @@ import logging
 if __name__ == '__main__':
     config = DemoConfig()
     logging.basicConfig(level=config.log_level)
-    ###
-    demo = Demo(config)
-    demo.create_instance()
-    ###
     vacuum = Vacuum()
     try:
         vacuum.start()
