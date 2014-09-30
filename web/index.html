@@ -10,9 +10,10 @@
 
   <!-- SPELLS -->
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.min.js"></script>
   <script src="bower_components/bootstrap/js/alert.js"></script>
+  <script src="bower_components/angular-translate/angular-translate.min.js"></script>
   <script src="script.js"></script>
   <script src="instance.js"></script>
   <script src="image.js"></script>
@@ -32,7 +33,7 @@
         <li><a href="#"><i class="fa fa-home"></i> Image</a></li>
           <li><a href="#instance"><i class="fa fa-comment"></i> Instance</a></li>
           -->
-          <li><a href="#about"><i class="fa fa-shield"></i> About</a></li>
+          <li><a href="#about"><i class="fa fa-shield"></i> {{ 'ABOUT'|translate }}</a></li>
       </ul>
     </div>
   </nav>

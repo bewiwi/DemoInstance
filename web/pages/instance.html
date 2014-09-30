@@ -1,22 +1,21 @@
 <div class="jumbotron text-center" ng-controller="instanceController">
-	<h1>Your instance</h1>
     <div class="alert-danger" ng-show="error">ERROR : {{ error.error }}</div>
     <div class="row">
         <div ng-show="!cloud_instance">
-            <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">Create instance of {{ image.name }}</button>
+            <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg"><span translate="">CREATE_INSTANCE_OF</span> {{ image.name }}</button>
         </div>
 
         <div class="col-md-6 col-md-offset-3" ng-show="cloud_instance">
             <table class="table">
                 <tr>
-                    <th>Cr&eacute;ation de votre instance</th>
+                    <th translate="">CREATING_INSTANCE</th>
                     <td>
                         <i ng-show="!cloud_instance.id" class="fa fa-spin fa-refresh fa-2x"></i>
                         <i ng-show="cloud_instance.id" class="fa fa-check fa-2x"></i>
                     </td>
                 </tr>
                 <tr>
-                    <th>Lancement de votre instance</th>
+                    <th translate="">STARTING_INSTANCE</th>
                     <td>
                         <div ng-show="cloud_instance.id">
                             <i ng-show="!state.instance_up" class="fa fa-spin fa-refresh fa-2x"></i>
@@ -25,7 +24,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>D&eacute;marage du syt&egrave;me</th>
+                    <th translate="">STARTING_SYSTEM</th>
                     <td>
                         <div ng-show="state.instance_up">
                             <i ng-show="!state.system_up" class="fa fa-spin fa-refresh fa-2x"></i>
@@ -36,8 +35,8 @@
             </table>
 
             <div ng-show="state.demo_address && state.system_up" class="alert alert-success">
-                <p>Vous pouvez vous connecter à <a class="alert-link" target="_blank" href="{{ state.demo_address }}">{{ state.demo_address }}</a></p>
-                <p>Votre instance ce terminera dans {{ state.life_time }} minutes</p>
+                <p>{{'YOU_CAN_CONNECT'|translate}} <a class="alert-link" target="_blank" href="{{ state.demo_address }}">{{ state.demo_address }}</a></p>
+                <p>{{ 'YOUR_INSTANCE_FINISH'|translate }} {{ state.life_time }} minutes</p>
             </div>
         </div>
     </div>

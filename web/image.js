@@ -6,6 +6,10 @@ demoApp.controller('imageController', function($scope, $http, $location) {
     $http.get('/image').
         success(function(data) {
             $scope.images = data;
+            var keys = Object.keys($scope.images);
+            if (keys.length == 1) {
+                $scope.redirect_instance($scope.images[keys[0]].name);
+            }
         }).
         error(errorCallback);
 
