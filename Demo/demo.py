@@ -84,7 +84,8 @@ class Demo():
         self.database.session.commit()
 
         raise_exception = False
-        if self.database_count_active_instance() <= self.config.images[image_key].max_instance:
+        logging.debug('%s active %s max',self.database_count_active_instance(image_key), self.config.images[image_key].max_instance )
+        if self.database_count_active_instance(image_key) <= self.config.images[image_key].max_instance:
             new_instance = self.nova.servers.create(self.config.images[image_key].instance_prefix + 'test',
                                                 self.config.images[image_key].image_id,
                                                 self.config.images[image_key].flavor_id)
@@ -165,11 +166,12 @@ class Demo():
         self.database.session.merge(database_instance)
         self.database.session.commit()
 
-    def database_count_active_instance(self):
+    def database_count_active_instance(self, image_key):
         query = self.database.session.query(Instance).filter(
-            Instance.status != 'DELETED'
+            Instance.status != 'DELETED',
+            Instance.image_key == image_key
         )
-        logging.debug('%s actives instances', query.count())
+        logging.debug('%s actives instances for %s', query.count(),image_key)
         return query.count()
 
     def placeholder_apply(self, param, instance):

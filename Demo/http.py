@@ -2,6 +2,7 @@ from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 from Demo.demo_config import DemoConfig
 from Demo.demo import Demo
+from Demo.demo_exception import DemoExceptionToMuchInstance
 import re
 import json
 import os
@@ -13,6 +14,12 @@ class Handler(BaseHTTPRequestHandler):
     def init_class(self):
         self.config = DemoConfig()
         self.demo = Demo(self.config)
+
+    def send_error(self,code,message):
+        self.send_response(code)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({'error' : message}))
 
     def send_file(self,file):
         f = open('web/'+file)
@@ -26,7 +33,7 @@ class Handler(BaseHTTPRequestHandler):
     def instance_create(self,image_key):
         id = self.demo.create_instance(image_key)
         rep={'id' : id}
-        self.send_response(200)
+        self.send_response(201)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         self.wfile.write(json.dumps(rep))
@@ -37,8 +44,7 @@ class Handler(BaseHTTPRequestHandler):
     def instance_info(self, instance_id):
         instance = self.demo.get_instance(instance_id)
         if not instance:
-            self.send_response(404)
-            self.end_headers()
+            self.send_error(404,'No instance found')
             return
 
         instance_info = self.demo.get_instance_info(instance)
@@ -71,6 +77,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def image_info(self, image_key):
         http_images = {}
+        if not self.config.images.has_key(image_key):
+            self.send_error(404,'Image not found')
+            return
         image = self.config.images[image_key]
         data = {'name': image.name, 'desc': image.desc}
         http_image = data
@@ -123,22 +132,29 @@ class Handler(BaseHTTPRequestHandler):
             if match:
                 self.image_info(match.group(1))
                 return
-            self.send_response(404)
+
+            self.send_error(404,'No action')
 
         except Exception as e:
             self.wfile.flush()
-            self.send_response(500)
-            self.end_headers()
-            self.wfile.write(e.message)
+            self.send_error(500, e.message)
         return
 
     def do_PUT(self):
-        self.init_class()
-        match = re.match("/instance/(.*)", self.path)
-        if match:
-            self.instance_create(match.group(1))
-            return
-        self.send_response(404)
+        try:
+            self.init_class()
+            match = re.match("/instance/(.*)", self.path)
+            if match:
+                self.instance_create(match.group(1))
+                return
+            self.send_error(404, 'No action')
+        except DemoExceptionToMuchInstance as e:
+            self.wfile.flush()
+            self.send_error(400, e.message)
+        except Exception as e:
+            self.wfile.flush()
+            self.send_error(500, e.message)
+        return
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""

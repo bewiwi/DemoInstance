@@ -1,6 +1,8 @@
 class DemoException(Exception):
     def __init__(self):
         self.value = "ERROR DEMO"
+        self.message = self.value
+
     def __str__(self):
         return repr(self.value)
 
@@ -8,5 +10,7 @@ class DemoException(Exception):
 class DemoExceptionToMuchInstance(DemoException):
     def __init__(self):
         self.value = "To much instances"
+        self.message = self.value
+
     def __str__(self):
         return repr(self.value)

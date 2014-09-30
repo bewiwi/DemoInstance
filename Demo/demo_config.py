@@ -32,7 +32,7 @@ class DemoConfig():
             image.instance_check_url = config.get(section,"check_url")
             image.instance_soft_url = config.get(section,"soft_url")
             image.instance_time = config.get(section,"time")
-            image.max_instance = config.get(section,"max_instance")
+            image.max_instance = config.getint(section,"max_instance")
             key_name = section[len(IMAGE_CONF_PREFIX):]
             self.images[key_name] = image
 

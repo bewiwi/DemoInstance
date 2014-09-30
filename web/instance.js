@@ -11,7 +11,7 @@ demoApp.controller('instanceController', function($scope, $http, $interval,$rout
         success(function(data) {
             $scope.image = data;
         }).
-        error(errorCallback())
+        error(errorCallback)
 
     $scope.createInstance = function() {
         $scope.cloud_instance = {};

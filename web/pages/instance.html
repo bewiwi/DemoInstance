@@ -1,6 +1,6 @@
 <div class="jumbotron text-center" ng-controller="instanceController">
 	<h1>Your instance</h1>
-
+    <div class="alert-danger" ng-show="error">ERROR : {{ error.error }}</div>
     <div class="row">
         <div ng-show="!cloud_instance">
             <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">Create instance of {{ image.name }}</button>
@@ -33,18 +33,11 @@
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <th>Fin de vie</th>
-                    <td>
-                        <div ng-show="state.system_up">
-                            <span>{{state.life_time}}</span>
-                        </div>
-                    </td>
-                </tr>
             </table>
 
             <div ng-show="state.demo_address && state.system_up" class="alert alert-success">
-                Vous pouvez vous connecter à <a class="alert-link" target="_blank" href="{{ state.demo_address }}">{{ state.demo_address }}</a>
+                <p>Vous pouvez vous connecter à <a class="alert-link" target="_blank" href="{{ state.demo_address }}">{{ state.demo_address }}</a></p>
+                <p>Votre instance ce terminera dans {{ state.life_time }} minutes</p>
             </div>
         </div>
     </div>
