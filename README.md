@@ -33,13 +33,14 @@ tenant=project
 url=http://srv-openstack:5000/v2.0
 region=regionOne
 ```
-Argument|Optional|Description
---------|--|----
-user |No| openstack user  
-password |No| openstack password  
-tenant |No| openstack tenant  
-url |No| openstack keystone api url  
-region |Yes| [OPTIONAL] openstak region
+
+| Argument | Optional | Description |
+| -------- | -------- | -------- |
+| user | No | openstack user |
+| password | No | openstack password |
+| tenant | No | openstack tenant |
+| url | No | openstack keystone api url |
+| region | Yes | [OPTIONAL] openstak region |
 
 ### HTTP
 ```
@@ -47,7 +48,7 @@ region |Yes| [OPTIONAL] openstak region
 port=8080
 ```
 Argument|Optional|Description
---------|-|---
+--------|--------|--------
 port |No|interface/api tcp port
 
 ### DATABASE
@@ -56,7 +57,7 @@ port |No|interface/api tcp port
 connection:mysql://root@localhost:3306/demo
 ```
 Argument|Optional|Description
--------|-|----
+--------|--------|--------
 connection |No|SQLAlchemy connection string of database
 
 Only tested with MySQL
@@ -67,7 +68,7 @@ You can define in this section variable shared with all [IMAGE\_]. The [IMAGE] s
 
 ##### config
 Argument|Optional|Description
-------|--|----
+--------|--------|--------
 name |No| Name of instance like "My cool app"
 desc |No|Little descrition like "This app is so cooooooool"
 info |No|info display after the creation like : "Login/Password are\<br />test/test""
