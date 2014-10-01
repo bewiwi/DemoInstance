@@ -12,7 +12,7 @@
 
 			// route for the about page
 			.when('/about', {
-				templateUrl : 'pages/about.html',
+				templateUrl : 'pages/about.html'
 			})
 
             .when('/instance/:image_name', {
@@ -46,7 +46,7 @@
             STARTING_SYSTEM: 'D&eacute;marrage du systeme',
             CREATE_INSTANCE_OF: 'Cr&eacute;ation de l\'instance ',
             ABOUT: 'A propos',
-            YOU_CAN_CONNECT: 'Vous pouvez vous connecter &acute;',
+            YOU_CAN_CONNECT: 'Vous pouvez vous connecter à ',
             YOUR_INSTANCE_FINISH:'Votre instance se terminera dans '
         });
         $translateProvider.preferredLanguage('fr');

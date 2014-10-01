@@ -67,7 +67,7 @@ class Handler(BaseHTTPRequestHandler):
         http_images = {}
         for name in self.config.images.keys():
             image = self.config.images[name]
-            data = { 'name' : image.name, 'desc' : image.desc}
+            data = {'name': image.name, 'desc': image.desc, 'img': image.img}
             http_images[name] = data
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
@@ -81,7 +81,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404,'Image not found')
             return
         image = self.config.images[image_key]
-        data = {'name': image.name, 'desc': image.desc}
+        data = {'name': image.name, 'desc': image.desc, 'img': image.img}
         http_image = data
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
