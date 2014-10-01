@@ -11,8 +11,7 @@ if __name__ == '__main__':
     vacuum = Vacuum()
     try:
         vacuum.start()
+        server = ThreadedHTTPServer(('0.0.0.0', config.http_port), Handler)
+        server.serve_forever()
     except (KeyboardInterrupt, SystemExit):
         vacuum.stop = True
-
-    server = ThreadedHTTPServer(('0.0.0.0', config.http_port), Handler)
-    server.serve_forever()

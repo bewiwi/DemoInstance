@@ -39,6 +39,14 @@ class Vacuum(threading.Thread):
         self.database.session.close()
 
     def run(self):
-        while not self.stop:
+        time_between_vacuum = 60
+        while True:
             self.check_old_instance()
-            sleep(60)
+            i=0
+            while i < time_between_vacuum:
+                if self.stop:
+                    logging.info('Stop vacuum')
+                    return
+                i += 1
+                sleep(1)
+        logging.error('Vacuum is stop')
