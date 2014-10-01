@@ -12,18 +12,19 @@ $ cp config-dist.ini config.ini
 $ vim config.ini
 ```
 
-##Configuration
+## Configuration
+
 DemoInstance have a single ini config file : config.ini
 In this file you have many section.
 
-###DEFAULT
+### DEFAULT
 ```
 [DEFAULT]
 log_level=DEBUG
 ```
 log_level : list of value here https://docs.python.org/2/library/logging.html#logging-levels
 
-###OPENSTACK
+### OPENSTACK
 ```
 [OPENSTACK]
 user=user
@@ -40,7 +41,7 @@ tenant |No| openstack tenant
 url |No| openstack keystone api url  
 region |Yes| [OPTIONAL] openstak region
 
-###HTTP
+### HTTP
 ```
 [HTTP]
 port=8080
@@ -49,7 +50,7 @@ Argument|Optional|Description
 --------|-|---
 port |No|interface/api tcp port
 
-###DATABASE
+### DATABASE
 ```
 [DATABASE]
 connection:mysql://root@localhost:3306/demo
@@ -60,11 +61,11 @@ connection |No|SQLAlchemy connection string of database
 
 Only tested with MySQL
 
-###IMAGE
+### IMAGE
 [IMAGE] section is the template of any [IMAGE\_].  
 You can define in this section variable shared with all [IMAGE\_]. The [IMAGE] section do not define a runnable image only section with [IMAGE\__ImageName_] format define runnable image
-#####config
 
+##### config
 Argument|Optional|Description
 ------|--|----
 name |No| Name of instance like "My cool app"
@@ -80,7 +81,7 @@ soft_url |No|url of the app to redirect the user
 max_instance |No|max number of instance
 
 
-####example
+#### example
 Example with only one instance:
 
 ```
@@ -125,7 +126,7 @@ flavor_id=2
 ```
 In this example just [IMAGE_MYAPP3] run with flavor_id=2 and other image run with flavor_id=1 defined in [IMAGE]
 
-##Run
+## Run
 ```
 python demo.py
 ```
