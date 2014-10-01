@@ -14,3 +14,11 @@ class DemoExceptionToMuchInstance(DemoException):
 
     def __str__(self):
         return repr(self.value)
+
+class DemoExceptionInvalidImage(Exception):
+    def __init__(self,image_var):
+        self.value = "Image Invalid %s" % image_var
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)

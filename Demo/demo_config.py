@@ -1,4 +1,6 @@
 import ConfigParser
+from copy import copy
+from demo_exception import DemoExceptionInvalidImage
 
 IMAGE_CONF_PREFIX='IMAGE_'
 
@@ -20,28 +22,43 @@ class DemoConfig():
         self.log_level=self.config.get("DEFAULT","log_level")
 
         self.images = {}
+        template_image = self.get_image_by_section('IMAGE')
         for section in self.config.sections():
             if not section.startswith(IMAGE_CONF_PREFIX):
                 continue
-            image = DemoConfigImage()
-            image.image_id = self.config.get(section, "image_id")
-            image.name = self.config.get(section, "name")
-            image.desc = self.exist_or_none(section, "desc")
-            image.img = self.exist_or_none(section, 'img')
-            image.info = self.exist_or_none(section, 'info')
-            image.flavor_id = self.config.get(section,"flavor_id")
-            image.instance_prefix = self.config.get(section,"prefix")
-            image.instance_check_url = self.config.get(section,"check_url")
-            image.instance_soft_url = self.config.get(section,"soft_url")
-            image.instance_time = self.config.get(section,"time")
-            image.max_instance = self.config.getint(section,"max_instance")
+            image = self.get_image_by_section(section, template_image=template_image)
             key_name = section[len(IMAGE_CONF_PREFIX):]
+            image.check()
             self.images[key_name] = image
 
-    def exist_or_none(self,section,key):
-        if self.config.has_option(section, key):
-            return self.config.get(section,key)
-        return None
+    def get_image_by_section(self, section, template_image=None):
+        if template_image is None:
+            image = DemoConfigImage()
+        else:
+            image = copy(template_image)
+        if self.config.has_option(section, "image_id"):
+            image.image_id = self.config.get(section, "image_id")
+        if self.config.has_option(section, "name"):
+            image.name = self.config.get(section, "name")
+        if self.config.has_option(section, "desc"):
+            image.desc = self.config.get(section, "desc")
+        if self.config.has_option(section, 'img'):
+            image.img = self.config.get(section, 'img')
+        if self.config.has_option(section, 'info'):
+            image.info = self.config.get(section, 'info')
+        if self.config.has_option(section, "flavor_id"):
+            image.flavor_id = self.config.get(section,"flavor_id")
+        if self.config.has_option(section, "prefix"):
+            image.instance_prefix = self.config.get(section,"prefix")
+        if self.config.has_option(section, "check_url"):
+            image.instance_check_url = self.config.get(section,"check_url")
+        if self.config.has_option(section, "soft_url"):
+            image.instance_soft_url = self.config.get(section,"soft_url")
+        if self.config.has_option(section, "time"):
+            image.instance_time = self.config.get(section,"time")
+        if self.config.has_option(section, "max_instance"):
+            image.max_instance = self.config.getint(section,"max_instance")
+        return image
 
 
 class DemoConfigImage():
@@ -56,3 +73,21 @@ class DemoConfigImage():
         self.name = None
         self.desc = None
         self.info = None
+        self.img = None
+
+    def check(self):
+        if self.image_id is None:
+            raise DemoExceptionInvalidImage('image_id')
+        if self.flavor_id is None:
+            raise DemoExceptionInvalidImage('flavor_id')
+        if self.instance_prefix is None:
+            raise DemoExceptionInvalidImage('instance_prefix')
+        if self.instance_check_url is None:
+            raise DemoExceptionInvalidImage('instance_check_url')
+        if self.instance_soft_url is None:
+            raise DemoExceptionInvalidImage('instance_soft_url')
+        if self.instance_time is None:
+            raise DemoExceptionInvalidImage('instance_time')
+        if self.max_instance is None:
+            raise DemoExceptionInvalidImage('max_instance')
+        return True
