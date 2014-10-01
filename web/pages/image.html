@@ -3,7 +3,7 @@
     <div class="well col-md-3 col-md-offset-2"
     ng-repeat="(key,image) in images"
     ng-click="redirect_instance(key)">
-        <img ng-show="image.img"  ng-src="{{ image.img }}"
+        <img class="image_img" ng-show="image.img"  ng-src="{{ image.img }}"
              style="width: 150px; height: 150px" >
         <p>{{ image.name }}</p>
         <p>{{ image.desc }}</p>

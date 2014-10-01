@@ -1,0 +1,12 @@
+.jumbotron {
+    background-color: white;
+}
+[ng-click],
+[data-ng-click],
+[x-ng-click] {
+    cursor: pointer;
+}
+
+.image_img {
+    margin-bottom: 15px;
+}
