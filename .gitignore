@@ -1,4 +1,5 @@
-config.ini
+*.ini
+!config-dist.ini
 *.pyc
 .DS_Store
 .idea/

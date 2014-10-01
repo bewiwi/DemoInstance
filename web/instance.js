@@ -1,4 +1,4 @@
-demoApp.controller('instanceController', function($scope, $http, $interval,$routeParams,$location) {
+demoApp.controller('instanceController', function($scope, $http, $interval,$routeParams,$location,$sce) {
     var errorCallback = function(error) {
         $scope.error = error;
     };
@@ -10,6 +10,7 @@ demoApp.controller('instanceController', function($scope, $http, $interval,$rout
     $http.get('/image/'+$routeParams.image_name).
         success(function(data) {
             $scope.image = data;
+            $scope.image.info = $sce.trustAsHtml(data.info)
         }).
         error(errorCallback)
 

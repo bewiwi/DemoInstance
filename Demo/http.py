@@ -81,7 +81,12 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404,'Image not found')
             return
         image = self.config.images[image_key]
-        data = {'name': image.name, 'desc': image.desc, 'img': image.img}
+        data = {
+            'name': image.name,
+            'desc': image.desc,
+            'img': image.img,
+            'info': image.info
+        }
         http_image = data
         self.send_response(200)
         self.send_header('Content-type', 'application/json')

@@ -28,6 +28,7 @@ class DemoConfig():
             image.name = self.config.get(section, "name")
             image.desc = self.exist_or_none(section, "desc")
             image.img = self.exist_or_none(section, 'img')
+            image.info = self.exist_or_none(section, 'info')
             image.flavor_id = self.config.get(section,"flavor_id")
             image.instance_prefix = self.config.get(section,"prefix")
             image.instance_check_url = self.config.get(section,"check_url")
@@ -42,6 +43,7 @@ class DemoConfig():
             return self.config.get(section,key)
         return None
 
+
 class DemoConfigImage():
     def __init__(self):
         self.image_id = None
@@ -53,3 +55,4 @@ class DemoConfigImage():
         self.max_instance = None
         self.name = None
         self.desc = None
+        self.info = None

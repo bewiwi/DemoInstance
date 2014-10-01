@@ -44,6 +44,7 @@
             <div ng-show="state.demo_address && state.system_up" class="alert alert-success">
                 <p>{{'YOU_CAN_CONNECT'|translate}} <a class="alert-link" target="_blank" href="{{ state.demo_address }}">{{ state.demo_address }}</a></p>
                 <p>{{ 'YOUR_INSTANCE_FINISH'|translate }} {{ state.life_time }} minutes</p>
+                <p ng-show="image.info" ng-bind-html="image.info"></p>
             </div>
         </div>
     </div>
