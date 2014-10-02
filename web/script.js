@@ -5,12 +5,10 @@
 	demoApp.config(function($routeProvider) {
 		$routeProvider
 
-			// route for the home page
 			.when('/', {
 				templateUrl : 'pages/image.html'
 			})
 
-			// route for the about page
 			.when('/about', {
 				templateUrl : 'pages/about.html'
 			})
@@ -19,7 +17,10 @@
                 templateUrl : 'pages/instance.html'
             })
 
-			// route for the contact page
+            .when('/instance/:image_name/:id', {
+                templateUrl : 'pages/instance.html'
+            })
+
 			.when('/instance', {
 				templateUrl : 'pages/instance.html'
 			});
@@ -36,7 +37,8 @@
             CREATE_INSTANCE_OF: 'Create instance of ',
             ABOUT: 'About',
             YOU_CAN_CONNECT: 'You can connect to',
-            YOUR_INSTANCE_FINISH:'Your instance will be destroy in '
+            YOUR_INSTANCE_FINISH:'Your instance will be destroy in ',
+            ERROR:'ERROR'
 
         });
         $translateProvider.translations('fr', {
@@ -47,7 +49,8 @@
             CREATE_INSTANCE_OF: 'Cr&eacute;ation de l\'instance ',
             ABOUT: 'A propos',
             YOU_CAN_CONNECT: 'Vous pouvez vous connecter à ',
-            YOUR_INSTANCE_FINISH:'Votre instance se terminera dans '
+            YOUR_INSTANCE_FINISH:'Votre instance se terminera dans ',
+            ERROR:'ERREUR'
         });
         $translateProvider.preferredLanguage('fr');
     });

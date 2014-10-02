@@ -6,26 +6,26 @@
                  ng-src="{{ image.img }}"
                  style="width: 150px; height: 150px" >
         </div>
-        <div ng-show="!cloud_instance">
+        <div ng-show="!instance_id && !creation_in_progress">
             <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">
                 <span translate="">CREATE_INSTANCE_OF</span> {{ image.name }}
             </button>
         </div>
 
-        <div class="col-md-6 col-md-offset-3" ng-show="cloud_instance">
-            <div class=" alert alert-danger" ng-show="error">ERROR : {{ error.error }}</div>
-            <table class="table">
+        <div class="col-md-6 col-md-offset-3">
+            <div class=" alert alert-danger" ng-show="error">{{'ERROR'|translate}} : {{ error.error }}</div>
+            <table ng-show="!error && ( instance_id || creation_in_progress )" class="table">
                 <tr>
                     <th translate="">CREATING_INSTANCE</th>
                     <td>
-                        <i ng-show="!cloud_instance.id" class="fa fa-spin fa-refresh fa-2x"></i>
-                        <i ng-show="cloud_instance.id" class="fa fa-check fa-2x"></i>
+                        <i ng-show="!state.id" class="fa fa-spin fa-refresh fa-2x"></i>
+                        <i ng-show="state.id" class="fa fa-check fa-2x"></i>
                     </td>
                 </tr>
                 <tr>
                     <th translate="">STARTING_INSTANCE</th>
                     <td>
-                        <div ng-show="cloud_instance.id">
+                        <div ng-show="state.id">
                             <i ng-show="!state.instance_up" class="fa fa-spin fa-refresh fa-2x"></i>
                             <i ng-show="state.instance_up" class="fa fa-check fa-2x"></i>
                         </div>
