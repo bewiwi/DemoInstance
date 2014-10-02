@@ -1,5 +1,5 @@
 <div class="jumbotron text-center" ng-controller="instanceController">
-    <div class="alert-danger" ng-show="error">ERROR : {{ error.error }}</div>
+
     <div class="row">
         <div>
             <img class="image_img" ng-show="image.img"
@@ -13,6 +13,7 @@
         </div>
 
         <div class="col-md-6 col-md-offset-3" ng-show="cloud_instance">
+            <div class=" alert alert-danger" ng-show="error">ERROR : {{ error.error }}</div>
             <table class="table">
                 <tr>
                     <th translate="">CREATING_INSTANCE</th>
@@ -44,7 +45,9 @@
             <div ng-show="state.demo_address && state.system_up" class="alert alert-success">
                 <p>{{'YOU_CAN_CONNECT'|translate}} <a class="alert-link" target="_blank" href="{{ state.demo_address }}">{{ state.demo_address }}</a></p>
                 <p>{{ 'YOUR_INSTANCE_FINISH'|translate }} {{ state.life_time }} minutes</p>
-                <p ng-show="image.info" ng-bind-html="image.info"></p>
+            </div>
+            <div ng-show="state.demo_address && state.system_up && image.info" class="alert alert-info">
+                <p ng-bind-html="image.info"></p>
             </div>
         </div>
     </div>
