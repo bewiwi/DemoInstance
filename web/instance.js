@@ -21,7 +21,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
             success(function(data) {
                 $scope.cloud_instance = data;
 
-                var refreshDelay = 15000,
+                var refreshDelay = 5000,
                     refreshCallback = function() {
                         $http.get('/instance/' + $scope.cloud_instance.id).
                             success(function(data) {
