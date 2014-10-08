@@ -22,3 +22,12 @@ class DemoExceptionInvalidImage(Exception):
 
     def __str__(self):
         return repr(self.value)
+
+
+class DemoExceptionInvalidImageTime(Exception):
+    def __init__(self, time):
+        self.value = "Invalid Time %s" % time
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)

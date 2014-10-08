@@ -11,8 +11,14 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
         success(function(data) {
             $scope.image = data;
             $scope.image.info = $sce.trustAsHtml(data.info)
+
+            $scope.ask_instance = {
+                image_name : $routeParams.image_name,
+                time : $scope.image.default_time
+            }
         }).
         error(errorCallback)
+
 
 
     if( $routeParams.id) {
@@ -42,9 +48,9 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
         });
     }
 
-    $scope.createInstance = function() {
+    $scope.createInstance = function(time) {
         $scope.creation_in_progress = true
-        $http.put('/instance/'+ $routeParams.image_name).
+        $http.put('/instance/'+ $routeParams.image_name, $scope.ask_instance).
             success(function(data) {
                 $location.path('/instance/'+$routeParams.image_name+'/'+data.id)
 

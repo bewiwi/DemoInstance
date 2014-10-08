@@ -54,8 +54,10 @@ class DemoConfig():
             image.instance_check_url = self.config.get(section,"check_url")
         if self.config.has_option(section, "soft_url"):
             image.instance_soft_url = self.config.get(section,"soft_url")
-        if self.config.has_option(section, "time"):
-            image.instance_time = self.config.get(section,"time")
+        if self.config.has_option(section, "time_default"):
+            image.instance_time = self.config.getint(section,"time_default")
+        if self.config.has_option(section, "time_max"):
+            image.instance_time_max = self.config.getint(section,"time_max")
         if self.config.has_option(section, "max_instance"):
             image.max_instance = self.config.getint(section,"max_instance")
         return image
@@ -69,6 +71,7 @@ class DemoConfigImage():
         self.instance_check_url = None
         self.instance_soft_url = None
         self.instance_time = None
+        self.instance_time_max = None
         self.max_instance = None
         self.name = None
         self.desc = None

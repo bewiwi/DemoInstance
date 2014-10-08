@@ -48,7 +48,7 @@ class Demo():
             data_instance.launched_at
             + datetime.timedelta(0, 0, 0, 0, data_instance.life_time)
         ) - datetime.datetime.now()
-        return int(delta.total_seconds()/60)
+        return int(self._get_total_seconds(delta)/60)
 
     def get_instances(self):
         return self.nova.servers.list()
@@ -69,7 +69,7 @@ class Demo():
         else:
             return False
 
-    def create_instance(self,image_key):
+    def create_instance(self, image_key, time=None):
         logging.info("Create Instance")
         logging.debug("Image id : %s", self.config.images[image_key].image_id)
         logging.debug("Flavor id : %s", self.config.images[image_key].flavor_id)
@@ -84,23 +84,36 @@ class Demo():
         self.database.session.commit()
 
         raise_exception = False
-        logging.debug('%s active %s max',self.database_count_active_instance(image_key), self.config.images[image_key].max_instance )
         if self.database_count_active_instance(image_key) <= self.config.images[image_key].max_instance:
-            new_instance = self.nova.servers.create(self.config.images[image_key].instance_prefix + 'test',
-                                                self.config.images[image_key].image_id,
-                                                self.config.images[image_key].flavor_id)
-            self.database_insert_server(new_instance, status='CREATED',
-                                        life_time=self.config.images[image_key].instance_time,
-                                        image_key=image_key)
+            new_instance = self.nova.servers.create(
+                self.config.images[image_key].instance_prefix + 'test',
+                self.config.images[image_key].image_id,
+                self.config.images[image_key].flavor_id
+            )
+            life_time = self.config.images[image_key].instance_time
+            if time is not None:
+                #Check the defined time is good or hack attempt
+                if self.config.images[image_key].instance_time_max is not None\
+                    and time <= self.config.images[image_key].instance_time_max:
+                    life_time = time
+                else:
+                    raise_exception = DemoExceptionInvalidImageTime(time)
+
         else:
-            raise_exception = True
+            raise_exception = DemoExceptionToMuchInstance()
+
+        if not raise_exception:
+            #No Exception go create instance
+            self.database_insert_server(new_instance, status='CREATED',
+                                        life_time=life_time,
+                                        image_key=image_key)
 
         #Remove the demand
         self.database.session.delete(database_instance)
         self.database.session.commit()
 
         if raise_exception:
-            raise DemoExceptionToMuchInstance()
+            raise raise_exception
 
         return self.get_instance_info(new_instance)['id']
 
@@ -177,3 +190,7 @@ class Demo():
     def placeholder_apply(self, param, instance):
         param = param.replace("%ip%", self.get_instance_ip(instance))
         return param
+
+    #Python 2.6 hook
+    def _get_total_seconds(self, td):
+        return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 1e6) / 1e6

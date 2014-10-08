@@ -6,9 +6,12 @@
                  ng-src="{{ image.img }}"
                  style="width: 150px; height: 150px" >
         </div>
+
         <div ng-show="!instance_id && !creation_in_progress">
+            <slider ng-show="image.max_time" floor="0" ceiling="{{ image.max_time }}" step="5" precision="0" ng-model="ask_instance.time"></slider>
             <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">
-                <span translate="">CREATE_INSTANCE_OF</span> {{ image.name }}
+                <span translate="">CREATE_INSTANCE_OF</span> {{ image.name }}<br />
+                <span translate="">FOR</span> {{ ask_instance.time }} min<br />
             </button>
         </div>
 

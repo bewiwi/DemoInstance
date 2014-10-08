@@ -1,5 +1,5 @@
 	// create the module and name it demoApp
-	var demoApp = angular.module('demoApp', ['ngRoute','pascalprecht.translate']);
+	var demoApp = angular.module('demoApp', ['ngRoute','pascalprecht.translate', 'ui.slider']);
 
 	// configure our routes
 	demoApp.config(function($routeProvider) {
@@ -38,6 +38,7 @@
             ABOUT: 'About',
             YOU_CAN_CONNECT: 'You can connect to',
             YOUR_INSTANCE_FINISH:'Your instance will be destroy in ',
+            FOR:'for',
             ERROR:'ERROR'
 
         });
@@ -50,6 +51,7 @@
             ABOUT: 'A propos',
             YOU_CAN_CONNECT: 'Vous pouvez vous connecter à ',
             YOUR_INSTANCE_FINISH:'Votre instance se terminera dans ',
+            FOR:'pour',
             ERROR:'ERREUR'
         });
         $translateProvider.preferredLanguage('fr');

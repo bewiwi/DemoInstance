@@ -72,7 +72,8 @@ Argument|Optional|Description
 name |No| Name of instance like "My cool app"
 desc |No|Little descrition like "This app is so cooooooool"
 info |No|info display after the creation like : "Login/Password are\<br />test/test""
-time |No|Instance life time in minute
+time_default |No|Default instance life time in minute
+time_max=80 |Yes|Max instance time life (activate time selection for user)
 img |Yes|url of picture. Can be in /instance_image or external link
 image_id |No| Openstack image id
 flavor_id |No|Openstack flavor id
@@ -95,7 +96,7 @@ info=Login/Password are<br />test/test
 img=/instance_image/example.png
 image_id=34e38945-3b17-4960-80f3-05efea732579
 flavor_id=1
-time=20
+time_default=20
 prefix=myapp_
 check_url=http://%ip%/ok
 soft_url=http://%ip%/

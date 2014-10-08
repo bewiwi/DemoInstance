@@ -3,6 +3,7 @@ from SocketServer import ThreadingMixIn
 from Demo.demo_config import DemoConfig
 from Demo.demo import Demo
 from Demo.demo_exception import DemoExceptionToMuchInstance
+from cgi import parse_header, parse_multipart, parse_qs
 import re
 import json
 import os
@@ -30,9 +31,9 @@ class Handler(BaseHTTPRequestHandler):
         f.close()
         return
 
-    def instance_create(self,image_key):
-        id = self.demo.create_instance(image_key)
-        rep={'id' : id}
+    def instance_create(self,image_key, time=None):
+        id = self.demo.create_instance(image_key,time)
+        rep={'id': id}
         self.send_response(201)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
@@ -67,7 +68,13 @@ class Handler(BaseHTTPRequestHandler):
         http_images = {}
         for name in self.config.images.keys():
             image = self.config.images[name]
-            data = {'name': image.name, 'desc': image.desc, 'img': image.img}
+            data = {
+                'name': image.name,
+                'desc': image.desc,
+                'img': image.img,
+                'max_time': image.instance_time_max,
+                'default_time': image.instance_time
+            }
             http_images[name] = data
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
@@ -85,6 +92,8 @@ class Handler(BaseHTTPRequestHandler):
             'name': image.name,
             'desc': image.desc,
             'img': image.img,
+            'max_time': image.instance_time_max,
+            'default_time': image.instance_time,
             'info': image.info
         }
         http_image = data
@@ -148,9 +157,16 @@ class Handler(BaseHTTPRequestHandler):
     def do_PUT(self):
         try:
             self.init_class()
+
+            length = int(self.headers.getheader('Content-Length'))
+            put_vars = json.loads(self.rfile.read(length))
+
             match = re.match("/instance/(.*)", self.path)
             if match:
-                self.instance_create(match.group(1))
+                time = None
+                if put_vars.has_key('time'):
+                    time = int(put_vars['time'])
+                self.instance_create(match.group(1), time=time)
                 return
             self.send_error(404, 'No action')
         except DemoExceptionToMuchInstance as e:
