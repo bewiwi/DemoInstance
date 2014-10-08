@@ -7,7 +7,7 @@ DemoInstance provides an interface to deploy instance of your project on an Open
 
 ```
 $ git clone ..
-$ pip -r requirement.txt
+$ pip install -r requirement.txt
 $ cp config-dist.ini config.ini
 $ vim config.ini
 ```
