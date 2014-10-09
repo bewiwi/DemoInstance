@@ -40,6 +40,7 @@
             YOUR_INSTANCE_FINISH:'Your instance will be destroy in ',
             FOR:'for',
             ERROR:'ERROR',
+            TIME:'Time',
             RETURN_HOME : 'Return Home'
 
         });
@@ -54,6 +55,7 @@
             YOUR_INSTANCE_FINISH:'Votre instance se terminera dans ',
             FOR:'pour',
             ERROR:'ERREUR',
+            TIME:'Temps',
             RETURN_HOME : 'Retourner à l\' accueil'
         });
         $translateProvider.preferredLanguage('fr');

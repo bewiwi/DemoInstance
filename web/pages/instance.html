@@ -10,9 +10,9 @@
         <div class="mr3"></div>
     <div class="row">
         <div ng-show="!instance_id && !creation_in_progress">
-           <div class="col-xs-2 col-sm-2 col-md-2 col-md-offset-5">
-               <p style="text-align:left;margin-bottom:-1rem;"><span class="glyphicon glyphicon-time"></span> {{'TIME'|translate}}</p>
-                <slider ng-show="image.max_time" floor="1" ceiling="{{ image.max_time }}" step="1" precision="0" ng-model="ask_instance.time"></slider>
+           <div ng-show="image.max_time" class="col-xs-2 col-sm-2 col-md-2 col-md-offset-5">
+               <p style="text-align:left;margin-bottom:-1rem;"><span class="glyphicon glyphicon-time"></span> {{'TIME'|translate}} :</p>
+                <slider floor="1" ceiling="{{ image.max_time }}" step="1" precision="0" ng-model="ask_instance.time"></slider>
             </div>
             <div class="col-xs-6 col-sm-6 col-md-6 col-md-offset-3">
                <div class="clearfix mr3"></div>
