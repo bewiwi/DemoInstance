@@ -23,14 +23,18 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
 
     if( $routeParams.id) {
         $scope.instance_id = $routeParams.id;
+        $scope.state = {
+            system_up: false
+        };
+        
         var refreshDelay = 5000,
             refreshCallback = function() {
                 $http.get('/instance/' + $scope.instance_id).
                     success(function(data) {
-                        $scope.state = data;
+                        angular.extend($scope.state, data);
 
                         if ($scope.state.system_up) {
-                            refreshDelay = 60000;
+                            refreshDelay = 60000;                                                
                         }
 
                         refreshTimeout = $timeout(refreshCallback, refreshDelay)
@@ -43,6 +47,18 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
             },
             refreshTimeout = $timeout(refreshCallback, refreshDelay);
 
+        $scope.$watch(
+            'state.system_up',
+            function(v) {
+                if (!v) return;
+                
+                $('html, body')
+                    .animate({
+                        scrollTop: $(document).height()
+                    }, 5000);
+            }
+        )
+        
         $scope.$on('$routeChangeStart', function() {
             $timeout.cancel(refreshTimeout);
         });

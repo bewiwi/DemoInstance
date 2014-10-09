@@ -39,11 +39,12 @@
             YOU_CAN_CONNECT: 'You can connect to',
             YOUR_INSTANCE_FINISH:'Your instance will be destroy in ',
             FOR:'for',
-            ERROR:'ERROR'
+            ERROR:'ERROR',
+            RETURN_HOME : 'Return Home'
 
         });
         $translateProvider.translations('fr', {
-            SELECT_IMAGE: 'Selectionez une image',
+            SELECT_IMAGE: 'Sélectionnez une image',
             CREATING_INSTANCE: 'Cr&eacute;ation de l\'instance',
             STARTING_INSTANCE: 'D&eacute;marrage instance',
             STARTING_SYSTEM: 'D&eacute;marrage du systeme',
@@ -52,7 +53,8 @@
             YOU_CAN_CONNECT: 'Vous pouvez vous connecter à ',
             YOUR_INSTANCE_FINISH:'Votre instance se terminera dans ',
             FOR:'pour',
-            ERROR:'ERREUR'
+            ERROR:'ERREUR',
+            RETURN_HOME : 'Retourner à l\' accueil'
         });
         $translateProvider.preferredLanguage('fr');
     });

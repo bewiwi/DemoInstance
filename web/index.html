@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-
 <!-- define angular app -->
 <html ng-app="demoApp">
-
 <head>
    <meta charset="utf-8">
   <!-- SCROLLS -->
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
   <link rel="stylesheet" href="bower_components/angular-slider/slider.css" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style_theme_1.css" />
 
   <!-- SPELLS -->
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -26,31 +24,41 @@
 
 <!-- define angular controller -->
 <body>
-
-  <nav class="navbar navbar-default">
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="/">Demo Instance</a>
-      </div>
-
-      <ul class="nav navbar-nav navbar-right">
-          <!--
-        <li><a href="#"><i class="fa fa-home"></i> Image</a></li>
-          <li><a href="#instance"><i class="fa fa-comment"></i> Instance</a></li>
-          -->
-          <li><a href="#about"><i class="fa fa-shield"></i> {{ 'ABOUT'|translate }}</a></li>
-      </ul>
+<nav class="navbar navbar-default">
+    <div>
+        <div class="navbar-header col-md-6 col-md-offset-3">
+            <a href="#" data-toggle="tooltip" data-placement="bottom" title="{{ 'RETURN_HOME'|translate }}"><p style="text-align:center;"><img class="logo" src="img/demo-instance-72.png" alt="Demo-instance"></p></a>
+        </div>
     </div>
-  </nav>
+</nav>
 
-  <div id="main">
-
+<div id="main">
     <!-- angular templating -->
-		<!-- this is where content will be injected -->
+    <!-- this is where content will be injected -->
     <div ng-view></div>
-    
-  </div>
-  
+</div>
+<div class="clearfix"></div>
+    <footer id="sticky-footer" class="footer">
+        <div class="wrapper">
+            <p class="footer-made">
+                © 2014 Tous droits Réservés — <a href="#about"><i class="fa fa-shield"></i> {{ 'ABOUT'|translate }}</a> — Made with <i class="fa fa-heart"></i> by <a class="Author" href="/">Me</a>
+            </p>
+        </div>
+    </footer>
+    <!-- SPELLS -->  
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="bower_components/angular-translate/angular-translate.min.js"></script>
+    <script src="script.js"></script>
+    <script src="instance.js"></script>
+    <script src="image.js"></script>
+    <script src="bower_components/bootstrap/js/alert.js"></script>
+    <script src="bower_components/bootstrap/js/tooltip.js"></script>
+    <script>
+    $(function() {
+        $('[data-toggle=tooltip]').tooltip();
+    });
+    </script>
 </body>
-
 </html>

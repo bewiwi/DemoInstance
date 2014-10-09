@@ -1,12 +1,22 @@
-<div class="jumbotron text-center clearfix" ng-controller="imageController">
-	<h1 translate="" >SELECT_IMAGE</h1>
-    <div class="well col-md-3 col-md-offset-2"
-    ng-repeat="(key,image) in images"
-    ng-click="redirect_instance(key)">
-        <img class="image_img" ng-show="image.img"  ng-src="{{ image.img }}"
-             style="width: 150px; height: 150px" >
-        <p>{{ image.name }}</p>
-        <p>{{ image.desc }}</p>
-
+<div class="jumbotron" ng-controller="imageController">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-2">
+            <h1 id="TitleEntry" translate="" >SELECT_IMAGE</h1>  
+        </div>
+    </div>
+   <div class="clearfix"></div>
+   <div class="row">
+        <div class="well col-md-3 col-md-offset-2 button float-shadow"
+        ng-repeat="(key,image) in images"
+        ng-click="redirect_instance(key)">
+            <p style="text-align:center;">
+                <img class="image_img"  ng-show="image.img"  ng-src="{{ image.img }}"
+                 style="width: 150px; height: 150px" >
+            </p>
+            <div class="clearfix"></div>
+            <p id="NameImage">{{ image.name }}</p>
+            <div class="clearfix"></div>
+            <p id="DescImage" >{{ image.desc }}</p>
+        </div>
     </div>
 </div>
