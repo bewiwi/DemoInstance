@@ -82,6 +82,18 @@ h1, h2, h3, h4 h5, h6, p {
         from {opacity:0;}
         to {opacity:1;}
     }
+
+.bold{
+    font-weight: 700;
+}
+span.glyphicon.glyphicon-time {
+    position: relative;
+    top: 3px;
+    color:#c1ab80;
+}
+p.ng-binding {
+color: #6E6E6E;
+}
 /* Footer */
 footer#sticky-footer {
     position: fixed;
@@ -294,4 +306,41 @@ margin-bottom: 100px;
 @-webkit-keyframes demo {
     0% { -webkit-transform:  rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
+}
+
+/* Slider Bar */
+slider div.handle, [slider] div.handle {
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    top: -6px !important;
+    background-color: #ffffff !important;
+    z-index: 2;
+    box-shadow: 1px 1px 6px rgba(85, 85, 85, 0.55);
+}
+slider div.bar, [slider] div.bar {
+    width: 100%;
+    height: 10px !important;
+    border-radius: 0px !important;
+    background: #DCDCDC;
+    overflow: hidden;
+}
+slider div.handle.active:after, [slider] div.handle.active:after {
+    display: none !important;
+}
+slider div.handle:after, [slider] div.handle:after {
+    display: none !important;
+}
+slider div.handle, [slider] div.handle {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    top: -8px;
+    background-color: #fff;
+    border: none !important;
+    z-index: 2;
+    border-radius: 100%;
+}
+div.bubble.value {
+    display: none !important;
 }

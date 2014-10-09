@@ -7,14 +7,20 @@
                </div>
             </div>
         </div>
-<div class="clearfix mr3"></div>
+        <div class="mr3"></div>
     <div class="row">
         <div ng-show="!instance_id && !creation_in_progress">
-            <slider ng-show="image.max_time" floor="0" ceiling="{{ image.max_time }}" step="5" precision="0" ng-model="ask_instance.time"></slider>
-            <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">
-                <span translate="">CREATE_INSTANCE_OF</span> {{ image.name }}<br />
-                <span translate="">FOR</span> {{ ask_instance.time }} min<br />
-            </button>
+           <div class="col-xs-2 col-sm-2 col-md-2 col-md-offset-5">
+               <p style="text-align:left;margin-bottom:-1rem;"><span class="glyphicon glyphicon-time"></span> {{'TIME'|translate}}</p>
+                <slider ng-show="image.max_time" floor="1" ceiling="{{ image.max_time }}" step="1" precision="0" ng-model="ask_instance.time"></slider>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-md-offset-3">
+               <div class="clearfix mr3"></div>
+                <button type="button" ng-click="createInstance()" class="btn btn-default btn-lg">
+                    <span translate="">CREATE_INSTANCE_OF</span> {{ image.name }}<br />
+                    <span translate="">FOR</span> <span class="bold">{{ ask_instance.time }}</span> min<br />
+                </button>
+            </div>
         </div>
     </div>
     <div class="row">
