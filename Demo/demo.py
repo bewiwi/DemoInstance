@@ -91,14 +91,12 @@ class Demo():
                 self.config.images[image_key].flavor_id
             )
             life_time = self.config.images[image_key].instance_time
-            if time is not None:
+            if time is not None and self.config.images[image_key].instance_time_max is not None:
                 #Check the defined time is good or hack attempt
-                if self.config.images[image_key].instance_time_max is not None\
-                    and time <= self.config.images[image_key].instance_time_max:
+                if time <= self.config.images[image_key].instance_time_max:
                     life_time = time
                 else:
                     raise_exception = DemoExceptionInvalidImageTime(time)
-
         else:
             raise_exception = DemoExceptionToMuchInstance()
 
