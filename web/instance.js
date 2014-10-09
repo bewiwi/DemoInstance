@@ -45,7 +45,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
                         refreshTimeout = $timeout(refreshCallback, refreshDelay)
                     });
             },
-            refreshTimeout = $timeout(refreshCallback, refreshDelay);
+            refreshTimeout;
 
         $scope.$watch(
             'state.system_up',
@@ -62,6 +62,8 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
         $scope.$on('$routeChangeStart', function() {
             $timeout.cancel(refreshTimeout);
         });
+
+        refreshCallback();
     }
 
     $scope.createInstance = function(time) {
