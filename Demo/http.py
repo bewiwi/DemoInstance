@@ -3,18 +3,18 @@ from SocketServer import ThreadingMixIn
 from Demo.demo_config import DemoConfig
 from Demo.demo import Demo
 from Demo.demo_exception import DemoExceptionToMuchInstance
-from cgi import parse_header, parse_multipart, parse_qs
 import re
 import json
 import os
 import logging
 
 
-class Handler(BaseHTTPRequestHandler):
+class Handler(BaseHTTPRequestHandler, object):
 
-    def init_class(self):
+    def __init__(self, *args, **kwargs):
         self.config = DemoConfig()
         self.demo = Demo(self.config)
+        super(Handler, self).__init__(*args, **kwargs)
 
     def send_error(self,code,message):
         self.send_response(code)
@@ -123,8 +123,6 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         str_path = self.path.split('?')[0]
         try:
-            self.init_class()
-
             if self.path == "/":
                 self.send_file('index.html')
                 return
@@ -156,8 +154,6 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_PUT(self):
         try:
-            self.init_class()
-
             length = int(self.headers.getheader('Content-Length'))
             put_vars = json.loads(self.rfile.read(length))
 
