@@ -1,5 +1,5 @@
 from novaclient.client import Client
-from database import DemoData, Instance
+from database import DemoData, Instance, User
 import logging
 from pprint import pprint
 import urllib2
@@ -69,7 +69,7 @@ class Demo():
         else:
             return False
 
-    def create_instance(self, image_key, time=None):
+    def create_instance(self, image_key, time=None, token=None):
         logging.info("Create Instance")
         logging.debug("Image id : %s", self.config.images[image_key].image_id)
         logging.debug("Flavor id : %s", self.config.images[image_key].flavor_id)
@@ -80,6 +80,7 @@ class Demo():
         database_instance.launched_at = datetime.datetime.now()
         database_instance.life_time = 10
         database_instance.image_key = image_key
+        database_instance.token = '0'
         self.database.session.add(database_instance)
         self.database.session.commit()
 
@@ -104,7 +105,7 @@ class Demo():
             #No Exception go create instance
             self.database_insert_server(new_instance, status='CREATED',
                                         life_time=life_time,
-                                        image_key=image_key)
+                                        image_key=image_key, token=token)
 
         #Remove the demand
         self.database.session.delete(database_instance)
@@ -132,7 +133,7 @@ class Demo():
             return True
         return False
 
-    def database_insert_server(self, instance, status=None, life_time=None,image_key=None):
+    def database_insert_server(self, instance, status=None, life_time=None,image_key=None, token=None):
         info = self.get_instance_info(instance)
         logging.debug('Insert instance %s', info['id'])
 
@@ -157,6 +158,9 @@ class Demo():
 
         if life_time is not None:
             data_instance.life_time = life_time
+
+        if token is not None:
+            data_instance.token = token
 
         self.database.session.merge(data_instance)
         self.database.session.commit()
@@ -184,6 +188,27 @@ class Demo():
         )
         logging.debug('%s actives instances for %s', query.count(),image_key)
         return query.count()
+
+    def create_user(self, email=None):
+        user = User()
+        user.email = email
+        user.generate_token()
+        user.last_connection = datetime.datetime.now()
+
+        self.database.session.merge(user)
+        self.database.session.commit()
+        return user
+
+    def get_user_by_token(self, token):
+        query = self.database.session.query(User).filter(
+            User.token == token
+        )
+        user = query.first()
+        user.last_connection = datetime.datetime.now()
+
+        self.database.session.merge(user)
+        self.database.session.commit()
+        return user
 
     def placeholder_apply(self, param, instance):
         param = param.replace("%ip%", self.get_instance_ip(instance))

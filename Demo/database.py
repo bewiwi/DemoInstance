@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, types, Column,String
-
+import uuid
 
 Base = declarative_base()
 
@@ -24,3 +24,15 @@ class Instance(Base):
     status = Column(String(255), nullable=False)
     launched_at = Column(types.DATETIME)
     life_time = Column(types.Integer, nullable=False)
+    token = Column(String(255), nullable=False)
+
+
+class User(Base):
+    __tablename__ = 'user'
+    token = Column(String(255), primary_key=True)
+    email = Column(String(255), unique=True)
+    last_connection = Column(types.DATETIME)
+
+    def generate_token(self):
+        self.token = uuid.uuid4()
+        return self.token
