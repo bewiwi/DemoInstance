@@ -59,7 +59,7 @@ class Handler(BaseHTTPRequestHandler, object):
             return
 
         instance_info = self.demo.get_instance_info(instance)
-        info = {'id' : instance_info['id'], 'system_up': False, 'instance_up': False}
+        info = {'id': instance_info['id'], 'system_up': False, 'instance_up': False}
         if self.demo.instance_is_up(instance):
             info['instance_up'] = True
             info['id'] = instance_info['id']
@@ -181,12 +181,13 @@ class Handler(BaseHTTPRequestHandler, object):
 
     def cookie_session(self):
         token = self.read_cookie(COOKIE_SESSION_NAME)
-        if token is None:
-            logging.debug('New User')
-            self.user = self.demo.create_user()
-            self.write_cookie(COOKIE_SESSION_NAME, self.user.token)
-        else:
+        if token is not None:
             self.user = self.demo.get_user_by_token(token)
+            if self.user:
+                return
+        logging.debug('New User')
+        self.user = self.demo.create_user()
+        self.write_cookie(COOKIE_SESSION_NAME, self.user.token)
 
     def write_cookie(self, name, value):
         c = Cookie.SimpleCookie()

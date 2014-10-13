@@ -203,6 +203,10 @@ class Demo():
         query = self.database.session.query(User).filter(
             User.token == token
         )
+
+        if query.count() == 0:
+            return False
+
         user = query.first()
         user.last_connection = datetime.datetime.now()
 
