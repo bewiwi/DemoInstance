@@ -192,6 +192,7 @@ class Handler(BaseHTTPRequestHandler, object):
     def write_cookie(self, name, value):
         c = Cookie.SimpleCookie()
         c[name] = value
+        c[name]['max-age'] = 999999999999999999 #It must be ok :D
         logging.debug('New cookie : %s %s', name, value)
         self.headers_to_send['Set-Cookie'] = c.output(header='')
 
