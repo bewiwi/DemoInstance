@@ -54,8 +54,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
                     }).
                     error(function(error) {
                         errorCallback(error);
-
-                        refreshTimeout = $timeout(refreshCallback, refreshDelay)
+                        refreshTimeout = false;
                     });
             },
             refreshTimeout;
