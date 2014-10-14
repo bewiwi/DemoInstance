@@ -36,9 +36,12 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
                         if ($scope.state.system_up) {
                             refreshDelay = 60000;                                                
                         }
+                        if ($scope.state.life_time === 0 ) {
+                            refreshDelay = 10000;
+                        }
 
                         var title = $scope.image.name;
-                        if($scope.state.life_time){
+                        if($scope.state.life_time === false){
                             var color = '#5CB85C';
                             if ( $scope.state.life_time < 5 ) {
                                 color = '#d00';
