@@ -1,5 +1,6 @@
 from novaclient.client import Client
 from database import DemoData, Instance, User
+from sqlalchemy import desc
 import logging
 from pprint import pprint
 import urllib2
@@ -133,6 +134,7 @@ class Demo():
             return True
         return False
 
+    ### DATABASE ###
     def database_insert_server(self, instance, status=None, life_time=None,image_key=None, token=None):
         info = self.get_instance_info(instance)
         logging.debug('Insert instance %s', info['id'])
@@ -189,6 +191,16 @@ class Demo():
         logging.debug('%s actives instances for %s', query.count(),image_key)
         return query.count()
 
+    def database_get_user_instance(self, token):
+        query = self.database.session.query(Instance).filter(
+            Instance.token == token,
+        ).order_by(desc(Instance.id))
+        logging.debug("%s instances for user %s", query.count(), token)
+        return query.all()
+
+    ### END DATABASE ###
+
+    ### USER ###
     def create_user(self, email=None):
         user = User()
         user.email = email
@@ -213,6 +225,7 @@ class Demo():
         self.database.session.merge(user)
         self.database.session.commit()
         return user
+    ### END USER ###
 
     def placeholder_apply(self, param, instance):
         param = param.replace("%ip%", self.get_instance_ip(instance))

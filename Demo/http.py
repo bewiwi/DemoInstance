@@ -73,6 +73,25 @@ class Handler(BaseHTTPRequestHandler, object):
         self.wfile.write(json.dumps(info))
         return
 
+    def user_instances_info(self):
+        if self.user == None:
+            self.send_error(404,'User not found')
+
+        instances = self.demo.database_get_user_instance(self.user.token)
+        info = []
+        for instance in instances:
+            info.append({
+                'id': instance.openstack_id,
+                'status': instance.status,
+                'type': instance.image_key,
+                'launched_at': str(instance.launched_at),
+                'life_time': instance.life_time
+            })
+        self.headers_to_send['Content-type'] = 'application/json'
+        self.send_all_header(200)
+        self.wfile.write(json.dumps(info))
+        return
+
     def images_info(self):
         http_images = {}
         for name in self.config.images.keys():
@@ -141,6 +160,10 @@ class Handler(BaseHTTPRequestHandler, object):
 
             if self.path =="/image":
                 self.images_info()
+                return
+
+            if self.path =="/myinstance":
+                self.user_instances_info()
                 return
 
             match = re.match("/instance/(.*)", self.path)

@@ -1,0 +1,27 @@
+<div class="jumbotron text-center" ng-controller="listController">
+    <h1>{{ 'LIST_INSTANCE'|translate }}</h1>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class=" alert alert-danger" ng-show="error"><i id="warning" class="fa fa-warning"></i> {{'ERROR'|translate}} : {{ error.error }}</div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <td></td>
+                    <td>Status</td>
+                    <td>Launched at</td>
+                    <td>Life time</td>
+                </tr>
+                </thead>
+                <tr ng-repeat="instance in instances">
+                    <td><span ng-show="instance.status != 'DELETED'" ng-click="go_to_instance(instance)" class="glyphicon glyphicon glyphicon-eye-open"></span></td>
+                    <td>{{ instance.status }}</td>
+                    <td>{{ instance.launched_at }}</td>
+                    <td>{{ instance.life_time }}</td>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>

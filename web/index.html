@@ -8,27 +8,21 @@
   <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
   <link rel="stylesheet" href="bower_components/angular-slider/slider.css" />
   <link rel="stylesheet" href="css/style_theme_1.css" />
-
-  <!-- SPELLS -->
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-route/angular-route.min.js"></script>
-  <script src="bower_components/bootstrap/js/alert.js"></script>
-  <script src="bower_components/angular-translate/angular-translate.min.js"></script>
-  <script src="bower_components/angular-slider/slider.js"></script>
-  <script src="script.js"></script>
-  <script src="instance.js"></script>
-  <script src="image.js"></script>
-
+   <title>{{ app_title }}</title>
+   <link rel="shortcut icon" type="image/png" href="img/favico.ico">
 </head>
 
-<!-- define angular controller -->
-<body>
 <nav class="navbar navbar-default">
-    <div>
-        <div class="navbar-header col-md-6 col-md-offset-3">
-            <a href="#" data-toggle="tooltip" data-placement="bottom" title="{{ 'RETURN_HOME'|translate }}"><p style="text-align:center;"><img class="logo" src="img/demo-instance-72.png" alt="Demo-instance"></p></a>
+    <div class="container">
+        <div class="navbar-header">
+            <a href="#" data-toggle="tooltip" data-placement="bottom" title="{{ 'RETURN_HOME'|translate }}"><img class="logo" src="img/demo-instance-72.png" alt="Logo Demo-instance"></a>
         </div>
+        <ul class="nav navbar-nav navbar-right">
+
+            <li>
+                <a href="#list"><i class="fa fa-list-alt"></i>{{ 'LIST_INSTANCE'|translate }}</a>
+            </li>
+        </ul>
     </div>
 </nav>
 
@@ -50,11 +44,16 @@
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-route/angular-route.min.js"></script>
     <script src="bower_components/angular-translate/angular-translate.min.js"></script>
+    <script src="bower_components/favico.js/favico-0.3.5.min.js"></script>
     <script src="script.js"></script>
+    <script src="js/service/favicoService.js"></script>s
     <script src="instance.js"></script>
     <script src="image.js"></script>
+    <script src="list.js"></script>
     <script src="bower_components/bootstrap/js/alert.js"></script>
     <script src="bower_components/bootstrap/js/tooltip.js"></script>
+    <script src="bower_components/bootstrap/js/alert.js"></script>
+    <script src="bower_components/angular-slider/slider.js"></script>
     <script>
     $(function() {
         $('[data-toggle=tooltip]').tooltip();

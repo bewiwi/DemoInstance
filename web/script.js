@@ -1,5 +1,11 @@
 	// create the module and name it demoApp
-	var demoApp = angular.module('demoApp', ['ngRoute','pascalprecht.translate', 'ui.slider']);
+	var demoApp = angular.module('demoApp', ['ngRoute','pascalprecht.translate', 'ui.slider'])
+        .run(function($rootScope,favicoService){
+            $rootScope.$on('$routeChangeStart',function(){
+                $rootScope.app_title = 'DemoInstance'
+                favicoService.reset()
+            });
+        });
 
 	// configure our routes
 	demoApp.config(function($routeProvider) {
@@ -8,6 +14,10 @@
 			.when('/', {
 				templateUrl : 'pages/image.html'
 			})
+
+            .when('/list', {
+                templateUrl : 'pages/list.html'
+            })
 
 			.when('/about', {
 				templateUrl : 'pages/about.html'
@@ -41,6 +51,7 @@
             FOR:'for',
             ERROR:'ERROR',
             TIME:'Time',
+            LIST_INSTANCE:'My instances',
             RETURN_HOME : 'Return Home'
 
         });
@@ -56,6 +67,7 @@
             FOR:'pour',
             ERROR:'ERREUR',
             TIME:'Temps',
+            LIST_INSTANCE:'Mes instances',
             RETURN_HOME : 'Retourner à l\' accueil'
         });
         $translateProvider.preferredLanguage('fr');

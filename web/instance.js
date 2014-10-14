@@ -1,4 +1,4 @@
-demoApp.controller('instanceController', function($scope, $http, $timeout, $routeParams, $location, $sce) {
+demoApp.controller('instanceController', function($scope, $http, $timeout, $routeParams, $location, $sce, $rootScope, favicoService) {
     var errorCallback = function(error) {
         $scope.error = error;
     };
@@ -37,6 +37,16 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
                             refreshDelay = 60000;                                                
                         }
 
+                        var title = $scope.image.name;
+                        if($scope.state.life_time){
+                            var color = '#5CB85C';
+                            if ( $scope.state.life_time < 5 ) {
+                                color = '#d00';
+                                title = 'TIMEOUT !!';
+                            }
+                            favicoService.badge($scope.state.life_time,{'bgColor' : color});
+                        }
+                        $rootScope.app_title = title;
                         refreshTimeout = $timeout(refreshCallback, refreshDelay)
                     }).
                     error(function(error) {
