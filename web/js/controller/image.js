@@ -3,7 +3,7 @@ demoApp.controller('imageController', function($scope, $http, $location) {
         $scope.error = error;
     };
 
-    $http.get('/image').
+    $http.get('/api/image').
         success(function(data) {
             $scope.images = data;
             var keys = Object.keys($scope.images);

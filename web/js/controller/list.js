@@ -3,7 +3,7 @@ demoApp.controller('listController', function($scope, $http,$location) {
         $scope.error = error;
     };
 
-    $http.get('/myinstance').
+    $http.get('/api/myinstance').
         success(function(data) {
             $scope.instances = data;
 

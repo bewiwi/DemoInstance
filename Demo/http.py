@@ -158,20 +158,20 @@ class Handler(BaseHTTPRequestHandler, object):
                 self.send_file(str_path)
                 return
 
-            if self.path =="/image":
+            if self.path =="/api/image":
                 self.images_info()
                 return
 
-            if self.path =="/myinstance":
+            if self.path =="/api/myinstance":
                 self.user_instances_info()
                 return
 
-            match = re.match("/instance/(.*)", self.path)
+            match = re.match("/api/instance/(.*)", self.path)
             if match:
                 self.instance_info(match.group(1))
                 return
 
-            match = re.match("/image/(.*)", self.path)
+            match = re.match("/api/image/(.*)", self.path)
             if match:
                 self.image_info(match.group(1))
                 return
@@ -188,7 +188,7 @@ class Handler(BaseHTTPRequestHandler, object):
             length = int(self.headers.getheader('Content-Length'))
             put_vars = json.loads(self.rfile.read(length))
 
-            match = re.match("/instance/(.*)", self.path)
+            match = re.match("/api/instance/(.*)", self.path)
             if match:
                 time = None
                 if put_vars.has_key('time'):

@@ -7,7 +7,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
         $location.path('/');
     }
 
-    $http.get('/image/'+$routeParams.image_name).
+    $http.get('/api/image/'+$routeParams.image_name).
         success(function(data) {
             $scope.image = data;
             $scope.image.info = $sce.trustAsHtml(data.info)
@@ -29,7 +29,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
         
         var refreshDelay = 5000,
             refreshCallback = function() {
-                $http.get('/instance/' + $scope.instance_id).
+                $http.get('/api/instance/' + $scope.instance_id).
                     success(function(data) {
                         angular.extend($scope.state, data);
 
@@ -41,7 +41,8 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
                         }
 
                         var title = $scope.image.name;
-                        if($scope.state.life_time === false){
+
+                        if($scope.state.life_time !== false){
                             var color = '#5CB85C';
                             if ( $scope.state.life_time < 5 ) {
                                 color = '#d00';
@@ -80,7 +81,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
 
     $scope.createInstance = function(time) {
         $scope.creation_in_progress = true
-        $http.put('/instance/'+ $routeParams.image_name, $scope.ask_instance).
+        $http.put('/api/instance/'+ $routeParams.image_name, $scope.ask_instance).
             success(function(data) {
                 $location.path('/instance/'+$routeParams.image_name+'/'+data.id)
 
