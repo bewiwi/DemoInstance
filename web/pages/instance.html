@@ -12,7 +12,7 @@
         <div ng-show="!instance_id && !creation_in_progress">
            <div ng-show="image.max_time" class="col-xs-2 col-sm-2 col-md-2 col-md-offset-5">
                <p style="text-align:left;margin-bottom:-1rem;"><span class="glyphicon glyphicon-time"></span> {{'TIME'|translate}} :</p>
-                <slider floor="1" ceiling="{{ image.max_time }}" step="1" precision="0" ng-model="ask_instance.time"></slider>
+               <slider floor="1" ceiling="{{ image.max_time }}" step="1" precision="0" ng-model="ask_instance.time"></slider>
             </div>
             <div class="col-xs-6 col-sm-6 col-md-6 col-md-offset-3">
                <div class="clearfix mr3"></div>
@@ -57,7 +57,15 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div ng-show="state.demo_address && state.system_up" class="alert alert-success">
                 <p>{{'YOU_CAN_CONNECT'|translate}} <a class="alert-link" target="_blank" href="{{ state.demo_address }}">{{ state.demo_address }}</a></p>
-                <p>{{ 'YOUR_INSTANCE_FINISH'|translate }} <span class="Time">{{ state.life_time }}</span> minutes</p>
+                <p>{{ 'YOUR_INSTANCE_FINISH'|translate }}
+                    <span class="Time">{{ state.life_time }}</span>
+                    <span ng-show="edit_instance.add_time != 0 && image.max_time && image.max_time > state.ask_time" style="color: green">(+{{ edit_instance.add_time }})</span> minutes
+                </p>
+                <div ng-show="image.max_time && image.max_time > state.ask_time" ng-init="post_load=false">
+                    <p style="text-align:left;margin-bottom:-1rem;"><span class="glyphicon glyphicon-time"></span> {{'TIME'|translate}} :</p>
+                    <slider floor="0" ceiling="{{ image.max_time - state.ask_time }}" step="1" precision="0" ng-model="edit_instance.add_time"></slider>
+                    <button ng-disabled="post_load" class="btn btn-default btn-lg" ng-click="postInstance();">Add time</button>
+                </div>
             </div>
             <div ng-show="state.demo_address && state.system_up && image.info" class="alert alert-info">
                 <p ng-bind-html="image.info" class="InfoAlerteP"></p>

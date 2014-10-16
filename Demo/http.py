@@ -66,6 +66,7 @@ class Handler(BaseHTTPRequestHandler, object):
             info['address'] = self.demo.get_instance_ip(instance)
             info['demo_address'] = self.demo.get_instance_soft_address(instance)
             info['life_time'] = self.demo.get_instance_life_time(instance)
+            info['ask_time'] = self.demo.get_instance_ask_time(instance)
             if self.demo.check_system_up(instance):
                 info['system_up'] = True
         self.headers_to_send['Content-type'] = 'application/json'
@@ -77,7 +78,7 @@ class Handler(BaseHTTPRequestHandler, object):
         if self.user == None:
             self.send_error(404,'User not found')
 
-        instances = self.demo.database_get_user_instance(self.user.token)
+        instances = self.demo.get_user_instance_database(self.user.token)
         info = []
         for instance in instances:
             info.append({
@@ -195,6 +196,29 @@ class Handler(BaseHTTPRequestHandler, object):
                     time = int(put_vars['time'])
                 self.instance_create(match.group(1), time=time)
                 return
+            self.send_error(404, 'No action')
+        except DemoExceptionToMuchInstance as e:
+            self.send_error(400, e.message)
+        except Exception as e:
+            self.send_error(500, e.message)
+        return
+
+    def do_POST(self):
+        try:
+            self.cookie_session()
+            length = int(self.headers.getheader('Content-Length'))
+            put_vars = json.loads(self.rfile.read(length))
+
+            match = re.match("/api/instance", self.path)
+            if match:
+                time = None
+                if put_vars.has_key('id'):
+                    id = put_vars['id']
+                    if put_vars.has_key('add_time'):
+                        self.demo.check_user_own_instance(self.user.token, id)
+                        self.demo.instance_add_time(id, int(put_vars['add_time']))
+                        self.instance_info(id)
+                        return
             self.send_error(404, 'No action')
         except DemoExceptionToMuchInstance as e:
             self.send_error(400, e.message)

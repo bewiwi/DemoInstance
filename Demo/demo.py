@@ -51,6 +51,14 @@ class Demo():
         ) - datetime.datetime.now()
         return int(self._get_total_seconds(delta)/60)
 
+    def get_instance_ask_time(self, instance):
+        info = self.get_instance_info(instance)
+        query = self.database.session.query(Instance).filter(
+            Instance.openstack_id == info['id']
+        )
+        data_instance = query.first()
+        return data_instance.life_time
+
     def get_instances(self):
         return self.nova.servers.list()
 
@@ -191,13 +199,19 @@ class Demo():
         logging.debug('%s actives instances for %s', query.count(),image_key)
         return query.count()
 
-    def database_get_user_instance(self, token):
+    def instance_add_time(self, openstack_id, add_time):
         query = self.database.session.query(Instance).filter(
-            Instance.token == token,
-        ).order_by(desc(Instance.id))
-        logging.debug("%s instances for user %s", query.count(), token)
-        return query.all()
+            Instance.openstack_id == openstack_id
+        )
+        data_instance = query.first()
+        total_time = data_instance.life_time + add_time
+        if total_time > self.config.images[data_instance.image_key].instance_time_max:
+            total_time = self.config.images[data_instance.image_key].instance_time_max
 
+        data_instance.life_time = total_time
+        self.database.session.merge(data_instance)
+        self.database.session.commit()
+        return data_instance.life_time
     ### END DATABASE ###
 
     ### USER ###
@@ -225,6 +239,26 @@ class Demo():
         self.database.session.merge(user)
         self.database.session.commit()
         return user
+
+    def check_user_own_instance(self, token, openstack_id, raise_exception = True):
+        query = self.database.session.query(Instance).filter(
+            Instance.openstack_id == openstack_id
+        )
+        instance = query.first()
+        if instance.token == token:
+            return True
+        if raise_exception:
+            raise DemoExceptionInvalidOwner()
+        else:
+            return False
+
+    def get_user_instance_database(self, token):
+        query = self.database.session.query(Instance).filter(
+            Instance.token == token,
+        ).order_by(desc(Instance.id))
+        logging.debug("%s instances for user %s", query.count(), token)
+        return query.all()
+
     ### END USER ###
 
     def placeholder_apply(self, param, instance):

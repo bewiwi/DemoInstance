@@ -23,6 +23,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
 
     if( $routeParams.id) {
         $scope.instance_id = $routeParams.id;
+
         $scope.state = {
             system_up: false
         };
@@ -88,4 +89,24 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
             }).
             error(errorCallback);
     };
+
+    $scope.post_load = false;
+    $scope.edit_instance = {
+        id: $scope.instance_id,
+        add_time: 0
+    }
+
+    $scope.postInstance = function() {
+        $scope.post_load = true;
+        $http.post('/api/instance/'+ $routeParams.image_name, $scope.edit_instance).
+            success(function(data) {
+                refreshCallback();
+                $scope.post_load = false;
+                $scope.edit_instance.add_time = 0;
+            }).
+            error(function(error){
+                $scope.post_load = false;
+                errorCallback(error);
+            });
+    }
 });

@@ -31,3 +31,21 @@ class DemoExceptionInvalidImageTime(Exception):
 
     def __str__(self):
         return repr(self.value)
+
+
+class DemoExceptionInvalidOwner(Exception):
+    def __init__(self, time):
+        self.value = "Invalid Owner"
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
+
+
+class DemoExceptionUserInstanceTypeAlreadyExist(Exception):
+    def __init__(self, time):
+        self.value = "User already have an instance of this type"
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
