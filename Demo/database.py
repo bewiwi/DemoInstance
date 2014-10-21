@@ -35,4 +35,4 @@ class User(Base):
 
     def generate_token(self):
         self.token = uuid.uuid4()
-        return self.token
+        return str(self.token)

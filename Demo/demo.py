@@ -6,6 +6,7 @@ from pprint import pprint
 import urllib2
 import datetime
 from demo_exception import *
+from demo_mail import DemoMail
 
 
 class Demo():
@@ -16,6 +17,14 @@ class Demo():
             2, config.user, config.password,
             config.tenant, config.url,
             region_name=config.region
+        )
+        self.mail = DemoMail(
+            host=self.config.mail_host,
+            port=self.config.mail_port,
+            from_mail=self.config.mail_from,
+            user=self.config.mail_user,
+            password=self.config.mail_password,
+            tls=self.config.mail_tls,
         )
 
     def get_instance_info(self, instance):
@@ -217,6 +226,17 @@ class Demo():
     ### USER ###
     def create_user(self, email=None):
         user = User()
+        if email is not None:
+            #Email is valid
+            self.check_email(email)
+
+            #User already exist ?
+            query = self.database.session.query(User).filter(
+                User.email == email
+            )
+            if query.count() >= 1:
+                return query.first()
+
         user.email = email
         user.generate_token()
         user.last_connection = datetime.datetime.now()
@@ -234,6 +254,10 @@ class Demo():
             return False
 
         user = query.first()
+
+        if user is None:
+            raise DemoExceptionUserTokenInvalid
+
         user.last_connection = datetime.datetime.now()
 
         self.database.session.merge(user)
@@ -258,12 +282,15 @@ class Demo():
         ).order_by(desc(Instance.id))
         logging.debug("%s instances for user %s", query.count(), token)
         return query.all()
-
     ### END USER ###
 
     def placeholder_apply(self, param, instance):
         param = param.replace("%ip%", self.get_instance_ip(instance))
         return param
+
+    def check_email(self,email):
+        #Todo write this function
+        return True
 
     #Python 2.6 hook
     def _get_total_seconds(self, td):
