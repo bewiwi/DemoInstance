@@ -2,7 +2,7 @@ from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 from Demo.demo_config import DemoConfig
 from Demo.demo import Demo
-from Demo.demo_exception import DemoExceptionToMuchInstance
+from Demo.demo_exception import DemoExceptionToMuchInstanceImage
 import re
 import json
 import os
@@ -195,7 +195,7 @@ class Handler(BaseHTTPRequestHandler, object):
 
             self.send_http_error(404, 'No action')
 
-        except DemoExceptionToMuchInstance as e:
+        except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(500, e.message)
         return
 
@@ -230,7 +230,7 @@ class Handler(BaseHTTPRequestHandler, object):
                 self.instance_create(match.group(1), time=time)
                 return
             self.send_http_error(404, 'No action')
-        except DemoExceptionToMuchInstance as e:
+        except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(400, e.message)
         except Exception as e:
             self.send_http_error(500, e.message, str(type(e)))

@@ -7,6 +7,23 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
         $location.path('/');
     }
 
+    //Var Ready
+    $scope.image_ready = false;
+    $scope.instance_ready = false;
+
+    //Check if instance already exist
+    $http.get('/api/myinstance').
+        success(function(data) {
+            var instances = data;
+            angular.forEach(instances, function(instance) {
+                if (instance.status != 'DELETED' && instance.type == $routeParams.image_name){
+                    $location.path('/instance/'+instance.type+'/'+instance.id)
+                }
+            })
+            $scope.instance_ready = true;
+        }).
+        error(errorCallback);
+
     $http.get('/api/image/'+$routeParams.image_name).
         success(function(data) {
             $scope.image = data;
@@ -16,9 +33,9 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
                 image_name : $routeParams.image_name,
                 time : $scope.image.default_time
             }
+            $scope.image_ready = true;
         }).
         error(errorCallback)
-
 
 
     if( $routeParams.id) {
@@ -69,7 +86,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
                 $('html, body')
                     .animate({
                         scrollTop: $(document).height()
-                    }, 5000);
+                    }, 2000);
             }
         )
         

@@ -87,37 +87,40 @@ class Demo():
         else:
             return False
 
-    def create_instance(self, image_key, time=None, token=None):
+    def create_instance(self, image_key, time, token):
         logging.info("Create Instance")
         logging.debug("Image id : %s", self.config.images[image_key].image_id)
         logging.debug("Flavor id : %s", self.config.images[image_key].flavor_id)
 
-        #Add a demand
-        database_instance = Instance()
-        database_instance.status = 'ASK'
-        database_instance.launched_at = datetime.datetime.now()
-        database_instance.life_time = 10
-        database_instance.image_key = image_key
-        database_instance.token = '0'
-        self.database.session.add(database_instance)
-        self.database.session.commit()
-
         raise_exception = False
-        if self.database_count_active_instance(image_key) <= self.config.images[image_key].max_instance:
-            new_instance = self.nova.servers.create(
-                self.config.images[image_key].instance_prefix + 'test',
-                self.config.images[image_key].image_id,
-                self.config.images[image_key].flavor_id
-            )
-            life_time = self.config.images[image_key].instance_time
-            if time is not None and self.config.images[image_key].instance_time_max is not None:
-                #Check the defined time is good or hack attempt
-                if time <= self.config.images[image_key].instance_time_max:
-                    life_time = time
-                else:
-                    raise_exception = DemoExceptionInvalidImageTime(time)
+        if not self.check_user_own_instance_type(token, image_key):
+            #Add a demand
+            database_instance = Instance()
+            database_instance.status = 'ASK'
+            database_instance.launched_at = datetime.datetime.now()
+            database_instance.life_time = 10
+            database_instance.image_key = image_key
+            database_instance.token = '0'
+            self.database.session.add(database_instance)
+            self.database.session.commit()
+
+            if self.database_count_active_instance(image_key) <= self.config.images[image_key].max_instance:
+                    new_instance = self.nova.servers.create(
+                        self.config.images[image_key].instance_prefix + 'test',
+                        self.config.images[image_key].image_id,
+                        self.config.images[image_key].flavor_id
+                    )
+                    life_time = self.config.images[image_key].instance_time
+                    if time is not None and self.config.images[image_key].instance_time_max is not None:
+                        #Check the defined time is good or hack attempt
+                        if time <= self.config.images[image_key].instance_time_max:
+                            life_time = time
+                        else:
+                            raise_exception = DemoExceptionInvalidImageTime(time)
+            else:
+                raise_exception = DemoExceptionToMuchInstanceImage()
         else:
-            raise_exception = DemoExceptionToMuchInstance()
+            raise_exception = DemoExceptionUserAlreadyHaveInstanceImage()
 
         if not raise_exception:
             #No Exception go create instance
@@ -275,6 +278,16 @@ class Demo():
             raise DemoExceptionInvalidOwner()
         else:
             return False
+
+    def check_user_own_instance_type(self, token, image_key):
+        query = self.database.session.query(Instance).filter(
+            Instance.image_key == image_key,
+            Instance.token == token,
+            Instance.status != 'DELETED'
+        )
+        if query.count() > 0:
+            return True
+        return False
 
     def get_user_instance_database(self, token):
         query = self.database.session.query(Instance).filter(
