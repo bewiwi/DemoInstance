@@ -21,8 +21,32 @@ In this file you have many section.
 ```
 [DEFAULT]
 log_level=DEBUG
+security_type=open
 ```
-log_level : list of value here https://docs.python.org/2/library/logging.html#logging-levels
+| Argument | Optional | Description |
+| -------- | -------- | -------- |
+| log_level | No | list of value here https://docs.python.org/2/library/logging.html#logging-levels |
+| security_type | No | Values "open" (public) or "email" (check email before access)  |
+
+### MAIL
+```
+[MAIL]
+host=smtp.gmail.com
+port=587
+user=user
+password=password
+from=loic.porte@test.com
+tls=yes
+```
+| Argument | Optional | Description |
+| -------- | -------- | -------- |
+| host | No | SMTP Host |
+| port | Yes | SMTP Port default 25 |
+| user | Yes | SMTP User |
+| password | Yes | SMTP Password |
+| from | Yes | From mail default demoinstance@localhost |
+| tls | Yes | SMTP is tls default no |
+
 
 ### OPENSTACK
 ```
@@ -40,7 +64,7 @@ region=regionOne
 | password | No | openstack password |
 | tenant | No | openstack tenant |
 | url | No | openstack keystone api url |
-| region | Yes | [OPTIONAL] openstak region |
+| region | Yes | openstak region |
 
 ### HTTP
 ```

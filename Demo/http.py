@@ -20,12 +20,12 @@ class Handler(BaseHTTPRequestHandler, object):
         self.headers_to_send = {}
         super(Handler, self).__init__(*args, **kwargs)
 
-    def send_error(self,code,message):
+    def send_http_error(self, code, error_message, error_type=None):
         self.wfile.flush()
         self.send_response(code)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
-        self.wfile.write(json.dumps({'error': message}))
+        self.wfile.write(json.dumps({'error': error_message, 'type': error_type}))
 
     def send_all_header(self, code=200):
         self.send_response(code)
@@ -36,6 +36,7 @@ class Handler(BaseHTTPRequestHandler, object):
         self.end_headers()
 
     def send_file(self,file):
+        #TODO check '../' security
         f = open('web/'+file)
         self.set_mime()
         self.send_all_header(200)
@@ -55,7 +56,7 @@ class Handler(BaseHTTPRequestHandler, object):
     def instance_info(self, instance_id):
         instance = self.demo.get_instance(instance_id)
         if not instance:
-            self.send_error(404, 'No instance found')
+            self.send_http_error(404, 'No instance found')
             return
 
         instance_info = self.demo.get_instance_info(instance)
@@ -74,9 +75,15 @@ class Handler(BaseHTTPRequestHandler, object):
         self.wfile.write(json.dumps(info))
         return
 
+    def get_user(self):
+        return {
+            'token': self.user.token,
+            'email': self.user.email
+        }
+
     def user_instances_info(self):
         if self.user == None:
-            self.send_error(404,'User not found')
+            self.send_http_error(404,'User not found')
 
         instances = self.demo.get_user_instance_database(self.user.token)
         info = []
@@ -113,7 +120,7 @@ class Handler(BaseHTTPRequestHandler, object):
     def image_info(self, image_key):
         http_images = {}
         if not self.config.images.has_key(image_key):
-            self.send_error(404,'Image not found')
+            self.send_http_error(404,'Image not found')
             return
         image = self.config.images[image_key]
         data = {
@@ -150,13 +157,22 @@ class Handler(BaseHTTPRequestHandler, object):
     def do_GET(self):
         str_path = self.path.split('?')[0]
         try:
-            self.cookie_session()
+
+            #Public URL
             if self.path == "/":
                 self.send_file('index.html')
                 return
 
             if os.path.isfile('web/'+str_path):
                 self.send_file(str_path)
+                return
+
+            #Private URL
+            if not self.cookie_session():
+                return
+
+            if self.path =="/api/user":
+                self.get_user()
                 return
 
             if self.path =="/api/image":
@@ -177,17 +193,34 @@ class Handler(BaseHTTPRequestHandler, object):
                 self.image_info(match.group(1))
                 return
 
-            self.send_error(404, 'No action')
+            self.send_http_error(404, 'No action')
 
         except DemoExceptionToMuchInstance as e:
-            self.send_error(500, e.message)
+            self.send_http_error(500, e.message)
         return
 
     def do_PUT(self):
         try:
-            self.cookie_session()
             length = int(self.headers.getheader('Content-Length'))
             put_vars = json.loads(self.rfile.read(length))
+
+            #Public
+            match = re.match("/api/user", self.path)
+            if match:
+                if put_vars.has_key('email'):
+                    url = 'http://'+self.headers.getheader('Host')+'/'
+                    email = put_vars['email']
+                    user = self.demo.create_user(email)
+                    self.demo.mail.send_token_mail(user.email, user.token, url)
+                    self.send_all_header()
+                    return
+                else:
+                    self.send_http_error(400, 'Email not found in request')
+                    return
+
+            #Private
+            if not self.cookie_session():
+                return
 
             match = re.match("/api/instance/(.*)", self.path)
             if match:
@@ -196,18 +229,19 @@ class Handler(BaseHTTPRequestHandler, object):
                     time = int(put_vars['time'])
                 self.instance_create(match.group(1), time=time)
                 return
-            self.send_error(404, 'No action')
+            self.send_http_error(404, 'No action')
         except DemoExceptionToMuchInstance as e:
-            self.send_error(400, e.message)
+            self.send_http_error(400, e.message)
         except Exception as e:
-            self.send_error(500, e.message)
+            self.send_http_error(500, e.message, str(type(e)))
         return
 
     def do_POST(self):
         try:
-            self.cookie_session()
             length = int(self.headers.getheader('Content-Length'))
             put_vars = json.loads(self.rfile.read(length))
+            if not self.cookie_session():
+                return
 
             match = re.match("/api/instance", self.path)
             if match:
@@ -219,11 +253,9 @@ class Handler(BaseHTTPRequestHandler, object):
                         self.demo.instance_add_time(id, int(put_vars['add_time']))
                         self.instance_info(id)
                         return
-            self.send_error(404, 'No action')
-        except DemoExceptionToMuchInstance as e:
-            self.send_error(400, e.message)
+            self.send_http_error(404, 'No action')
         except Exception as e:
-            self.send_error(500, e.message)
+            self.send_http_error(500, e.message)
         return
 
     def cookie_session(self):
@@ -231,15 +263,24 @@ class Handler(BaseHTTPRequestHandler, object):
         if token is not None:
             self.user = self.demo.get_user_by_token(token)
             if self.user:
-                return
-        logging.debug('New User')
-        self.user = self.demo.create_user()
-        self.write_cookie(COOKIE_SESSION_NAME, self.user.token)
+                #Update session time
+                self.write_cookie(COOKIE_SESSION_NAME, self.user.token)
+                if self.user:
+                    return True
+
+        if self.config.security_type == 'open':
+            self.user = self.demo.create_user()
+            self.write_cookie(COOKIE_SESSION_NAME, self.user.token)
+        else:
+            self.send_http_error(401, 'Please Login')
+            return False
+        return True
 
     def write_cookie(self, name, value):
         c = Cookie.SimpleCookie()
         c[name] = value
         c[name]['max-age'] = 999999999999999999 #It must be ok :D
+        c[name]['path'] = '/'
         logging.debug('New cookie : %s %s', name, value)
         self.headers_to_send['Set-Cookie'] = c.output(header='')
 

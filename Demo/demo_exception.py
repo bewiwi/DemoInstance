@@ -7,6 +7,15 @@ class DemoException(Exception):
         return repr(self.value)
 
 
+class DemoExceptionBadConfigValue(DemoException):
+    def __init__(self, config, value):
+        self.value = "Bad config value for %s : %s" % (config, value)
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class DemoExceptionToMuchInstance(DemoException):
     def __init__(self):
         self.value = "To much instances"
@@ -14,6 +23,7 @@ class DemoExceptionToMuchInstance(DemoException):
 
     def __str__(self):
         return repr(self.value)
+
 
 class DemoExceptionInvalidImage(Exception):
     def __init__(self,image_var):
@@ -45,6 +55,15 @@ class DemoExceptionInvalidOwner(Exception):
 class DemoExceptionUserInstanceTypeAlreadyExist(Exception):
     def __init__(self, time):
         self.value = "User already have an instance of this type"
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
+
+
+class DemoExceptionUserTokenInvalid(Exception):
+    def __init__(self, time):
+        self.value = "User token is invalid"
         self.message = self.value
 
     def __str__(self):

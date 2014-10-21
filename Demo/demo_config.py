@@ -1,26 +1,65 @@
 import ConfigParser
 from copy import copy
-from demo_exception import DemoExceptionInvalidImage
-
-IMAGE_CONF_PREFIX='IMAGE_'
+from demo_exception import *
+IMAGE_CONF_PREFIX = 'IMAGE_'
 
 
 class DemoConfig():
     def __init__(self,config_file='./config.ini'):
         self.config = ConfigParser.ConfigParser()
         self.config.read(config_file)
-        self.user=self.config.get("OPENSTACK","user")
-        self.password=self.config.get("OPENSTACK","password")
-        self.tenant=self.config.get("OPENSTACK","tenant")
-        self.url=self.config.get("OPENSTACK","url")
-        if self.config.has_option("OPENSTACK","region"):
-            self.region = self.config.get("OPENSTACK","region")
+
+        #Default
+        self.log_level = self.config.get("DEFAULT", "log_level")
+        self.security_type = self.config.get("DEFAULT", "security_type")
+        if self.security_type not in ('open','email'):
+            raise DemoExceptionBadConfigValue('security_type', self.security_type)
+
+        #Openstack
+        self.user = self.config.get("OPENSTACK", "user")
+        self.password = self.config.get("OPENSTACK", "password")
+        self.tenant = self.config.get("OPENSTACK", "tenant")
+        self.url = self.config.get("OPENSTACK", "url")
+        if self.config.has_option("OPENSTACK", "region"):
+            self.region = self.config.get("OPENSTACK", "region")
         else:
             self.region = None
-        self.http_port=self.config.getint("HTTP","port")
-        self.database_connection=self.config.get("DATABASE","connection")
-        self.log_level=self.config.get("DEFAULT","log_level")
 
+        #HTTP
+        self.http_port = self.config.getint("HTTP", "port")
+
+        #Database
+        self.database_connection = self.config.get("DATABASE", "connection")
+
+        #EMAIL CONF
+        if self.security_type == 'email':
+            self.mail_host = self.config.get("MAIL", "host")
+            if self.config.has_option("MAIL", "port"):
+                self.mail_port = self.config.getint("MAIL", "port")
+            else:
+                self.mail_port = 25
+
+            if self.config.has_option("MAIL", "from"):
+                self.mail_from = self.config.get("MAIL", "from")
+            else:
+                self.mail_from = 'demoinstance@localhost'
+
+            if self.config.has_option("MAIL", "user"):
+                self.mail_user = self.config.get("MAIL", "user")
+            else:
+                self.mail_user = None
+
+            if self.config.has_option("MAIL", "password"):
+                self.mail_password = self.config.get("MAIL", "password")
+            else:
+                self.mail_password = None
+
+            if self.config.has_option("MAIL", "tls"):
+                self.mail_tls = self.config.getboolean("MAIL", "tls")
+            else:
+                self.mail_tls = False
+
+        #IMAGE CONF
         self.images = {}
         template_image = self.get_image_by_section('IMAGE')
         for section in self.config.sections():

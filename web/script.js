@@ -1,5 +1,5 @@
 	// create the module and name it demoApp
-	var demoApp = angular.module('demoApp', ['ngRoute','pascalprecht.translate', 'ui.slider'])
+	var demoApp = angular.module('demoApp', ['ngRoute', 'ngCookies','pascalprecht.translate', 'ui.slider'])
         .run(function($rootScope,favicoService){
             $rootScope.$on('$routeChangeStart',function(){
                 $rootScope.app_title = 'DemoInstance'
@@ -14,6 +14,18 @@
 			.when('/', {
 				templateUrl : 'pages/image.html'
 			})
+
+            .when('/login', {
+                templateUrl : 'pages/login.html'
+            })
+
+            .when('/login/:token', {
+                controller : function($routeParams, $cookies, $location){
+                    $cookies.token = $routeParams.token;
+                    $location.path('/')
+                },
+                template : ''
+            })
 
             .when('/list', {
                 templateUrl : 'pages/list.html'
@@ -38,7 +50,19 @@
 
 
 
-    demoApp.config(function ($translateProvider) {
+    demoApp.config(function ($translateProvider, $httpProvider) {
+
+        $httpProvider.interceptors.push(['$location','$q',function($location, $q) {
+            return {
+                'responseError': function(rejection) {
+                    if ( rejection.status == 401 ){
+                        $location.path('/login')
+                    }
+                    return $q.reject(rejection);
+                }
+            };
+        }]);
+
         $translateProvider.translations('en', {
             SELECT_IMAGE: 'Select image',
             CREATING_INSTANCE: 'Creating instance',
@@ -51,6 +75,7 @@
             FOR:'for',
             ERROR:'ERROR',
             TIME:'Time',
+            LOGIN:'Please log in',
             LIST_INSTANCE:'My instances',
             RETURN_HOME : 'Return Home'
 
@@ -67,6 +92,7 @@
             FOR:'pour',
             ERROR:'ERREUR',
             TIME:'Temps',
+            LOGIN:'Connectez vous',
             LIST_INSTANCE:'Mes instances',
             RETURN_HOME : 'Retourner à l\' accueil'
         });
