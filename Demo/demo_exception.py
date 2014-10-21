@@ -16,9 +16,18 @@ class DemoExceptionBadConfigValue(DemoException):
         return repr(self.value)
 
 
-class DemoExceptionToMuchInstance(DemoException):
+class DemoExceptionToMuchInstanceImage(DemoException):
     def __init__(self):
         self.value = "To much instances"
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
+
+
+class DemoExceptionUserAlreadyHaveInstanceImage(DemoException):
+    def __init__(self):
+        self.value = "User Already have instance"
         self.message = self.value
 
     def __str__(self):
