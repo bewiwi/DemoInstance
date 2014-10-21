@@ -11,6 +11,6 @@ demoApp.controller('listController', function($scope, $http,$location) {
         error(errorCallback);
 
     $scope.go_to_instance = function (instance) {
-        $location.path('/instance/'+instance.type+'/'+instance.id)
+        $location.path('/instance/'+instance.type+'/'+instance.id);
     }
 });

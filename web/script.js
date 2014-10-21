@@ -2,15 +2,14 @@
 	var demoApp = angular.module('demoApp', ['ngRoute', 'ngCookies','pascalprecht.translate', 'ui.slider'])
         .run(function($rootScope,favicoService){
             $rootScope.$on('$routeChangeStart',function(){
-                $rootScope.app_title = 'DemoInstance'
-                favicoService.reset()
+                $rootScope.app_title = 'DemoInstance';
+                favicoService.reset();
             });
         });
 
 	// configure our routes
 	demoApp.config(function($routeProvider) {
 		$routeProvider
-
 			.when('/', {
 				templateUrl : 'pages/image.html'
 			})
@@ -22,7 +21,7 @@
             .when('/login/:token', {
                 controller : function($routeParams, $cookies, $location){
                     $cookies.token = $routeParams.token;
-                    $location.path('/')
+                    $location.path('/');
                 },
                 template : ''
             })
@@ -56,7 +55,7 @@
             return {
                 'responseError': function(rejection) {
                     if ( rejection.status == 401 ){
-                        $location.path('/login')
+                        $location.path('/login');
                     }
                     return $q.reject(rejection);
                 }

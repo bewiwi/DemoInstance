@@ -4,7 +4,7 @@ demoApp.factory('favicoService', function() {
         });
 
         var badge = function(num, opts) {
-            opts = opts || {}
+            opts = opts || {};
             favico.badge(num,opts);
         };
         var reset = function() {

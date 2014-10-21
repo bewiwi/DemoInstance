@@ -11,13 +11,19 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
     $scope.image_ready = false;
     $scope.instance_ready = false;
 
+    $scope.ask_instance = {
+        image_name : '',
+        time : ''
+    }
+
+
     //Check if instance already exist
     $http.get('/api/myinstance').
         success(function(data) {
             var instances = data;
             angular.forEach(instances, function(instance) {
                 if (instance.status != 'DELETED' && instance.type == $routeParams.image_name){
-                    $location.path('/instance/'+instance.type+'/'+instance.id)
+                    $location.path('/instance/'+instance.type+'/'+instance.id);
                 }
             })
             $scope.instance_ready = true;
@@ -27,7 +33,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
     $http.get('/api/image/'+$routeParams.image_name).
         success(function(data) {
             $scope.image = data;
-            $scope.image.info = $sce.trustAsHtml(data.info)
+            $scope.image.info = $sce.trustAsHtml(data.info);
 
             $scope.ask_instance = {
                 image_name : $routeParams.image_name,
@@ -101,7 +107,7 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
         $scope.creation_in_progress = true
         $http.put('/api/instance/'+ $routeParams.image_name, $scope.ask_instance).
             success(function(data) {
-                $location.path('/instance/'+$routeParams.image_name+'/'+data.id)
+                $location.path('/instance/'+$routeParams.image_name+'/'+data.id);
 
             }).
             error(errorCallback);
