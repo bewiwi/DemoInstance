@@ -27,7 +27,7 @@ class DemoMail():
 
     def send_token_mail(self, mail, token, url):
         logging.debug('Send token mail to %s with token %s', mail, token)
-        header = 'To:' + mail + '\n' + 'From: ' + self.from_mail + '\n' + 'Subject:testing \n'
+        header = str('To:' + mail + '\n' + 'From: ' + self.from_mail + '\n' + 'Subject:testing \n')
         body = self.get_token_mail_body(token, url)
         msg = header + '\n'+ body + '\n\n'
         smtp_server = self.connect()

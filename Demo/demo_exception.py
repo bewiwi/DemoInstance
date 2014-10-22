@@ -34,6 +34,15 @@ class DemoExceptionUserAlreadyHaveInstanceImage(DemoException):
         return repr(self.value)
 
 
+class DemoExceptionInvalidEmail(DemoException):
+    def __init__(self, email):
+        self.value = "Email is invalid : %s" % email
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class DemoExceptionInvalidImage(Exception):
     def __init__(self,image_var):
         self.value = "Image Invalid %s" % image_var

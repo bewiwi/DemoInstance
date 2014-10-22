@@ -7,7 +7,7 @@ import urllib2
 import datetime
 from demo_exception import *
 from demo_mail import DemoMail
-
+import re
 
 class Demo():
     def __init__(self, config):
@@ -231,7 +231,8 @@ class Demo():
         user = User()
         if email is not None:
             #Email is valid
-            self.check_email(email)
+            if not self.check_email(email):
+                raise DemoExceptionInvalidEmail(email)
 
             #User already exist ?
             query = self.database.session.query(User).filter(
@@ -301,9 +302,11 @@ class Demo():
         param = param.replace("%ip%", self.get_instance_ip(instance))
         return param
 
-    def check_email(self,email):
-        #Todo write this function
-        return True
+    def check_email(self, email):
+        pattern = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+        if re.match(pattern, email):
+            return True
+        return False
 
     #Python 2.6 hook
     def _get_total_seconds(self, td):

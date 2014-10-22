@@ -34,5 +34,5 @@ class User(Base):
     last_connection = Column(types.DATETIME)
 
     def generate_token(self):
-        self.token = uuid.uuid4()
-        return str(self.token)
+        self.token = str(uuid.uuid4())
+        return self.token
