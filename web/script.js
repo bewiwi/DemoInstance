@@ -76,6 +76,8 @@
             TIME:'Time',
             LOGIN:'Please log in',
             LIST_INSTANCE:'My instances',
+            EMAIL_SEND:'SEND',
+            EMAIL_INFO:'An email will be send with your link',
             RETURN_HOME : 'Return Home'
 
         });
@@ -93,6 +95,8 @@
             TIME:'Temps',
             LOGIN:'Connectez vous',
             LIST_INSTANCE:'Mes instances',
+            EMAIL_SEND:'Envoyer',
+            EMAIL_INFO:'Un email va vous être envoyé avec votre lien pour vous connecter',
             RETURN_HOME : 'Retourner à l\' accueil'
         });
         $translateProvider.preferredLanguage('fr');
