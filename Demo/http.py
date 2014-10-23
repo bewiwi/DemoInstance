@@ -35,8 +35,7 @@ class Handler(BaseHTTPRequestHandler, object):
             self.send_header(name, value)
         self.end_headers()
 
-    def send_file(self,file):
-        #TODO check '../' security
+    def send_file(self, file):
         f = open('web/'+file)
         self.set_mime()
         self.send_all_header(200)

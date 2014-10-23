@@ -9,6 +9,7 @@ from demo_exception import *
 from demo_mail import DemoMail
 import re
 
+
 class Demo():
     def __init__(self, config):
         self.config = config
@@ -18,14 +19,17 @@ class Demo():
             config.tenant, config.url,
             region_name=config.region
         )
-        self.mail = DemoMail(
-            host=self.config.mail_host,
-            port=self.config.mail_port,
-            from_mail=self.config.mail_from,
-            user=self.config.mail_user,
-            password=self.config.mail_password,
-            tls=self.config.mail_tls,
-        )
+        if self.config.security_type == "email" :
+            self.mail = DemoMail(
+                host=self.config.mail_host,
+                port=self.config.mail_port,
+                from_mail=self.config.mail_from,
+                user=self.config.mail_user,
+                password=self.config.mail_password,
+                tls=self.config.mail_tls,
+            )
+        else:
+            self.mail = None
 
     def get_instance_info(self, instance):
         return instance._info.copy()
