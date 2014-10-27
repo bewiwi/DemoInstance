@@ -26,7 +26,7 @@ function error(){
 case "$1" in
   start)
     create_pid_folder || error "Can't create pid folder"
-    ($EXEC_START > $LOGFILE 2>&1)&
+    ($EXEC_START >> $LOGFILE 2>&1)&
     echo $! > $PIDFILE || error "Can't write pid file"
     sleep 1
     is_up && echo 'OK'
