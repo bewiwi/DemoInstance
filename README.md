@@ -156,3 +156,7 @@ In this example just [IMAGE_MYAPP3] run with flavor_id=2 and other image run wit
 ```
 python demo.py
 ```
+Or
+```
+./demo.sh start
+```

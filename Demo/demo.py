@@ -19,7 +19,7 @@ class Demo():
             config.tenant, config.url,
             region_name=config.region
         )
-        if self.config.security_type == "email" :
+        if self.config.security_type == "email":
             self.mail = DemoMail(
                 host=self.config.mail_host,
                 port=self.config.mail_port,
