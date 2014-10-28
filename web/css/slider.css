@@ -30,3 +30,7 @@ slider div.handle, [slider] div.handle {
     z-index: 2;
     border-radius: 100%;
 }
+
+div.bubble.value {
+    display: none !important;
+}

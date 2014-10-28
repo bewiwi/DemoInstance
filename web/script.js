@@ -74,6 +74,7 @@
             FOR:'for',
             ERROR:'ERROR',
 
+            TIME:'Time',
             ADD_TIME:'Extend lifetime (min.)',
             SUBMIT: 'Submit',
 
@@ -105,6 +106,7 @@
             FOR:'pour',
             ERROR:'ERREUR',
 
+            TIME:'Temps',
             ADD_TIME: 'Prolonger (min.)',
             SUBMIT: 'Valider',
 
