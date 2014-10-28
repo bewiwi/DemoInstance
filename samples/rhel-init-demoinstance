@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# demoinstance		Demo Instance
+# demoinstance          Demo Instance
 #
 # chkconfig: - 99 01
 # description: Start instance on openstack
@@ -18,19 +18,27 @@
 . /etc/init.d/functions
 
 DEMO_DIR=/tmp/DemoInstance/
+USER=demo_instance
+
+if [ -f /etc/sysconfig/demoinstance ]; then
+        . /etc/sysconfig/demoinstance
+	export PIDFILE
+	export LOGFILE
+fi
+
 
 start() {
-        $DEMO_DIR/demo.sh start
+        su "$USER" -c "$DEMO_DIR/demo.sh start"
         return $?
 }
 
 stop() {
-        $DEMO_DIR/demo.sh stop
+        su "$USER" -c "$DEMO_DIR/demo.sh stop"
         return $?
 }
 
 status() {
-        $DEMO_DIR/demo.sh status
+        su "$USER" -c "$DEMO_DIR/demo.sh status"
         return $?
 }
 

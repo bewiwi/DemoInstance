@@ -160,3 +160,23 @@ Or
 ```
 ./demo.sh start
 ```
+
+## Init script
+### Redhat/Centos
+Template for Centos is avaible in samples/
+Just link file to /etc/init.d and maybe add it to boot sequence
+```
+ln -s /where/is/your/project /etc/init.d/demoinstance
+chkconfig demoinstance on
+```
+Don't forget to add config file in /etc/sysconfig/demoinstance
+```
+cat <EOF /etc/sysconfig/demoinstance
+PIDFILE=/tmp/test.pid
+LOGFILE=/tmp/log.log
+USER=demoinstance
+EOF
+```
+
+### Debian/Ubuntu
+If you want this you can do it and make me a PR
