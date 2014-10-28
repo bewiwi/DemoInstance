@@ -172,9 +172,14 @@ chkconfig demoinstance on
 Don't forget to add config file in /etc/sysconfig/demoinstance
 ```
 cat <EOF /etc/sysconfig/demoinstance
+# PID file
 PIDFILE=/tmp/test.pid
+# Log file
 LOGFILE=/tmp/log.log
+# Process's user
 USER=demoinstance
+# Demoinstance folder
+DEMO_DIR=/opt/demoinstance
 EOF
 ```
 
