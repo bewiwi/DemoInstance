@@ -1,45 +1,48 @@
 <!DOCTYPE html>
-<!-- define angular app -->
+
 <html ng-app="demoApp">
+
 <head>
-   <meta charset="utf-8">
-  <!-- SCROLLS -->
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-  <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-  <link rel="stylesheet" href="bower_components/angular-slider/slider.css" />
-  <link rel="stylesheet" href="css/style_theme_1.css" />
-   <title>{{ app_title }}</title>
-   <link rel="shortcut icon" type="image/png" href="img/favico.ico">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="bower_components/angular-slider/slider.css" />
+    <link rel="stylesheet" href="css/style_theme_1.css" />
+    <link rel="stylesheet" href="css/slider.css" />
+    <link rel="stylesheet" href="css/table.css" />
+    <link rel="stylesheet" href="css/alert.css" />
+    <title>{{ app_title }}</title>
+    <link rel="shortcut icon" type="image/png" href="img/favico.ico">
 </head>
 
-<nav class="navbar navbar-default">
-    <div class="container">
+<body>
+
+    <nav class="navbar navbar-default">
+        <div class="navbar-header navbar-right">
+            <ul class="nav navbar-nav ">
+                <li>
+                    <a href="#list"><i class="fa fa-list-alt"></i> {{ 'LIST_INSTANCE'|translate }}</a>
+                </li>
+            </ul>
+        </div>
         <div class="navbar-header">
             <a href="#" data-toggle="tooltip" data-placement="bottom" title="{{ 'RETURN_HOME'|translate }}"><img class="logo" src="img/demo-instance-72.png" alt="Logo Demo-instance"></a>
         </div>
-        <ul class="nav navbar-nav navbar-right">
+        <h1>{{ app_title }}</h1>
+    </nav>
 
-            <li>
-                <a href="#list"><i class="fa fa-list-alt"></i>{{ 'LIST_INSTANCE'|translate }}</a>
-            </li>
-        </ul>
+    <div class="container">
+        <div ng-view></div>
     </div>
-</nav>
 
-<div id="main">
-    <!-- angular templating -->
-    <!-- this is where content will be injected -->
-    <div ng-view></div>
-</div>
-<div class="clearfix"></div>
     <footer id="sticky-footer" class="footer">
         <div class="wrapper">
             <p class="footer-made">
-                © 2014 Tous droits Réservés — <a href="#about"><i class="fa fa-shield"></i> {{ 'ABOUT'|translate }}</a> — Made with <i class="fa fa-heart"></i> by <a class="Author" href="/">Me</a>
+                2014 - <a href="#about"><i class="fa fa-shield"></i> {{ 'ABOUT'|translate }}</a>
             </p>
         </div>
     </footer>
-    <!-- SPELLS -->  
+
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-route/angular-route.min.js"></script>
@@ -57,9 +60,10 @@
     <script src="bower_components/bootstrap/js/alert.js"></script>
     <script src="bower_components/angular-slider/slider.js"></script>
     <script>
-    $(function() {
-        $('[data-toggle=tooltip]').tooltip();
-    });
+        $(function() {
+            $('[data-toggle=tooltip]').tooltip();
+        });
     </script>
+
 </body>
 </html>

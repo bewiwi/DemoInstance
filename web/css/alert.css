@@ -1,0 +1,27 @@
+.alert{
+    border-radius: 0px ;
+    padding: 0;
+    padding-top: 5px;
+}
+.alert-danger {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    color: #ffffff;
+    background-color: #E86747;
+    border-color: none;
+    font-size: 20px;
+}
+.alert-success {
+    color: #6E6E6E ;
+    background-color: #f9f9f9 ;
+    border-color: #eaeaea ;
+}
+.alert-success .alert-link {
+    color: #c1AB80;
+    font-weight: 500;
+}
+.alert-info {
+    color:#6E6E6E;
+    background-color: #B7D4F8;
+    border-color: #A4BDDB;
+}

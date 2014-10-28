@@ -63,7 +63,7 @@
         }]);
 
         $translateProvider.translations('en', {
-            SELECT_IMAGE: 'Select image',
+            NEW_INSTANCE: 'Instances',
             CREATING_INSTANCE: 'Creating instance',
             STARTING_INSTANCE: 'Starting instance',
             STARTING_SYSTEM: 'Starting system',
@@ -73,16 +73,28 @@
             YOUR_INSTANCE_FINISH:'Your instance will be destroy in ',
             FOR:'for',
             ERROR:'ERROR',
-            TIME:'Time',
+
+            ADD_TIME:'Extend lifetime (min.)',
+            SUBMIT: 'Submit',
+
             LOGIN:'Please log in',
-            LIST_INSTANCE:'My instances',
+            LIST_INSTANCE:'History',
             EMAIL_SEND:'SEND',
             EMAIL_INFO:'An email will be send with your link',
-            RETURN_HOME : 'Return Home'
+            RETURN_HOME : 'Return Home',
 
+            INSTANCE_LAUNCHED_AT: 'Startup time',
+            INSTANCE_LIFE_TIME: 'Life time  (min.)',
+            INSTANCE_ACTIONS: 'Actions',
+
+            INSTANCE_STATUS : 'Status',
+            INSTANCE_DELETED: 'Deleted',
+            INSTANCE_CREATED: 'Instance démarrée',
+            INSTANCE_DONE: 'Application démarrée',
+            INSTANCE_UP : 'Instance running'
         });
         $translateProvider.translations('fr', {
-            SELECT_IMAGE: 'Sélectionnez une image',
+            NEW_INSTANCE: 'Instances',
             CREATING_INSTANCE: 'Cr&eacute;ation de l\'instance',
             STARTING_INSTANCE: 'D&eacute;marrage instance',
             STARTING_SYSTEM: 'D&eacute;marrage du systeme',
@@ -92,12 +104,25 @@
             YOUR_INSTANCE_FINISH:'Votre instance se terminera dans ',
             FOR:'pour',
             ERROR:'ERREUR',
-            TIME:'Temps',
+
+            ADD_TIME: 'Prolonger (min.)',
+            SUBMIT: 'Valider',
+
             LOGIN:'Connectez vous',
-            LIST_INSTANCE:'Mes instances',
+            LIST_INSTANCE:'Historique',
             EMAIL_SEND:'Envoyer',
             EMAIL_INFO:'Un email va vous être envoyé avec votre lien pour vous connecter',
-            RETURN_HOME : 'Retourner à l\' accueil'
+            RETURN_HOME : 'Retourner à l\' accueil',
+
+            INSTANCE_LAUNCHED_AT: 'Jour / heure de démarrage',
+            INSTANCE_LIFE_TIME: 'Durée de vie (min.)',
+            INSTANCE_ACTIONS: 'Actions',
+
+            INSTANCE_STATUS : 'Etat',
+            INSTANCE_DELETED: 'Supprimée',
+            INSTANCE_CREATED: 'Instance démarrée',
+            INSTANCE_DONE: 'Application démarrée',
+            INSTANCE_UP : 'Instance en cours'
         });
         $translateProvider.preferredLanguage('fr');
     });
