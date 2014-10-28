@@ -3,10 +3,16 @@ DemoInstance provides an interface to deploy instance of your project on an Open
 
 ## Interface example
 
+## Pre requisites
+
+* Python & Python devel & Python PIP
+* GCC
+* MySQL server / MySQL devel
+
 ## Installation
 
 ```
-$ git clone ..
+$ git clone git@github.com:bewiwi/DemoInstance.git
 $ pip install -r requirement.txt
 $ cp config-dist.ini config.ini
 $ vim config.ini
