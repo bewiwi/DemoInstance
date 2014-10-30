@@ -1,0 +1,18 @@
+table {
+    width: 100%;
+    margin-bottom: 100px;
+}
+
+th, td {
+    padding-top: 15px ;
+    padding-bottom: 15px ;
+    padding-left: 10px ;
+    vertical-align: top;
+}
+
+th.ng-scope {
+    color: #6E6E6E;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    line-height: 60px;
+}
