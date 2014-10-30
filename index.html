@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>DemoInstance by bewiwi</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>DemoInstance</h1>
+          <h2>DemoInstance provides a web interface to deploy demonstration instances in Openstack cloud.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/bewiwi/DemoInstance/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/bewiwi/DemoInstance/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/bewiwi/DemoInstance" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a name="project-demoinstance" class="anchor" href="#project-demoinstance"><span class="octicon octicon-link"></span></a>Project DemoInstance</h1>
+
+<p>DemoInstance provides an interface to deploy instance of your project on an Openstack cloud. With this project your futur client can deploy an isolated instance for a defined time.</p>
+
+<h2>
+<a name="interface-example" class="anchor" href="#interface-example"><span class="octicon octicon-link"></span></a>Interface example</h2>
+
+<h2>
+<a name="pre-requisites" class="anchor" href="#pre-requisites"><span class="octicon octicon-link"></span></a>Pre requisites</h2>
+
+<ul>
+<li>Python &amp; Python devel &amp; Python PIP</li>
+<li>GCC</li>
+<li>MySQL server / MySQL devel</li>
+</ul>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<pre><code>$ git clone git@github.com:bewiwi/DemoInstance.git
+$ pip install -r requirement.txt
+$ cp config-dist.ini config.ini
+$ vim config.ini
+</code></pre>
+
+<h2>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>DemoInstance have a single ini config file : config.ini
+In this file you have many section.</p>
+
+<h3>
+<a name="default" class="anchor" href="#default"><span class="octicon octicon-link"></span></a>DEFAULT</h3>
+
+<pre><code>[DEFAULT]
+log_level=DEBUG
+security_type=open
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Optional</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>log_level</td>
+<td>No</td>
+<td>list of value here <a href="https://docs.python.org/2/library/logging.html#logging-levels">https://docs.python.org/2/library/logging.html#logging-levels</a>
+</td>
+</tr>
+<tr>
+<td>security_type</td>
+<td>No</td>
+<td>Values "open" (public) or "email" (check email before access)</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a name="mail" class="anchor" href="#mail"><span class="octicon octicon-link"></span></a>MAIL</h3>
+
+<pre><code>[MAIL]
+host=smtp.gmail.com
+port=587
+user=user
+password=password
+from=loic.porte@test.com
+tls=yes
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Optional</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>host</td>
+<td>No</td>
+<td>SMTP Host</td>
+</tr>
+<tr>
+<td>port</td>
+<td>Yes</td>
+<td>SMTP Port default 25</td>
+</tr>
+<tr>
+<td>user</td>
+<td>Yes</td>
+<td>SMTP User</td>
+</tr>
+<tr>
+<td>password</td>
+<td>Yes</td>
+<td>SMTP Password</td>
+</tr>
+<tr>
+<td>from</td>
+<td>Yes</td>
+<td>From mail default demoinstance@localhost</td>
+</tr>
+<tr>
+<td>tls</td>
+<td>Yes</td>
+<td>SMTP is tls default no</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a name="openstack" class="anchor" href="#openstack"><span class="octicon octicon-link"></span></a>OPENSTACK</h3>
+
+<pre><code>[OPENSTACK]
+user=user
+password=password
+tenant=project
+url=http://srv-openstack:5000/v2.0
+region=regionOne
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Optional</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>user</td>
+<td>No</td>
+<td>openstack user</td>
+</tr>
+<tr>
+<td>password</td>
+<td>No</td>
+<td>openstack password</td>
+</tr>
+<tr>
+<td>tenant</td>
+<td>No</td>
+<td>openstack tenant</td>
+</tr>
+<tr>
+<td>url</td>
+<td>No</td>
+<td>openstack keystone api url</td>
+</tr>
+<tr>
+<td>region</td>
+<td>Yes</td>
+<td>openstak region</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a name="http" class="anchor" href="#http"><span class="octicon octicon-link"></span></a>HTTP</h3>
+
+<pre><code>[HTTP]
+port=8080
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Optional</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>port</td>
+<td>No</td>
+<td>interface/api tcp port</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a name="database" class="anchor" href="#database"><span class="octicon octicon-link"></span></a>DATABASE</h3>
+
+<pre><code>[DATABASE]
+connection:mysql://root@localhost:3306/demo
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Optional</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>connection</td>
+<td>No</td>
+<td>SQLAlchemy connection string of database</td>
+</tr>
+</tbody>
+</table>
+
+<p>Only tested with MySQL</p>
+
+<h3>
+<a name="image" class="anchor" href="#image"><span class="octicon octicon-link"></span></a>IMAGE</h3>
+
+<p>[IMAGE] section is the template of any [IMAGE_].<br>
+You can define in this section variable shared with all [IMAGE_]. The [IMAGE] section do not define a runnable image only section with [IMAGE__ImageName_] format define runnable image</p>
+
+<h5>
+<a name="config" class="anchor" href="#config"><span class="octicon octicon-link"></span></a>config</h5>
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Optional</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>No</td>
+<td>Name of instance like "My cool app"</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>No</td>
+<td>Little descrition like "This app is so cooooooool"</td>
+</tr>
+<tr>
+<td>info</td>
+<td>No</td>
+<td>info display after the creation like : "Login/Password are&lt;br /&gt;test/test""</td>
+</tr>
+<tr>
+<td>time_default</td>
+<td>No</td>
+<td>Default instance life time in minute</td>
+</tr>
+<tr>
+<td>time_max=80</td>
+<td>Yes</td>
+<td>Max instance time life (activate time selection for user)</td>
+</tr>
+<tr>
+<td>img</td>
+<td>Yes</td>
+<td>url of picture. Can be in /instance_image or external link</td>
+</tr>
+<tr>
+<td>image_id</td>
+<td>No</td>
+<td>Openstack image id</td>
+</tr>
+<tr>
+<td>flavor_id</td>
+<td>No</td>
+<td>Openstack flavor id</td>
+</tr>
+<tr>
+<td>prefix</td>
+<td>No</td>
+<td>Openstack prefix name</td>
+</tr>
+<tr>
+<td>check_url</td>
+<td>No</td>
+<td>url to call to check if app is ready (%ip% is a placeholder with instance address)</td>
+</tr>
+<tr>
+<td>soft_url</td>
+<td>No</td>
+<td>url of the app to redirect the user</td>
+</tr>
+<tr>
+<td>max_instance</td>
+<td>No</td>
+<td>max number of instance</td>
+</tr>
+</tbody>
+</table>
+
+<h4>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>example</h4>
+
+<p>Example with only one instance:</p>
+
+<pre><code>[IMAGE]
+
+[IMAGE_MYAPP]
+name=MyAPP
+desc=My first app
+info=Login/Password are&lt;br /&gt;test/test
+img=/instance_image/example.png
+image_id=34e38945-3b17-4960-80f3-05efea732579
+flavor_id=1
+time_default=20
+prefix=myapp_
+check_url=http://%ip%/ok
+soft_url=http://%ip%/
+max_instance=10
+</code></pre>
+
+<p>Example with three instances</p>
+
+<pre><code>[IMAGE]
+flavor_id=1
+
+[IMAGE_MYAPP1]
+name=MyAPP
+desc=My first app
+...
+
+[IMAGE_MYAPP2]
+name=MyNewAPP
+desc=My second app
+...
+
+
+[IMAGE_MYAPP3]
+name=MyLastAPP
+desc=My last app
+flavor_id=2
+...
+</code></pre>
+
+<p>In this example just [IMAGE_MYAPP3] run with flavor_id=2 and other image run with flavor_id=1 defined in [IMAGE]</p>
+
+<h2>
+<a name="run" class="anchor" href="#run"><span class="octicon octicon-link"></span></a>Run</h2>
+
+<pre><code>python demo.py
+</code></pre>
+
+<p>Or</p>
+
+<pre><code>./demo.sh start
+</code></pre>
+
+<h2>
+<a name="init-script" class="anchor" href="#init-script"><span class="octicon octicon-link"></span></a>Init script</h2>
+
+<h3>
+<a name="redhatcentos" class="anchor" href="#redhatcentos"><span class="octicon octicon-link"></span></a>Redhat/Centos</h3>
+
+<p>Template for Centos is avaible in samples/
+Just link file to /etc/init.d and maybe add it to boot sequence</p>
+
+<pre><code>ln -s /where/is/your/project /etc/init.d/demoinstance
+chkconfig demoinstance on
+</code></pre>
+
+<p>Don't forget to add config file in /etc/sysconfig/demoinstance</p>
+
+<pre><code>cat &lt;EOF /etc/sysconfig/demoinstance
+# PID file
+PIDFILE=/tmp/test.pid
+# Log file
+LOGFILE=/tmp/log.log
+# Process's user
+USER=demoinstance
+# Demoinstance folder
+DEMO_DIR=/opt/demoinstance
+EOF
+</code></pre>
+
+<h3>
+<a name="debianubuntu" class="anchor" href="#debianubuntu"><span class="octicon octicon-link"></span></a>Debian/Ubuntu</h3>
+
+<p>If you want this you can do it and make me a PR</p>
+        </section>
+
+        <footer>
+          DemoInstance is maintained by <a href="https://github.com/bewiwi">bewiwi</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
