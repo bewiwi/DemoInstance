@@ -82,22 +82,7 @@ span.glyphicon.glyphicon-time {
 p.ng-binding {
 color: #6E6E6E;
 }
-/* Footer */
-footer#sticky-footer {
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-}
-.footer {
-    border-top: 1px solid #f2f2f2;
-    border-bottom: 5px solid #c1ab80;
-    text-align: center;
-    overflow: hidden;
-    background: #ffffff;
-} 
-.footer .wrapper {
-    padding: 15px 30px;
-}
+
 .wrapper {
     max-width: -webkit-calc(800px - (30px * 2));
     max-width: calc(800px - (30px * 2));
@@ -108,10 +93,7 @@ footer#sticky-footer {
     padding-left: 30px;
     overflow: hidden;
 }
-.footer p {
-    margin-bottom: 5px;
-    color: #6E6E6E;
-}
+
 a.ng-binding{color: #C1AB80;font-weight: 500;}
 .Author{color: #c1AB80;}
 .Author:hover{color: #c1AB80;}

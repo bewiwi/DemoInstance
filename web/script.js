@@ -30,10 +30,6 @@
                 templateUrl : 'pages/list.html'
             })
 
-			.when('/about', {
-				templateUrl : 'pages/about.html'
-			})
-
             .when('/instance/:image_name', {
                 templateUrl : 'pages/instance.html'
             })
