@@ -4,13 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-    <link rel="stylesheet" href="bower_components/angular-slider/slider.css" />
-    <link rel="stylesheet" href="css/style_theme_1.css" />
-    <link rel="stylesheet" href="css/slider.css" />
-    <link rel="stylesheet" href="css/table.css" />
-    <link rel="stylesheet" href="css/alert.css" />
+    <link rel="stylesheet" href="public/css/vendor.css" />
+    <link rel="stylesheet" href="public/css/app.css" />
     <title>{{ app_title }}</title>
     <link rel="shortcut icon" type="image/png" href="img/favico.ico">
 </head>
@@ -35,23 +30,8 @@
         <div ng-view></div>
     </div>
 
-
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-route/angular-route.min.js"></script>
-    <script src="bower_components/angular-cookies/angular-cookies.min.js"></script>
-    <script src="bower_components/angular-translate/angular-translate.min.js"></script>
-    <script src="bower_components/favico.js/favico-0.3.5.min.js"></script>
-    <script src="script.js"></script>
-    <script src="js/service/favicoService.js"></script>
-    <script src="js/controller/instance.js"></script>
-    <script src="js/controller/image.js"></script>
-    <script src="js/controller/list.js"></script>
-    <script src="js/controller/login.js"></script>
-    <script src="bower_components/bootstrap/js/alert.js"></script>
-    <script src="bower_components/bootstrap/js/tooltip.js"></script>
-    <script src="bower_components/bootstrap/js/alert.js"></script>
-    <script src="bower_components/angular-slider/slider.js"></script>
+    <script src="public/js/vendor.js"></script>
+    <script src="public/js/app.js"></script>
     <script>
         $(function() {
             $('[data-toggle=tooltip]').tooltip();
