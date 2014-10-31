@@ -98,8 +98,15 @@ module.exports = function(grunt) {
                     'public/css/vendor.css': ['public/css/vendor.css']
                 }
             }
+        },
+        watch: {
+            javascript: {
+                files: ['js/**/*.js'],
+                tasks: ['concat:js_application']
+            }
         }
     });
 
     grunt.registerTask('default', ['clean', 'concat','copy', 'ngAnnotate', 'uglify', 'cssmin']);
+    grunt.registerTask('dev', ['clean', 'concat', 'copy', 'watch']);
 };
