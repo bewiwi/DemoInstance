@@ -1,7 +1,8 @@
 module.exports = function(grunt) {
-    grunt.initConfig({
-        //pkg: grunt.file.readJSON('package.json'),
+    require('load-grunt-tasks')(grunt);
 
+    grunt.initConfig({
+        clean: ['public'],
         concat: {
             js_application: {
                 src: [
@@ -17,12 +18,12 @@ module.exports = function(grunt) {
             },
             js_vendors: {
                 src: [
-                    'bower_components/jquery/dist/jquery.min.js',
-                    'bower_components/angular/angular.min.js',
-                    'bower_components/angular-route/angular-route.min.js',
-                    'bower_components/angular-cookies/angular-cookies.min.js',
-                    'bower_components/angular-translate/angular-translate.min.js',
-                    'bower_components/favico.js/favico-0.3.5.min.js',
+                    'bower_components/jquery/dist/jquery.js',
+                    'bower_components/angular/angular.js',
+                    'bower_components/angular-route/angular-route.js',
+                    'bower_components/angular-cookies/angular-cookies.js',
+                    'bower_components/angular-translate/angular-translate.js',
+                    'bower_components/favico.js/favico.js',
                     'bower_components/bootstrap/js/alert.js',
                     'bower_components/bootstrap/js/tooltip.js',
                     'bower_components/bootstrap/js/alert.js',
@@ -59,19 +60,46 @@ module.exports = function(grunt) {
                         dest: 'public/fonts/',
                         flatten: true
                 }]
+            }
+        },
+        ngAnnotate: {
+            options: {
+                singleQuotes: true
             },
-            sourceMaps:  {
-                files: [
-                    {src: ['bower_components/jquery/dist/jquery.min.map'], dest: 'public/js/jquery.min.map'},
-                    {src: ['bower_components/angular/angular.min.js.map'], dest: 'public/js/angular.min.js.map'},
-                    {src: ['bower_components/angular-cookies/angular-cookies.min.js.map'], dest: 'public/js/angular-cookies.min.js.map'},
-                    {src: ['bower_components/bootstrap/dist/css/bootstrap.css'], dest: 'public/css/bootstrap.css.map'}
-                ]
+            all: {
+                files: {
+                    'public/js/app.js': ['public/js/app.js'],
+                    'public/js/vendor.js': ['public/js/vendor.js']
+                }
+            }
+        },
+        uglify: {
+            options: {
+                mangle: true,
+                compress: true,
+                report: true,
+                sourceMap: true
+            },
+            javascript: {
+                files: {
+                    'public/js/vendor.js': ['public/js/vendor.js'],
+                    'public/js/app.js': ['public/js/app.js']
+                }
+            }
+
+        },
+        cssmin: {
+            options: {
+                keepSpecialComments : 0
+            },
+            combine: {
+                files: {
+                    'public/css/app.css': ['public/css/app.css'],
+                    'public/css/vendor.css': ['public/css/vendor.css']
+                }
             }
         }
     });
 
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.registerTask('default', ['concat','copy']);
+    grunt.registerTask('default', ['clean', 'concat','copy', 'ngAnnotate', 'uglify', 'cssmin']);
 };
