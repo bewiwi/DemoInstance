@@ -2,6 +2,7 @@
 DemoInstance provides an interface to deploy instance of your project on an Openstack cloud. With this project your futur client can deploy an isolated instance for a defined time.
 
 ## Interface example
+![Image of Demoinstance](https://raw.githubusercontent.com/bewiwi/DemoInstance/gh-pages/demoinstance.gif)
 
 ## Pre requisites
 
