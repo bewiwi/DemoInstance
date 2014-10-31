@@ -39,7 +39,7 @@ class Demo():
         interfaces = info['addresses'].keys()
         return info['addresses'][interfaces[0]][0]['addr']
 
-    def get_instance_type(self,instance):
+    def get_instance_type(self, instance):
         info = self.get_instance_info(instance)
         query = self.database.session.query(Instance).filter(
             Instance.openstack_id == info['id']

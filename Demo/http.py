@@ -2,7 +2,7 @@ from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 from Demo.demo_config import DemoConfig
 from Demo.demo import Demo
-from Demo.demo_exception import DemoExceptionToMuchInstanceImage
+from Demo.demo_exception import *
 import re
 import json
 import os
@@ -55,8 +55,7 @@ class Handler(BaseHTTPRequestHandler, object):
     def instance_info(self, instance_id):
         instance = self.demo.get_instance(instance_id)
         if not instance:
-            self.send_http_error(404, 'No instance found')
-            return
+            raise DemoExceptionInstanceNotFound()
 
         instance_info = self.demo.get_instance_info(instance)
         info = {'id': instance_info['id'], 'system_up': False, 'instance_up': False}
@@ -119,8 +118,7 @@ class Handler(BaseHTTPRequestHandler, object):
     def image_info(self, image_key):
         http_images = {}
         if not self.config.images.has_key(image_key):
-            self.send_http_error(404,'Image not found')
-            return
+            raise DemoExceptionInstanceNotFound()
         image = self.config.images[image_key]
         data = {
             'name': image.name,
@@ -193,9 +191,12 @@ class Handler(BaseHTTPRequestHandler, object):
                 return
 
             self.send_http_error(404, 'No action')
-
+        except DemoExceptionInstanceNotFound as e:
+            self.send_http_error(404, e.message)
         except DemoExceptionToMuchInstanceImage as e:
-            self.send_http_error(500, e.message)
+            self.send_http_error(503, e.message, str(type(e)))
+        except Exception as e:
+            self.send_http_error(500, e.message, str(type(e)))
         return
 
     def do_PUT(self):
@@ -229,6 +230,8 @@ class Handler(BaseHTTPRequestHandler, object):
                 self.instance_create(match.group(1), time=time)
                 return
             self.send_http_error(404, 'No action')
+        except DemoExceptionInstanceNotFound as e:
+            self.send_http_error(404, e.message)
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(400, e.message)
         except Exception as e:
@@ -253,6 +256,8 @@ class Handler(BaseHTTPRequestHandler, object):
                         self.instance_info(id)
                         return
             self.send_http_error(404, 'No action')
+        except DemoExceptionInstanceNotFound as e:
+            self.send_http_error(404, e.message)
         except Exception as e:
             self.send_http_error(500, e.message)
         return

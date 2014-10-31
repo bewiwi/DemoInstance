@@ -25,6 +25,15 @@ class DemoExceptionToMuchInstanceImage(DemoException):
         return repr(self.value)
 
 
+class DemoExceptionInstanceNotFound(DemoException):
+    def __init__(self):
+        self.value = "Instance not found"
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class DemoExceptionUserAlreadyHaveInstanceImage(DemoException):
     def __init__(self):
         self.value = "User Already have instance"
