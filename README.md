@@ -12,8 +12,16 @@ DemoInstance provides an interface to deploy instance of your project on an Open
 ## Installation
 
 ```
+# npm install -g bower
+# npm install -g grunt
 $ git clone git@github.com:bewiwi/DemoInstance.git
+$ cd DemoInstance
 $ pip install -r requirement.txt
+$ cd web/
+$ npm install
+$ bower install
+$ grunt
+$ cd -
 $ cp config-dist.ini config.ini
 $ vim config.ini
 ```

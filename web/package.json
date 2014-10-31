@@ -1,0 +1,10 @@
+{
+    "name": "demoninstance",
+    "version": "1.0.0",
+    "devDependencies": {
+        "grunt": "~0.4.0",
+        "grunt-cli": "^0.1.13",
+        "grunt-contrib-concat": "~0.4.0",
+        "grunt-contrib-copy": "*"
+    }
+}
