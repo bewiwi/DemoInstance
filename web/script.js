@@ -92,9 +92,9 @@
         });
         $translateProvider.translations('fr', {
             NEW_INSTANCE: 'Instances',
-            CREATING_INSTANCE: 'Cr&eacute;ation de l\'instance',
-            STARTING_INSTANCE: 'D&eacute;marrage instance',
-            STARTING_SYSTEM: 'D&eacute;marrage du systeme',
+            CREATING_INSTANCE: 'Cr&eacute;ation de votre environnement de d&eacute;monstration',
+            STARTING_INSTANCE: 'D&eacute;marrage de votre environnement de d&eacute;monstration',
+            STARTING_SYSTEM: 'Configuration de votre environnement de d&eacute;monstration',
             CREATE_INSTANCE_OF: 'Cr&eacute;ation de l\'instance ',
             ABOUT: 'A propos',
             YOU_CAN_CONNECT: 'Vous pouvez vous connecter à ',
