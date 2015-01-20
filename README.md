@@ -114,8 +114,8 @@ info |No|info display after the creation like : "Login/Password are\<br />test/t
 time_default |No|Default instance life time in minute
 time_max=80 |Yes|Max instance time life (activate time selection for user)
 img |Yes|url of picture. Can be in /instance_image or external link
-image_id |No| Openstack image id
-flavor_id |No|Openstack flavor id
+image_id |No| Openstack image id or name
+flavor_id |No|Openstack flavor id or name
 prefix |No|Openstack prefix name 
 check_url |No|url to call to check if app is ready (%ip% is a placeholder with instance address)
 soft_url |No|url of the app to redirect the user
@@ -133,8 +133,8 @@ name=MyAPP
 desc=My first app
 info=Login/Password are<br />test/test
 img=/instance_image/example.png
-image_id=34e38945-3b17-4960-80f3-05efea732579
-flavor_id=1
+image_id=MonImage1
+flavor_id=m1.tiny
 time_default=20
 prefix=myapp_
 check_url=http://%ip%/ok

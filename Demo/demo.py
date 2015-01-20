@@ -1,4 +1,5 @@
 from novaclient.client import Client
+from novaclient import exceptions as nova_exeptions
 from database import DemoData, Instance, User
 from sqlalchemy import desc
 import logging
@@ -93,8 +94,18 @@ class Demo():
 
     def create_instance(self, image_key, time, token):
         logging.info("Create Instance")
-        logging.debug("Image id : %s", self.config.images[image_key].image_id)
-        logging.debug("Flavor id : %s", self.config.images[image_key].flavor_id)
+        logging.debug("Image config : %s", self.config.images[image_key].image_id)
+        try:
+            image = self.nova.images.find(name=self.config.images[image_key].image_id)
+        except nova_exeptions.NotFound:
+            image = self.nova.images.find(id=self.config.images[image_key].image_id)
+        logging.debug("Image id : %s", image.id)
+        logging.debug("Flavor config : %s", self.config.images[image_key].flavor_id)
+        try:
+            flavor = self.nova.flavors.find(name=self.config.images[image_key].flavor_id)
+        except nova_exeptions.NotFound:
+            flavor = self.nova.flavors.find(id=self.config.images[image_key].flavor_id)
+        logging.debug("Flavor id : %s", flavor.id)
 
         raise_exception = False
         if not self.check_user_own_instance_type(token, image_key):
@@ -111,8 +122,8 @@ class Demo():
             if self.database_count_active_instance(image_key) <= self.config.images[image_key].max_instance:
                     new_instance = self.nova.servers.create(
                         self.config.images[image_key].instance_prefix + 'test',
-                        self.config.images[image_key].image_id,
-                        self.config.images[image_key].flavor_id
+                        image.id,
+                        flavor.id
                     )
                     life_time = self.config.images[image_key].instance_time
                     if time is not None and self.config.images[image_key].instance_time_max is not None:
