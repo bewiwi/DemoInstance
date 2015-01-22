@@ -1,0 +1,20 @@
+db:
+    image: mysql:5.6
+    ports:
+        - "3306:3306"
+    expose:
+        - "3306"
+    environment:
+        MYSQL_DATABASE: demo
+        MYSQL_ROOT_PASSWORD: password
+
+demoinstance:
+    build: .
+    links:
+        - db
+    volumes:
+        - ./config.ini:/opt/demoinstance/config.ini
+    ports:
+        - "8080:8080"
+    expose:
+        - "8080"

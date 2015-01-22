@@ -14,7 +14,7 @@ DemoInstance provides an interface to deploy instance of your project on an Open
 
 ```
 # npm install -g bower
-# npm install -g grunt
+# npm install -g grunt-cli
 $ git clone git@github.com:bewiwi/DemoInstance.git
 $ cd DemoInstance
 $ pip install -r requirement.txt
@@ -175,6 +175,15 @@ Or
 ```
 ./demo.sh start
 ```
+## Contribute
+If you want to contribute you're welcome. Just create issues or make some PR.
+
+### Dev env
+A docker env was set to help you to dev. To start just configure a good config.ini and run
+```
+fig up
+```
+If you don't have docker you can directly install needed lib on your hosts, it works well to
 
 ## Init script
 ### Redhat/Centos
