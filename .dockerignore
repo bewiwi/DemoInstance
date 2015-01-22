@@ -1,0 +1,14 @@
+Vagrantfile
+.vagrant
+*.ini
+!config-dist.ini
+*.pyc
+.DS_Store
+.idea/
+web/bower_components
+web/instance_image/*
+!web/instance_image/example.png
+web/node_modules/
+web/public
+fig.yml
+README.md
