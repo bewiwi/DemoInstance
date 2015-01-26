@@ -95,16 +95,22 @@ class Demo():
     def create_instance(self, image_key, time, token):
         logging.info("Create Instance")
         logging.debug("Image config : %s", self.config.images[image_key].image_id)
-        try:
-            image = self.nova.images.find(name=self.config.images[image_key].image_id)
-        except nova_exeptions.NotFound:
+        matches = self.nova.images.findall(name=self.config.images[image_key].image_id)
+        if len(matches) == 0:
+            #If no match name check id
             image = self.nova.images.find(id=self.config.images[image_key].image_id)
+        else:
+            #Get first name matching
+            image = matches[0]
         logging.debug("Image id : %s", image.id)
         logging.debug("Flavor config : %s", self.config.images[image_key].flavor_id)
-        try:
-            flavor = self.nova.flavors.find(name=self.config.images[image_key].flavor_id)
-        except nova_exeptions.NotFound:
+
+        matches = self.nova.flavors.findall(name=self.config.images[image_key].flavor_id)
+        if len(matches) == 0:
             flavor = self.nova.flavors.find(id=self.config.images[image_key].flavor_id)
+        else:
+            flavor = matches[0]
+
         logging.debug("Flavor id : %s", flavor.id)
 
         raise_exception = False
