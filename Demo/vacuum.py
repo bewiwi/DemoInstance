@@ -41,7 +41,11 @@ class Vacuum(threading.Thread):
     def run(self):
         time_between_vacuum = 60
         while True:
-            self.check_old_instance()
+            try:
+                self.check_old_instance()
+            except Exception as e:
+                logging.error("Vaccum Raise Execption %s", e.message)
+                self.database.session.close()
             i=0
             while i < time_between_vacuum:
                 if self.stop:
