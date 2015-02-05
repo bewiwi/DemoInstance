@@ -10,6 +10,18 @@ demoApp.controller('imageController', function($scope, $http, $location) {
             if (keys.length == 1) {
                 $scope.redirect_instance(keys[0]);
             }
+            $http.get('/api/myinstance').
+                success(function(data) {
+                    var instances = data;
+                    $scope.running_instance = [];
+                    angular.forEach(instances, function(instance) {
+                        if (instance.status != 'DELETED'){
+                            $scope.images[instance.type].status = instance.status;
+                        }
+                    })
+                }).
+                error(errorCallback);
+
         }).
         error(errorCallback);
 

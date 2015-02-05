@@ -108,7 +108,14 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
         $http.put('/api/instance/'+ $routeParams.image_name, $scope.ask_instance).
             success(function(data) {
                 $location.path('/instance/'+$routeParams.image_name+'/'+data.id);
+            }).
+            error(errorCallback);
+    };
 
+    $scope.deleteInstance = function() {
+        $http.delete('/api/instance/'+ $routeParams.id).
+            success(function(data) {
+                $location.path('/');
             }).
             error(errorCallback);
     };

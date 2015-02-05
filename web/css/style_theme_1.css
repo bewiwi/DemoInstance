@@ -126,6 +126,7 @@ a.ng-binding{color: #C1AB80;font-weight: 500;}
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
     font-size: 1em;
+    vertical-align: inherit;
     margin-bottom: 5px;
 }
 

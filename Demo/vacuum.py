@@ -25,7 +25,7 @@ class Vacuum(threading.Thread):
             logging.debug('%s must be destroy at %s', data_instance.openstack_id ,destroy_at)
             if destroy_at < datetime.datetime.now():
                 logging.info('%s is to old',data_instance.openstack_id)
-                self.demo.database_remove_server(data_instance)
+                self.demo.database_remove_server(data_instance.openstack_id)
 
             on_cloud = False
             for instance in instances:
@@ -35,7 +35,7 @@ class Vacuum(threading.Thread):
                     break
             if not on_cloud and data_instance.openstack_id:
                 logging.info('%s is not present on cloud anymore',data_instance.id)
-                self.demo.database_remove_server(data_instance)
+                self.demo.database_remove_server(data_instance.openstack_id)
         self.database.session.close()
 
     def run(self):
