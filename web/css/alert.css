@@ -25,3 +25,23 @@
     background-color: #B7D4F8;
     border-color: #A4BDDB;
 }
+
+.alert-warning .btn{
+    background: DDCE7E;
+    border-color: #c1AB80 ;
+    color: #c1AB80;
+    font-weight: 300;
+    font-family: 'Roboto', sans-serif;
+    border-radius:0;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+    font-size: 1em;
+    margin-bottom: 5px;
+}
+
+.alert-warning .btn:hover{
+    background: #c1AB80;
+    color:white;
+}

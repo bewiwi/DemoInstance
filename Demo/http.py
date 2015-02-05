@@ -27,6 +27,13 @@ class Handler(BaseHTTPRequestHandler, object):
         self.end_headers()
         self.wfile.write(json.dumps({'error': error_message, 'type': error_type}))
 
+    def send_http_message(self, code=200, message=''):
+        self.wfile.flush()
+        self.send_response(code)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({'info': message}))
+
     def send_all_header(self, code=200):
         self.send_response(code)
         logging.debug('Add Header')
@@ -45,7 +52,7 @@ class Handler(BaseHTTPRequestHandler, object):
 
     def instance_create(self,image_key, time=None):
         id = self.demo.create_instance(image_key, token=self.user.token, time=time)
-        rep={'id': id}
+        rep = {'id': id}
         self.headers_to_send['Content-type'] = 'application/json'
         self.send_all_header(201)
         self.wfile.write(json.dumps(rep))
@@ -80,7 +87,7 @@ class Handler(BaseHTTPRequestHandler, object):
         }
 
     def user_instances_info(self):
-        if self.user == None:
+        if self.user is None:
             self.send_http_error(404,'User not found')
 
         instances = self.demo.get_user_instance_database(self.user.token)
@@ -154,7 +161,6 @@ class Handler(BaseHTTPRequestHandler, object):
     def do_GET(self):
         str_path = self.path.split('?')[0]
         try:
-
             #Public URL
             if self.path == "/":
                 self.send_file('index.html')
@@ -168,15 +174,15 @@ class Handler(BaseHTTPRequestHandler, object):
             if not self.cookie_session():
                 return
 
-            if self.path =="/api/user":
+            if self.path == "/api/user":
                 self.get_user()
                 return
 
-            if self.path =="/api/image":
+            if self.path == "/api/image":
                 self.images_info()
                 return
 
-            if self.path =="/api/myinstance":
+            if self.path == "/api/myinstance":
                 self.user_instances_info()
                 return
 
@@ -255,6 +261,25 @@ class Handler(BaseHTTPRequestHandler, object):
                         self.demo.instance_add_time(id, int(put_vars['add_time']))
                         self.instance_info(id)
                         return
+            self.send_http_error(404, 'No action')
+        except DemoExceptionInstanceNotFound as e:
+            self.send_http_error(404, e.message)
+        except Exception as e:
+            self.send_http_error(500, e.message)
+        return
+
+    def do_DELETE(self):
+        try:
+            if not self.cookie_session():
+                return
+
+            match = re.match("/api/instance/(.*)", self.path)
+            if match:
+                openstack_id = match.group(1)
+                self.demo.check_user_own_instance(self.user.token, openstack_id)
+                self.demo.database_remove_server(openstack_id)
+                self.send_http_message(200, 'ok')
+                return
             self.send_http_error(404, 'No action')
         except DemoExceptionInstanceNotFound as e:
             self.send_http_error(404, e.message)

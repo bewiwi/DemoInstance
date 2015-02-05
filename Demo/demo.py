@@ -209,17 +209,21 @@ class Demo():
         self.database.session.commit()
         return data_instance
 
-    def database_remove_server(self, database_instance):
-        logging.info('DELETE instance %s', database_instance.openstack_id)
+    def database_remove_server(self, openstack_id):
+        logging.info('DELETE instance %s', openstack_id)
 
         # nova
-        instance = self.get_instance(database_instance.openstack_id)
+        instance = self.get_instance(openstack_id)
         if instance:
             instance.delete()
         else:
-            logging.debug('Instance %s not in cloud',database_instance.openstack_id)
+            logging.debug('Instance %s not in cloud', openstack_id)
 
         #database
+        query = self.database.session.query(Instance).filter(
+            Instance.openstack_id == openstack_id
+        )
+        database_instance = query.first()
         database_instance.status = 'DELETED'
         self.database.session.merge(database_instance)
         self.database.session.commit()
@@ -294,7 +298,7 @@ class Demo():
             Instance.openstack_id == openstack_id
         )
         instance = query.first()
-        if instance.token == token:
+        if instance is not None and instance.token == token:
             return True
         if raise_exception:
             raise DemoExceptionInvalidOwner()

@@ -24,9 +24,7 @@ module.exports = function(grunt) {
                     'bower_components/angular-cookies/angular-cookies.js',
                     'bower_components/angular-translate/angular-translate.js',
                     'bower_components/favico.js/favico.js',
-                    'bower_components/bootstrap/js/alert.js',
-                    'bower_components/bootstrap/js/tooltip.js',
-                    'bower_components/bootstrap/js/alert.js',
+                    'bower_components/bootstrap/dist/js/bootstrap.js',
                     'bower_components/angular-slider/slider.js'
                 ],
                 dest: 'public/js/vendor.js'
@@ -101,8 +99,12 @@ module.exports = function(grunt) {
         },
         watch: {
             javascript: {
-                files: ['js/**/*.js'],
+                files: ['js/**/*.js', 'web/script.js'],
                 tasks: ['concat:js_application']
+            },
+            css:{
+                files: ['css/*.css'],
+                tasks: ['concat:css_app']
             }
         }
     });

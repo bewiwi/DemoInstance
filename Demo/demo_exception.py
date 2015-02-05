@@ -71,7 +71,7 @@ class DemoExceptionInvalidImageTime(Exception):
 
 
 class DemoExceptionInvalidOwner(Exception):
-    def __init__(self, time):
+    def __init__(self):
         self.value = "Invalid Owner"
         self.message = self.value
 
