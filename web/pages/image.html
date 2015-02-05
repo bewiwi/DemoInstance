@@ -4,9 +4,8 @@
         <p style="text-align:center;">
             <img ng-show="image.img"  ng-src="{{ image.img }}" class="instance-thumbnail">
         </p>
-        <p id="NameImage">{{ image.name }}</p>
+        <p id="NameImage">{{ image.name }} <span ng-show="image.status" class="glyphicon glyphicon-check" /></p>
         <div class="clearfix"></div>
-
         <p id="DescImage" >{{ image.desc }}</p>
     </div>
 </div>
