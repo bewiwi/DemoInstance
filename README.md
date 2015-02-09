@@ -120,7 +120,7 @@ prefix |No|Openstack prefix name
 check_url |No|url to call to check if app is ready (%ip% is a placeholder with instance address)
 soft_url |No|url of the app to redirect the user
 max_instance |No|max number of instance
-
+user_data|yes|nova userdata to inject in the instance
 
 #### example
 Example with only one instance:
@@ -166,6 +166,19 @@ flavor_id=2
 ...
 ```
 In this example just [IMAGE_MYAPP3] run with flavor_id=2 and other image run with flavor_id=1 defined in [IMAGE]
+
+## Ini format Tips
+Sometimes, you need a value to be on multi-line. To do that you can write your key:parameter like this:
+
+```
+user_data:#cloud-config
+    password: mypassword
+    chpasswd: { expire: False }
+    ssh_pwauth: True
+```
+
+This is defined here : http://tools.ietf.org/html/rfc822.html on LONG HEADER FIELDS section
+
 
 ## Run
 ```
