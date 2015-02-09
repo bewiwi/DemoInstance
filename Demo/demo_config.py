@@ -86,19 +86,21 @@ class DemoConfig():
         if self.config.has_option(section, 'info'):
             image.info = self.config.get(section, 'info')
         if self.config.has_option(section, "flavor_id"):
-            image.flavor_id = self.config.get(section,"flavor_id")
+            image.flavor_id = self.config.get(section, "flavor_id")
         if self.config.has_option(section, "prefix"):
-            image.instance_prefix = self.config.get(section,"prefix")
+            image.instance_prefix = self.config.get(section, "prefix")
         if self.config.has_option(section, "check_url"):
-            image.instance_check_url = self.config.get(section,"check_url")
+            image.instance_check_url = self.config.get(section, "check_url")
         if self.config.has_option(section, "soft_url"):
-            image.instance_soft_url = self.config.get(section,"soft_url")
+            image.instance_soft_url = self.config.get(section, "soft_url")
         if self.config.has_option(section, "time_default"):
-            image.instance_time = self.config.getint(section,"time_default")
+            image.instance_time = self.config.getint(section, "time_default")
         if self.config.has_option(section, "time_max"):
-            image.instance_time_max = self.config.getint(section,"time_max")
+            image.instance_time_max = self.config.getint(section, "time_max")
         if self.config.has_option(section, "max_instance"):
-            image.max_instance = self.config.getint(section,"max_instance")
+            image.max_instance = self.config.getint(section, "max_instance")
+        if self.config.has_option(section, "user_data"):
+            image.user_data = self.config.get(section, "user_data")
         return image
 
 
@@ -116,6 +118,7 @@ class DemoConfigImage():
         self.desc = None
         self.info = None
         self.img = None
+        self.user_data = None
 
     def check(self):
         if self.image_id is None:

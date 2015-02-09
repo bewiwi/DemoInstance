@@ -129,7 +129,8 @@ class Demo():
                     new_instance = self.nova.servers.create(
                         self.config.images[image_key].instance_prefix + 'test',
                         image.id,
-                        flavor.id
+                        flavor.id,
+                        userdata=self.config.images[image_key].user_data
                     )
                     life_time = self.config.images[image_key].instance_time
                     if time is not None and self.config.images[image_key].instance_time_max is not None:
