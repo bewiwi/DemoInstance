@@ -1,14 +1,13 @@
 from novaclient.client import Client
-from novaclient import exceptions as nova_exeptions
 from database import DemoData, Instance, User
 from sqlalchemy import desc
 import logging
-from pprint import pprint
 import urllib2
 import datetime
 from demo_exception import *
 from demo_mail import DemoMail
 import re
+import os
 
 
 class Demo():
@@ -20,6 +19,8 @@ class Demo():
             config.tenant, config.url,
             region_name=config.region
         )
+
+        #Security Email
         if self.config.security_type == "email":
             self.mail = DemoMail(
                 host=self.config.mail_host,
@@ -31,6 +32,24 @@ class Demo():
             )
         else:
             self.mail = None
+
+        #Security Auth
+        if self.config.security_type.startswith('auth_'):
+            path = os.path.join(os.path.dirname(__file__), "auth")
+            mod_name = self.config.security_type
+            auth_mod = __import__('auth.'+mod_name, globals(), locals(), fromlist=[mod_name])
+            auth_class = getattr(auth_mod, Demo.get_class_name(mod_name))
+            self.auth = auth_class(self.config.auth)
+        else:
+            self.auth = False
+
+    @staticmethod
+    def get_class_name(mod_name):
+        output = ""
+        words = mod_name.split("_")
+        for word in words:
+            output += word.title()
+        return output
 
     def get_instance_info(self, instance):
         return instance._info.copy()

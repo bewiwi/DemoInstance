@@ -95,3 +95,12 @@ class DemoExceptionUserTokenInvalid(Exception):
 
     def __str__(self):
         return repr(self.value)
+
+
+class DemoExceptionErrorAuth(Exception):
+    def __init__(self):
+        self.value = "Invalid user/password"
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)

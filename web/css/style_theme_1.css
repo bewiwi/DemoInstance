@@ -33,7 +33,7 @@ body{
 .navbar-default .navbar-nav > li > a {
     margin-top: 22px;
 }
-.fa-shield, .fa-list-alt{
+.fa-sign-out, .fa-shield, .fa-list-alt{
     color:#C1AB80;
 }
 

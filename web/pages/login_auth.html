@@ -1,0 +1,13 @@
+<div class="jumbotron text-center" ng-controller="loginAuthController">
+    <h1>{{ 'LOGIN'|translate }}</h1>
+    <div class="row">
+        <div class="alert alert-danger" ng-show="error"><i id="warning" class="fa fa-warning"></i> {{'ERROR'|translate}} : {{ error.error }}</div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-md-offset-3">
+            <input autofocus="" placeholder="Username" type="text" ng-model="user.user" />
+            <input ng-keyup="$event.keyCode == 13 ? connect() : null" type="password" placeholder="Password" ng-model="user.password" />
+            <button type="button" ng-click="connect()" class="btn btn-default btn-lg">
+                <span translate="">SUBMIT</span><br />
+            </button>
+        </div>
+    </div>
+</div>

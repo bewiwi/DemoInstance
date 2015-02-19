@@ -12,7 +12,7 @@ class DemoConfig():
         #Default
         self.log_level = self.config.get("DEFAULT", "log_level")
         self.security_type = self.config.get("DEFAULT", "security_type")
-        if self.security_type not in ('open','email'):
+        if self.security_type not in ('open','email') and not self.security_type.startswith('auth_'):
             raise DemoExceptionBadConfigValue('security_type', self.security_type)
 
         #Openstack
@@ -58,6 +58,13 @@ class DemoConfig():
                 self.mail_tls = self.config.getboolean("MAIL", "tls")
             else:
                 self.mail_tls = False
+
+        #Auth Conf
+        if self.security_type.startswith('auth_'):
+            self.auth = {}
+            if self.config.has_section(self.security_type.upper()):
+                for name, value in self.config.items(self.security_type.upper()):
+                    self.auth[name] = value
 
         #IMAGE CONF
         self.images = {}

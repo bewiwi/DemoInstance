@@ -16,7 +16,10 @@
         <div class="navbar-header navbar-right">
             <ul class="nav navbar-nav ">
                 <li>
-                    <a href="#list"><i class="fa fa-list-alt"></i> {{ 'LIST_INSTANCE'|translate }}</a>
+                    <a href="#list"><i class="fa fa-list-alt"></i>{{ 'LIST_INSTANCE'|translate }}</a>
+                </li>
+                <li ng-show="user.email">
+                    <a href="#" ng-click="disconnect()"><i class="fa fa-sign-out"></i>{{ user.email }} </a>
                 </li>
             </ul>
         </div>
