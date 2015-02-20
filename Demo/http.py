@@ -81,10 +81,13 @@ class Handler(BaseHTTPRequestHandler, object):
         return
 
     def get_user(self):
-        return {
+        info = {
             'token': self.user.token,
             'email': self.user.email
         }
+        self.headers_to_send['Content-type'] = 'application/json'
+        self.send_all_header(200)
+        self.wfile.write(json.dumps(info))
 
     def user_instances_info(self):
         if self.user is None:
@@ -141,6 +144,15 @@ class Handler(BaseHTTPRequestHandler, object):
         self.wfile.write(json.dumps(http_image))
         return
 
+    def connect(self, user, password):
+        mail = self.demo.auth.check_auth(user, password)
+        if not mail:
+            raise DemoExceptionErrorAuth
+
+        user = self.demo.create_user(mail)
+        self.write_cookie(COOKIE_SESSION_NAME, user.token)
+        self.send_all_header()
+
     def set_mime(self):
         mimetype = None
         if self.path.endswith(".html"):
@@ -168,6 +180,11 @@ class Handler(BaseHTTPRequestHandler, object):
 
             if os.path.isfile('web/'+str_path):
                 self.send_file(str_path)
+                return
+
+            if self.path == '/api/disconnect':
+                self.write_cookie(COOKIE_SESSION_NAME, 'disable')
+                self.send_all_header()
                 return
 
             #Private URL
@@ -248,6 +265,15 @@ class Handler(BaseHTTPRequestHandler, object):
         try:
             length = int(self.headers.getheader('Content-Length'))
             put_vars = json.loads(self.rfile.read(length))
+
+            #Public
+            if self.path == '/api/connect':
+                if put_vars.has_key('user') and put_vars.has_key('password') :
+                    self.connect(put_vars['user'], put_vars['password'])
+                    return
+                self.send_http_error(404, 'No action')
+
+            #Private
             if not self.cookie_session():
                 return
 
@@ -301,14 +327,18 @@ class Handler(BaseHTTPRequestHandler, object):
             self.user = self.demo.create_user()
             self.write_cookie(COOKIE_SESSION_NAME, self.user.token)
         else:
-            self.send_http_error(401, 'Please Login')
+            if self.config.security_type == 'email':
+                type = 'email'
+            else:
+                type = 'auth'
+            self.send_http_error(401, 'Please Login', type)
             return False
         return True
 
-    def write_cookie(self, name, value):
+    def write_cookie(self, name, value, age=999999999999):
         c = Cookie.SimpleCookie()
         c[name] = value
-        c[name]['max-age'] = 999999999999999999 #It must be ok :D
+        c[name]['max-age'] = age
         c[name]['path'] = '/'
         logging.debug('New cookie : %s %s', name, value)
         self.headers_to_send['Set-Cookie'] = c.output(header='')

@@ -1,0 +1,54 @@
+# coding=utf-8
+from auth import DemoAuth
+import ldap
+
+
+class AuthLdap(DemoAuth):
+    def __init__(self, config):
+        self.host = config['host']
+        self.bind_user = config['bind_user']
+        self.bind_password = config['bind_password']
+        self.search_base = config['search_base']
+        self.login_attribute = config['login_attribute']
+        self.email_attribute = config['email_attribute']
+
+    def check_auth(self, user, password):
+        try:
+            ld = ldap.initialize(self.host)
+            ld.simple_bind_s(self.bind_user, self.bind_password)
+            search_filter = self.login_attribute+"="+user
+            res = ld.search_s(self.search_base, ldap.SCOPE_SUBTREE, search_filter)
+            ld.unbind_s()
+        except ldap.INVALID_CREDENTIALS as e:
+            return False
+
+        if (len(res) > 1):
+            raise Exception("To much user returned")
+        if (len(res) < 1):
+            raise ldap.INVALID_CREDENTIALS
+
+        dn, attributes = res[0]
+        if not self.try_bind(dn, password):
+            return False
+        return self.get_email(dn)
+
+    def get_email(self, dn):
+        ld = ldap.initialize(self.host)
+        ld.simple_bind_s(self.bind_user, self.bind_password)
+        res = ld.search_s(dn, ldap.SCOPE_BASE)
+        dn, attributes = res[0]
+        ld.unbind_s()
+        return attributes[self.email_attribute][0]
+
+    def try_bind(self, dn, password):
+        ld = ldap.initialize(self.host)
+        try:
+            ld.simple_bind_s(dn, password)
+            whoami = ld.whoami_s()
+            ld.unbind_s()
+        except ldap.INVALID_CREDENTIALS:
+            return False
+
+        if whoami is None:
+            return False
+        return True

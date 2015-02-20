@@ -1,10 +1,25 @@
 	// create the module and name it demoApp
 	var demoApp = angular.module('demoApp', ['ngRoute', 'ngCookies','pascalprecht.translate', 'ui.slider'])
-        .run(function($rootScope,favicoService){
+        .run(function($rootScope, favicoService, $http, $cookies, $location){
             $rootScope.$on('$routeChangeStart',function(){
                 $rootScope.app_title = 'DemoInstance';
                 favicoService.reset();
             });
+
+            $rootScope.user = {};
+            $rootScope.getUser = function() {
+                $http.get('/api/user').
+                    success(function(data) {
+                        $rootScope.user = data;
+                    });
+            };
+
+            $rootScope.disconnect = function() {
+                $cookies.token = undefined;
+                $rootScope.user = {}
+                $location.path('/');
+            };
+            $rootScope.getUser();
         });
 
 	// configure our routes
@@ -14,8 +29,12 @@
 				templateUrl : 'pages/image.html'
 			})
 
-            .when('/login', {
-                templateUrl : 'pages/login.html'
+            .when('/mail', {
+                templateUrl : 'pages/login_mail.html'
+            })
+
+            .when('/auth', {
+                templateUrl : 'pages/login_auth.html'
             })
 
             .when('/login/:token', {
@@ -51,7 +70,10 @@
             return {
                 'responseError': function(rejection) {
                     if ( rejection.status == 401 ){
-                        $location.path('/login');
+                        if ( rejection.data.type == 'auth' )
+                            $location.path('/auth');
+                        else
+                            $location.path('/mail');
                     }
                     return $q.reject(rejection);
                 }

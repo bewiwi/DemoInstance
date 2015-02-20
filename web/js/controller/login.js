@@ -1,4 +1,4 @@
-demoApp.controller('loginController', function($scope, $http) {
+demoApp.controller('loginMailController', function($scope, $http) {
     var errorCallback = function(error) {
         $scope.error = error;
         console.log(error)
@@ -6,11 +6,29 @@ demoApp.controller('loginController', function($scope, $http) {
 
     $scope.user = { 'email': '' };
 
-    $scope.addUser = function (email) {
+    $scope.addUser = function () {
         $http.put('/api/user',$scope.user).
             success(function(data) {
                 $scope.error = undefined;
                 $scope.user = data;
+            }).
+            error(errorCallback);
+    }
+});
+
+demoApp.controller('loginAuthController', function($scope, $http, $location, $rootScope) {
+    var errorCallback = function(error) {
+        $scope.error = error;
+        console.log(error)
+    };
+
+    $scope.user = { 'user': '', 'password':'' };
+
+    $scope.connect = function () {
+        $http.post('/api/connect',$scope.user).
+            success(function(data) {
+                $rootScope.getUser();
+                $location.path('/');
             }).
             error(errorCallback);
     }

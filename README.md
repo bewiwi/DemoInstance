@@ -41,7 +41,7 @@ security_type=open
 | Argument | Optional | Description |
 | -------- | -------- | -------- |
 | log_level | No | list of value here https://docs.python.org/2/library/logging.html#logging-levels |
-| security_type | No | Values "open" (public) or "email" (check email before access)  |
+| security_type | No | Values "open" (public), "email" (check email before access) or "auth_ldap" |
 
 ### MAIL
 ```
@@ -62,6 +62,23 @@ tls=yes
 | from | Yes | From mail default demoinstance@localhost |
 | tls | Yes | SMTP is tls default no |
 
+### LDAP
+```
+host=ldap://ldapOrActiveDirectoyHostname
+bind_user=cn=read,OU=Users,dc=mydomain,dc=local
+bind_password=readpassword
+search_base=OU=Users,dc=abc-objectif,dc=local
+login_attribute=sAMAccountName
+email_attribute=mail
+``
+| Argument | Optional | Description |
+| -------- | -------- | -------- |
+| host | No | Ldap Host |
+| bind_user | Yes | Ldap user to read ldap |
+| bind_password | Yes | Ldap password |
+| search_base | Yes | Limit valid user with this branch |
+| login_attribute | Yes | Ldap attribute to use to login |
+| email_attribute | Yes | Ldap attribute of email |
 
 ### OPENSTACK
 ```
@@ -188,15 +205,6 @@ Or
 ```
 ./demo.sh start
 ```
-## Contribute
-If you want to contribute you're welcome. Just create issues or make some PR.
-
-### Dev env
-A docker env was set to help you to dev. To start just configure a good config.ini and run
-```
-fig up
-```
-If you don't have docker you can directly install needed lib on your hosts, it works well to
 
 ## Init script
 ### Redhat/Centos
@@ -222,3 +230,32 @@ EOF
 
 ### Debian/Ubuntu
 If you want this you can do it and make me a PR
+
+## Contribute
+If you want to contribute you're welcome. Just create issues or make some PR.
+
+### Dev env
+A docker env was set to help you to dev. To start just configure a good config.ini and run
+```
+fig up
+```
+If you don't have docker you can directly install needed lib on your hosts, it works well to
+
+### Add auth system
+To add a new auth system is really simple, just add a class in Demo/auth directory which is son of DemoAuth
+and just add 2 functions with this prototype :
+
+```python
+    def __init__(self, config):
+        pass
+        
+    #Must return email if ok or False
+    def check_auth(self, user, password):
+        pass
+```
+
+init parameter is just "config" which is a dictionnary of your config section.
+
+Config section name must be your filename (without '.py') uppercase and your class name must be a transformation 
+of your filename like this :
+'auth_ldap.py => AuthLdap'
