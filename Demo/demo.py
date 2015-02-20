@@ -43,6 +43,13 @@ class Demo():
         else:
             self.auth = False
 
+        #Provider
+        path = os.path.join(os.path.dirname(__file__), "provider")
+        prov_name = 'prov_'+self.config.provider
+        auth_mod = __import__('provider.'+prov_name, globals(), locals(), fromlist=[prov_name])
+        auth_class = getattr(auth_mod, Demo.get_class_name(self.config.provider))
+        self.provider = auth_class(self.config.provider_data)
+
     @staticmethod
     def get_class_name(mod_name):
         output = ""

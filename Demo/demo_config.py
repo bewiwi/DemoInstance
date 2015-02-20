@@ -12,8 +12,9 @@ class DemoConfig():
         #Default
         self.log_level = self.config.get("DEFAULT", "log_level")
         self.security_type = self.config.get("DEFAULT", "security_type")
-        if self.security_type not in ('open','email') and not self.security_type.startswith('auth_'):
+        if self.security_type not in ('open', 'email') and not self.security_type.startswith('auth_'):
             raise DemoExceptionBadConfigValue('security_type', self.security_type)
+        self.provider = self.config.get("DEFAULT", "provider")
 
         #Openstack
         self.user = self.config.get("OPENSTACK", "user")
@@ -65,6 +66,12 @@ class DemoConfig():
             if self.config.has_section(self.security_type.upper()):
                 for name, value in self.config.items(self.security_type.upper()):
                     self.auth[name] = value
+
+        #Prov Conf
+        self.provider_data = {}
+        if self.config.has_section(self.provider.upper()):
+            for name, value in self.config.items(self.provider.upper()):
+                self.provider_data[name] = value
 
         #IMAGE CONF
         self.images = {}
