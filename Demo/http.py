@@ -60,20 +60,18 @@ class Handler(BaseHTTPRequestHandler, object):
         return
 
     def instance_info(self, instance_id):
-        instance = self.demo.get_instance(instance_id)
-        if not instance:
+        if not self.demo.provider.instance_exist(instance_id):
             raise DemoExceptionInstanceNotFound()
 
-        instance_info = self.demo.get_instance_info(instance)
-        info = {'id': instance_info['id'], 'system_up': False, 'instance_up': False}
-        if self.demo.instance_is_up(instance):
+        info = {'id': instance_id, 'system_up': False, 'instance_up': False}
+        if self.demo.instance_is_up(instance_id):
             info['instance_up'] = True
-            info['id'] = instance_info['id']
-            info['address'] = self.demo.get_instance_ip(instance)
-            info['demo_address'] = self.demo.get_instance_soft_address(instance)
-            info['life_time'] = self.demo.get_instance_life_time(instance)
-            info['ask_time'] = self.demo.get_instance_ask_time(instance)
-            if self.demo.check_system_up(instance):
+            info['id'] = instance_id
+            info['address'] = self.demo.provider.get_instance_ip(instance_id)
+            info['demo_address'] = self.demo.get_instance_soft_address(instance_id)
+            info['life_time'] = self.demo.get_instance_life_time(instance_id)
+            info['ask_time'] = self.demo.get_instance_ask_time(instance_id)
+            if self.demo.check_system_up(instance_id):
                 info['system_up'] = True
         self.headers_to_send['Content-type'] = 'application/json'
         self.send_all_header(200)
@@ -219,6 +217,7 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(503, e.message, str(type(e)))
         except Exception as e:
+            raise
             self.send_http_error(500, e.message, str(type(e)))
         return
 
@@ -258,6 +257,7 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(400, e.message)
         except Exception as e:
+            raise
             self.send_http_error(500, e.message, str(type(e)))
         return
 
@@ -310,6 +310,7 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionInstanceNotFound as e:
             self.send_http_error(404, e.message)
         except Exception as e:
+            raise
             self.send_http_error(500, e.message)
         return
 

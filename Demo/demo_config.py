@@ -16,16 +16,6 @@ class DemoConfig():
             raise DemoExceptionBadConfigValue('security_type', self.security_type)
         self.provider = self.config.get("DEFAULT", "provider")
 
-        #Openstack
-        self.user = self.config.get("OPENSTACK", "user")
-        self.password = self.config.get("OPENSTACK", "password")
-        self.tenant = self.config.get("OPENSTACK", "tenant")
-        self.url = self.config.get("OPENSTACK", "url")
-        if self.config.has_option("OPENSTACK", "region"):
-            self.region = self.config.get("OPENSTACK", "region")
-        else:
-            self.region = None
-
         #HTTP
         self.http_port = self.config.getint("HTTP", "port")
 
@@ -69,8 +59,8 @@ class DemoConfig():
 
         #Prov Conf
         self.provider_data = {}
-        if self.config.has_section(self.provider.upper()):
-            for name, value in self.config.items(self.provider.upper()):
+        if self.config.has_section('PROV_'+self.provider.upper()):
+            for name, value in self.config.items('PROV_'+self.provider.upper()):
                 self.provider_data[name] = value
 
         #IMAGE CONF

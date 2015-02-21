@@ -70,7 +70,7 @@ bind_password=readpassword
 search_base=OU=Users,dc=abc-objectif,dc=local
 login_attribute=sAMAccountName
 email_attribute=mail
-``
+```
 | Argument | Optional | Description |
 | -------- | -------- | -------- |
 | host | No | Ldap Host |

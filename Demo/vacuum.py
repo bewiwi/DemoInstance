@@ -19,7 +19,7 @@ class Vacuum(threading.Thread):
         logging.debug('CHECK OLD INSTANCE')
         query = self.database.session.query(Instance).filter(Instance.status != 'DELETED')
         logging.debug("%s count",query.count())
-        instances = self.demo.get_instances()
+        instances = self.demo.provider.get_instances()
         for data_instance in query.all():
             destroy_at = data_instance.launched_at + datetime.timedelta(0, 0, 0, 0, data_instance.life_time)
             logging.debug('%s must be destroy at %s', data_instance.openstack_id ,destroy_at)
@@ -28,9 +28,8 @@ class Vacuum(threading.Thread):
                 self.demo.database_remove_server(data_instance.openstack_id)
 
             on_cloud = False
-            for instance in instances:
-                info = self.demo.get_instance_info(instance)
-                if data_instance.openstack_id == info['id']:
+            for id in instances:
+                if data_instance.openstack_id == id:
                     on_cloud = True
                     break
             if not on_cloud and data_instance.openstack_id:
@@ -46,6 +45,7 @@ class Vacuum(threading.Thread):
             except Exception as e:
                 logging.error("Vaccum Raise Execption %s", e.message)
                 self.database.session.close()
+                raise
             i=0
             while i < time_between_vacuum:
                 if self.stop:
