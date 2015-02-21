@@ -133,6 +133,8 @@ class Demo():
         return False
 
     def check_system_up(self, instance_id):
+        if self.config.images[self.get_instance_type(instance_id)].instance_check_url is None:
+            return True
         url = self.placeholder_apply(
             self.config.images[self.get_instance_type(instance_id)].instance_check_url,
             instance_id

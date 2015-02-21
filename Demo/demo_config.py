@@ -131,8 +131,6 @@ class DemoConfigImage():
             raise DemoExceptionInvalidImage('flavor_id')
         if self.instance_prefix is None:
             raise DemoExceptionInvalidImage('instance_prefix')
-        if self.instance_check_url is None:
-            raise DemoExceptionInvalidImage('instance_check_url')
         if self.instance_soft_url is None:
             raise DemoExceptionInvalidImage('instance_soft_url')
         if self.instance_time is None:
