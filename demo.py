@@ -1,8 +1,6 @@
 from Demo.demo_config import DemoConfig
-from Demo.http import ThreadedHTTPServer,Handler
+from Demo.http import ThreadedHTTPServer, Handler
 from Demo.vacuum import Vacuum
-from Demo.demo import Demo
-from Demo.database import DemoData
 import logging
 
 if __name__ == '__main__':

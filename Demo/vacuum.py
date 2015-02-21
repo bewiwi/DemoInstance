@@ -1,4 +1,4 @@
-from database import DemoData,Instance
+from database import Instance
 from demo_config import DemoConfig
 from demo import Demo
 import threading
@@ -17,14 +17,23 @@ class Vacuum(threading.Thread):
 
     def check_old_instance(self):
         logging.debug('CHECK OLD INSTANCE')
-        query = self.database.session.query(Instance).filter(Instance.status != 'DELETED')
-        logging.debug("%s count",query.count())
+        query = self.database.session\
+            .query(Instance)\
+            .filter(Instance.status != 'DELETED')
+        logging.debug("%s count", query.count())
         instances = self.demo.provider.get_instances()
         for data_instance in query.all():
-            destroy_at = data_instance.launched_at + datetime.timedelta(0, 0, 0, 0, data_instance.life_time)
-            logging.debug('%s must be destroy at %s', data_instance.openstack_id ,destroy_at)
+            destroy_at = data_instance.launched_at\
+                        + datetime.timedelta(
+                            0, 0, 0, 0,
+                            data_instance.life_time
+                        )
+            logging.debug(
+                '%s must be destroy at %s',
+                data_instance.openstack_id, destroy_at
+            )
             if destroy_at < datetime.datetime.now():
-                logging.info('%s is to old',data_instance.openstack_id)
+                logging.info('%s is to old', data_instance.openstack_id)
                 self.demo.database_remove_server(data_instance.openstack_id)
 
             on_cloud = False
@@ -33,7 +42,10 @@ class Vacuum(threading.Thread):
                     on_cloud = True
                     break
             if not on_cloud and data_instance.openstack_id:
-                logging.info('%s is not present on cloud anymore',data_instance.id)
+                logging.info(
+                    '%s is not present on cloud anymore',
+                    data_instance.id
+                )
                 self.demo.database_remove_server(data_instance.openstack_id)
         self.database.session.close()
 
@@ -46,7 +58,7 @@ class Vacuum(threading.Thread):
                 logging.error("Vaccum Raise Execption %s", e.message)
                 self.database.session.close()
                 raise
-            i=0
+            i = 0
             while i < time_between_vacuum:
                 if self.stop:
                     logging.info('Stop vacuum')

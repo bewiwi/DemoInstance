@@ -5,24 +5,28 @@ IMAGE_CONF_PREFIX = 'IMAGE_'
 
 
 class DemoConfig():
-    def __init__(self,config_file='./config.ini'):
+    def __init__(self, config_file='./config.ini'):
         self.config = ConfigParser.ConfigParser()
         self.config.read(config_file)
 
-        #Default
+        # Default
         self.log_level = self.config.get("DEFAULT", "log_level")
         self.security_type = self.config.get("DEFAULT", "security_type")
-        if self.security_type not in ('open', 'email') and not self.security_type.startswith('auth_'):
-            raise DemoExceptionBadConfigValue('security_type', self.security_type)
+        if self.security_type not in ('open', 'email')\
+                and not self.security_type.startswith('auth_'):
+            raise DemoExceptionBadConfigValue(
+                'security_type',
+                self.security_type
+            )
         self.provider = self.config.get("DEFAULT", "provider")
 
-        #HTTP
+        # HTTP
         self.http_port = self.config.getint("HTTP", "port")
 
-        #Database
+        # Database
         self.database_connection = self.config.get("DATABASE", "connection")
 
-        #EMAIL CONF
+        # EMAIL CONF
         if self.security_type == 'email':
             self.mail_host = self.config.get("MAIL", "host")
             if self.config.has_option("MAIL", "port"):
@@ -50,26 +54,31 @@ class DemoConfig():
             else:
                 self.mail_tls = False
 
-        #Auth Conf
+        # Auth Conf
         if self.security_type.startswith('auth_'):
             self.auth = {}
-            if self.config.has_section(self.security_type.upper()):
-                for name, value in self.config.items(self.security_type.upper()):
+            section = self.security_type.upper()
+            if self.config.has_section(section):
+                for name, value in self.config.items(section):
                     self.auth[name] = value
 
-        #Prov Conf
+        # Prov Conf
         self.provider_data = {}
-        if self.config.has_section('PROV_'+self.provider.upper()):
-            for name, value in self.config.items('PROV_'+self.provider.upper()):
+        section = 'PROV_'+self.provider.upper()
+        if self.config.has_section(section):
+            for name, value in self.config.items(section):
                 self.provider_data[name] = value
 
-        #IMAGE CONF
+        # IMAGE CONF
         self.images = {}
         template_image = self.get_image_by_section('IMAGE')
         for section in self.config.sections():
             if not section.startswith(IMAGE_CONF_PREFIX):
                 continue
-            image = self.get_image_by_section(section, template_image=template_image)
+            image = self.get_image_by_section(
+                section,
+                template_image=template_image
+            )
             key_name = section[len(IMAGE_CONF_PREFIX):]
             image.check()
             self.images[key_name] = image

@@ -25,7 +25,12 @@ class Handler(BaseHTTPRequestHandler, object):
         self.send_response(code)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
-        self.wfile.write(json.dumps({'error': error_message, 'type': error_type}))
+        self.wfile.write(
+            json.dumps({
+                'error': error_message,
+                'type': error_type
+            })
+        )
 
     def send_http_message(self, code=200, message=''):
         self.wfile.flush()
@@ -50,8 +55,12 @@ class Handler(BaseHTTPRequestHandler, object):
         f.close()
         return
 
-    def instance_create(self,image_key, time=None):
-        id = self.demo.create_instance(image_key, token=self.user.token, time=time)
+    def instance_create(self, image_key, time=None):
+        id = self.demo.create_instance(
+            image_key,
+            token=self.user.token,
+            time=time
+        )
         rep = {'id': id}
         self.headers_to_send['Content-type'] = 'application/json'
         self.send_all_header(201)
@@ -68,9 +77,9 @@ class Handler(BaseHTTPRequestHandler, object):
             info['instance_up'] = True
             info['id'] = instance_id
             info['address'] = self.demo.provider.get_instance_ip(instance_id)
-            info['demo_address'] = self.demo.get_instance_soft_address(instance_id)
-            info['life_time'] = self.demo.get_instance_life_time(instance_id)
-            info['ask_time'] = self.demo.get_instance_ask_time(instance_id)
+            info['demo_address'] = self.demo.get_soft_address(instance_id)
+            info['life_time'] = self.demo.get_life_time(instance_id)
+            info['ask_time'] = self.demo.get_ask_time(instance_id)
             if self.demo.check_system_up(instance_id):
                 info['system_up'] = True
         self.headers_to_send['Content-type'] = 'application/json'
@@ -89,7 +98,7 @@ class Handler(BaseHTTPRequestHandler, object):
 
     def user_instances_info(self):
         if self.user is None:
-            self.send_http_error(404,'User not found')
+            self.send_http_error(404, 'User not found')
 
         instances = self.demo.get_user_instance_database(self.user.token)
         info = []
@@ -124,8 +133,7 @@ class Handler(BaseHTTPRequestHandler, object):
         return
 
     def image_info(self, image_key):
-        http_images = {}
-        if not self.config.images.has_key(image_key):
+        if image_key not in self.config.images:
             raise DemoExceptionInstanceNotFound()
         image = self.config.images[image_key]
         data = {
@@ -154,24 +162,24 @@ class Handler(BaseHTTPRequestHandler, object):
     def set_mime(self):
         mimetype = None
         if self.path.endswith(".html"):
-            mimetype='text/html'
+            mimetype = 'text/html'
         if self.path.endswith(".js"):
-            mimetype='application/javascript'
+            mimetype = 'application/javascript'
         if self.path.endswith(".css"):
-            mimetype='text/css'
+            mimetype = 'text/css'
         if self.path.endswith(".jpg"):
-            mimetype='image/jpg'
+            mimetype = 'image/jpg'
         if self.path.endswith(".gif"):
-            mimetype='image/gif'
+            mimetype = 'image/gif'
         if self.path.endswith(".png"):
-            mimetype='image/png'
+            mimetype = 'image/png'
         if mimetype is not None:
             self.headers_to_send['Content-type'] = mimetype
 
     def do_GET(self):
         str_path = self.path.split('?')[0]
         try:
-            #Public URL
+            # Public URL
             if self.path == "/":
                 self.send_file('index.html')
                 return
@@ -185,7 +193,7 @@ class Handler(BaseHTTPRequestHandler, object):
                 self.send_all_header()
                 return
 
-            #Private URL
+            # Private URL
             if not self.cookie_session():
                 return
 
@@ -226,10 +234,10 @@ class Handler(BaseHTTPRequestHandler, object):
             length = int(self.headers.getheader('Content-Length'))
             put_vars = json.loads(self.rfile.read(length))
 
-            #Public
+            # Public
             match = re.match("/api/user", self.path)
             if match:
-                if put_vars.has_key('email'):
+                if 'email' in put_vars:
                     url = 'http://'+self.headers.getheader('Host')+'/'
                     email = put_vars['email']
                     user = self.demo.create_user(email)
@@ -240,14 +248,14 @@ class Handler(BaseHTTPRequestHandler, object):
                     self.send_http_error(400, 'Email not found in request')
                     return
 
-            #Private
+            # Private
             if not self.cookie_session():
                 return
 
             match = re.match("/api/instance/(.*)", self.path)
             if match:
                 time = None
-                if put_vars.has_key('time'):
+                if 'time' in put_vars:
                     time = int(put_vars['time'])
                 self.instance_create(match.group(1), time=time)
                 return
@@ -266,25 +274,28 @@ class Handler(BaseHTTPRequestHandler, object):
             length = int(self.headers.getheader('Content-Length'))
             put_vars = json.loads(self.rfile.read(length))
 
-            #Public
+            # Public
             if self.path == '/api/connect':
-                if put_vars.has_key('user') and put_vars.has_key('password') :
+                if 'user' in put_vars and 'password' in put_vars:
                     self.connect(put_vars['user'], put_vars['password'])
                     return
                 self.send_http_error(404, 'No action')
 
-            #Private
+            # Private
             if not self.cookie_session():
                 return
 
             match = re.match("/api/instance", self.path)
             if match:
                 time = None
-                if put_vars.has_key('id'):
+                if 'id' in put_vars:
                     id = put_vars['id']
-                    if put_vars.has_key('add_time'):
+                    if 'add_time' in put_vars:
                         self.demo.check_user_own_instance(self.user.token, id)
-                        self.demo.instance_add_time(id, int(put_vars['add_time']))
+                        self.demo.instance_add_time(
+                            id,
+                            int(put_vars['add_time'])
+                        )
                         self.instance_info(id)
                         return
             self.send_http_error(404, 'No action')
@@ -302,7 +313,10 @@ class Handler(BaseHTTPRequestHandler, object):
             match = re.match("/api/instance/(.*)", self.path)
             if match:
                 openstack_id = match.group(1)
-                self.demo.check_user_own_instance(self.user.token, openstack_id)
+                self.demo.check_user_own_instance(
+                    self.user.token,
+                    openstack_id
+                )
                 self.demo.database_remove_server(openstack_id)
                 self.send_http_message(200, 'ok')
                 return
@@ -319,7 +333,7 @@ class Handler(BaseHTTPRequestHandler, object):
         if token is not None:
             self.user = self.demo.get_user_by_token(token)
             if self.user:
-                #Update session time
+                # Update session time
                 self.write_cookie(COOKIE_SESSION_NAME, self.user.token)
                 if self.user:
                     return True
@@ -348,7 +362,7 @@ class Handler(BaseHTTPRequestHandler, object):
         if "Cookie" in self.headers:
             c = Cookie.SimpleCookie(self.headers["Cookie"])
             logging.debug(" Cookies : %s", self.headers["Cookie"])
-            if not name in c:
+            if name not in c:
                 return None
             return c[name].value
         return None
