@@ -225,7 +225,6 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(503, e.message, str(type(e)))
         except Exception as e:
-            raise
             self.send_http_error(500, e.message, str(type(e)))
         return
 
@@ -265,7 +264,6 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(400, e.message)
         except Exception as e:
-            raise
             self.send_http_error(500, e.message, str(type(e)))
         return
 
@@ -324,7 +322,6 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionInstanceNotFound as e:
             self.send_http_error(404, e.message)
         except Exception as e:
-            raise
             self.send_http_error(500, e.message)
         return
 
