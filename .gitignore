@@ -1,6 +1,6 @@
 Vagrantfile
 .vagrant
-*.ini
+/*.ini
 !config-dist.ini
 *.pyc
 .DS_Store

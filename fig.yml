@@ -9,11 +9,11 @@ db:
         MYSQL_ROOT_PASSWORD: password
 
 demoinstance:
-    build: .
+    build: ./test/
     links:
         - db
     volumes:
-        - ./config.ini:/opt/demoinstance/config.ini
+        - ./:/opt/demoinstance/
     ports:
         - "8080:8080"
     expose:

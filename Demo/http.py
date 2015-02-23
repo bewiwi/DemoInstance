@@ -1,8 +1,8 @@
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from SocketServer import ThreadingMixIn
-from Demo.demo_config import DemoConfig
-from Demo.demo import Demo
-from Demo.demo_exception import *
+from demo_config import DemoConfig
+from demo import Demo
+from demo_exception import *
 import re
 import json
 import os

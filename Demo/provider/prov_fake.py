@@ -6,7 +6,7 @@ class Fake(DemoProv):
     instances = {}
 
     def __init__(self, config):
-        self.file = config['file']
+        pass
 
     def get_instances(self):
         return Fake.instances.keys()
@@ -17,7 +17,7 @@ class Fake(DemoProv):
     def instance_is_up(self, id):
         return self.instance_exist(id)
 
-    def create_instance(self , image_conf):
+    def create_instance(self, image_conf):
         id = str(uuid.uuid4())
         Fake.instances[id] = image_conf
         return id

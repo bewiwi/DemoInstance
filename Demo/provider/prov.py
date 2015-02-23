@@ -1,6 +1,7 @@
 from novaclient.client import Client
 import logging
 
+
 class DemoProv():
     def __init__(self, config):
         pass
@@ -14,7 +15,7 @@ class DemoProv():
     def instance_is_up(self, id):
         raise NotImplementedError
 
-    def create_instance(self,image_conf):
+    def create_instance(self, image_conf):
         raise NotImplementedError
 
     def remove_instance(self, id):

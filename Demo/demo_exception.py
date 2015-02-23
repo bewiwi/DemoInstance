@@ -105,6 +105,7 @@ class DemoExceptionErrorAuth(Exception):
     def __str__(self):
         return repr(self.value)
 
+
 class DemoExceptionConfigNotFound(Exception):
     def __init__(self):
         self.value = "Invalid config file"

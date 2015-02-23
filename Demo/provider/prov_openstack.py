@@ -22,7 +22,7 @@ class Openstack(DemoProv):
 
     def get_instances(self):
         instances_id = []
-        for instance in  self.nova.servers.list():
+        for instance in self.nova.servers.list():
             instances_id.append(instance.id)
         return instances_id
 
@@ -53,14 +53,14 @@ class Openstack(DemoProv):
         else:
             return False
 
-    def create_instance(self,image_conf):
+    def create_instance(self, image_conf):
         logging.debug("Image config : %s", image_conf.image_id)
         matches = self.nova.images.findall(name=image_conf.image_id)
         if len(matches) == 0:
-            #If no match name check id
+            # If no match name check id
             image = self.nova.images.find(id=image_conf.image_id)
         else:
-            #Get first name matching
+            # Get first name matching
             image = matches[0]
         logging.debug("Image id : %s", image.id)
         logging.debug("Flavor config : %s", image_conf.flavor_id)
