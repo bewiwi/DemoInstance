@@ -1,13 +1,19 @@
 import ConfigParser
+import os
 from copy import copy
 from demo_exception import *
+
 IMAGE_CONF_PREFIX = 'IMAGE_'
 
 
 class DemoConfig():
-    def __init__(self, config_file='./config.ini'):
+    config_file = './config.ini'
+
+    def __init__(self):
+        if not os.path.isfile(DemoConfig.config_file):
+            raise DemoExceptionConfigNotFound()
         self.config = ConfigParser.ConfigParser()
-        self.config.read(config_file)
+        self.config.read(DemoConfig.config_file)
 
         # Default
         self.log_level = self.config.get("DEFAULT", "log_level")
