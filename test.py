@@ -17,9 +17,22 @@ def run_functional_test():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-u', help='url to test', default='http://127.0.0.1')
+    parser.add_argument(
+        '-U', '--url', help='url to test',
+        default='http://127.0.0.1:8080'
+    )
+    parser.add_argument(
+        '-u', '--unit', help='run untit test',
+        action='store_true'
+    )
+    parser.add_argument(
+        '-f', '--functional', help='run functional test',
+        action='store_true'
+    )
     args = parser.parse_args()
 
-    DemoTestCase.config['demo_url'] = args.u
-    run_unit_test()
-    run_functional_test()
+    DemoTestCase.config['demo_url'] = args.url
+    if args.unit:
+        run_unit_test()
+    if args.functional:
+        run_functional_test()

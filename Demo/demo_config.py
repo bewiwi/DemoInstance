@@ -140,12 +140,6 @@ class DemoConfigImage():
         self.user_data = None
 
     def check(self):
-        if self.image_id is None:
-            raise DemoExceptionInvalidImage('image_id')
-        if self.flavor_id is None:
-            raise DemoExceptionInvalidImage('flavor_id')
-        if self.instance_prefix is None:
-            raise DemoExceptionInvalidImage('instance_prefix')
         if self.instance_soft_url is None:
             raise DemoExceptionInvalidImage('instance_soft_url')
         if self.instance_time is None:
