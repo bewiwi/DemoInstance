@@ -119,12 +119,15 @@ class Handler(BaseHTTPRequestHandler, object):
         http_images = {}
         for name in self.config.images.keys():
             image = self.config.images[name]
+            time_max = None
+            if time_max in image:
+                time_max = image['time_max']
             data = {
-                'name': image.name,
-                'desc': image.desc,
-                'img': image.img,
-                'max_time': image.instance_time_max,
-                'default_time': image.instance_time
+                'name': image['name'],
+                'desc': image['desc'],
+                'img': image['img'],
+                'max_time': time_max,
+                'default_time': image['time_default']
             }
             http_images[name] = data
         self.headers_to_send['Content-type'] = 'application/json'
@@ -136,13 +139,18 @@ class Handler(BaseHTTPRequestHandler, object):
         if image_key not in self.config.images:
             raise DemoExceptionInstanceNotFound()
         image = self.config.images[image_key]
+
+        time_max = None
+        if time_max in image:
+            time_max = image['time_max']
+
         data = {
-            'name': image.name,
-            'desc': image.desc,
-            'img': image.img,
-            'max_time': image.instance_time_max,
-            'default_time': image.instance_time,
-            'info': image.info
+            'name': image['name'],
+            'desc': image['desc'],
+            'img': image['img'],
+            'max_time': time_max,
+            'default_time': image['time_default'],
+            'info': image['info']
         }
         http_image = data
         self.headers_to_send['Content-type'] = 'application/json'

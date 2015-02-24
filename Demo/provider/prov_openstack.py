@@ -54,30 +54,38 @@ class Openstack(DemoProv):
             return False
 
     def create_instance(self, image_conf):
-        logging.debug("Image config : %s", image_conf.image_id)
-        matches = self.nova.images.findall(name=image_conf.image_id)
+        logging.debug("Image config : %s", image_conf['image_id'])
+        matches = self.nova.images.findall(name=image_conf['image_id'])
         if len(matches) == 0:
             # If no match name check id
-            image = self.nova.images.find(id=image_conf.image_id)
+            image = self.nova.images.find(id=image_conf['image_id'])
         else:
             # Get first name matching
             image = matches[0]
         logging.debug("Image id : %s", image.id)
-        logging.debug("Flavor config : %s", image_conf.flavor_id)
+        logging.debug("Flavor config : %s", image_conf['flavor_id'])
 
-        matches = self.nova.flavors.findall(name=image_conf.flavor_id)
+        matches = self.nova.flavors.findall(name=image_conf['flavor_id'])
         if len(matches) == 0:
-            flavor = self.nova.flavors.find(id=image_conf.flavor_id)
+            flavor = self.nova.flavors.find(id=image_conf['flavor_id'])
         else:
             flavor = matches[0]
 
         logging.debug("Flavor id : %s", flavor.id)
 
+        instance_prefix = ''
+        if 'instance_prefix' in image_conf:
+            instance_prefix = image_conf['instance_prefix']
+
+        user_data = None
+        if 'user_data' in image_conf:
+            user_data = image_conf['user_data']
+
         instance = self.nova.servers.create(
-            image_conf.instance_prefix + 'test',
+            instance_prefix + 'test',
             image.id,
             flavor.id,
-            userdata=image_conf.user_data
+            userdata=user_data
         )
         return self.__get_instance_info(instance)['id']
 

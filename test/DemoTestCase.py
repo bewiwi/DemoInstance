@@ -11,25 +11,28 @@ class DemoTestCase(unittest.TestCase):
         self.cookies = {}
 
     def get(self, uri, params=None):
+        params = json.dumps(params)
         r = requests.get(
             DemoTestCase.config["demo_url"]+uri,
-            params=params,
+            data=params,
             cookies=self.cookies
         )
         return r
 
     def put(self, uri, params=None):
+        params = json.dumps(params)
         r = requests.put(
             DemoTestCase.config["demo_url"]+uri,
-            params=params,
+            data=params,
             cookies=self.cookies
         )
         return r
 
     def delete(self, uri, params=None):
+        params = json.dumps(params)
         r = requests.delete(
             DemoTestCase.config["demo_url"]+uri,
-            params=params,
+            data=params,
             cookies=self.cookies
         )
         return r

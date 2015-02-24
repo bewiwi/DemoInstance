@@ -4,6 +4,9 @@ from copy import copy
 from demo_exception import *
 
 IMAGE_CONF_PREFIX = 'IMAGE_'
+IMAGE_INT_PARAM = [
+    'time_default', 'max_instance', 'time_max', 'time_default'
+]
 
 
 class DemoConfig():
@@ -86,64 +89,25 @@ class DemoConfig():
                 template_image=template_image
             )
             key_name = section[len(IMAGE_CONF_PREFIX):]
-            image.check()
+            self.check_image(image)
             self.images[key_name] = image
 
     def get_image_by_section(self, section, template_image=None):
         if template_image is None:
-            image = DemoConfigImage()
+            image = {}
         else:
             image = copy(template_image)
-        if self.config.has_option(section, "image_id"):
-            image.image_id = self.config.get(section, "image_id")
-        if self.config.has_option(section, "name"):
-            image.name = self.config.get(section, "name")
-        if self.config.has_option(section, "desc"):
-            image.desc = self.config.get(section, "desc")
-        if self.config.has_option(section, 'img'):
-            image.img = self.config.get(section, 'img')
-        if self.config.has_option(section, 'info'):
-            image.info = self.config.get(section, 'info')
-        if self.config.has_option(section, "flavor_id"):
-            image.flavor_id = self.config.get(section, "flavor_id")
-        if self.config.has_option(section, "prefix"):
-            image.instance_prefix = self.config.get(section, "prefix")
-        if self.config.has_option(section, "check_url"):
-            image.instance_check_url = self.config.get(section, "check_url")
-        if self.config.has_option(section, "soft_url"):
-            image.instance_soft_url = self.config.get(section, "soft_url")
-        if self.config.has_option(section, "time_default"):
-            image.instance_time = self.config.getint(section, "time_default")
-        if self.config.has_option(section, "time_max"):
-            image.instance_time_max = self.config.getint(section, "time_max")
-        if self.config.has_option(section, "max_instance"):
-            image.max_instance = self.config.getint(section, "max_instance")
-        if self.config.has_option(section, "user_data"):
-            image.user_data = self.config.get(section, "user_data")
+        for name, value in self.config.items(section):
+            if name in IMAGE_INT_PARAM:
+                value = int(value)
+            image[name] = value
         return image
 
-
-class DemoConfigImage():
-    def __init__(self):
-        self.image_id = None
-        self.flavor_id = None
-        self.instance_prefix = None
-        self.instance_check_url = None
-        self.instance_soft_url = None
-        self.instance_time = None
-        self.instance_time_max = None
-        self.max_instance = None
-        self.name = None
-        self.desc = None
-        self.info = None
-        self.img = None
-        self.user_data = None
-
-    def check(self):
-        if self.instance_soft_url is None:
-            raise DemoExceptionInvalidImage('instance_soft_url')
-        if self.instance_time is None:
-            raise DemoExceptionInvalidImage('instance_time')
-        if self.max_instance is None:
-            raise DemoExceptionInvalidImage('max_instance')
+    def check_image(self, image):
+        if 'name' not in image:
+            raise DemoExceptionInvalidImage('name')
+        if 'soft_url' not in image:
+            raise DemoExceptionInvalidImage('soft_url')
+        if 'time_default' not in image:
+            raise DemoExceptionInvalidImage('time_default')
         return True

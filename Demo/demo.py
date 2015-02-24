@@ -72,7 +72,7 @@ class Demo():
 
     def get_soft_address(self, instance):
         return self.placeholder_apply(
-            self.config.images[self.get_type(instance)].instance_soft_url,
+            self.config.images[self.get_type(instance)]['soft_url'],
             instance)
 
     def get_life_time(self, id):
@@ -97,9 +97,13 @@ class Demo():
 
     def create_instance(self, image_key, time, token):
         logging.info("Create Instance")
-        raise_exception = False
+        image = self.config.images[image_key]
+        active_instance = self.database_count_active_instance(image_key)
+
         if self.check_user_own_instance_type(token, image_key):
-            raise_exception = DemoExceptionUserAlreadyHaveInstanceImage()
+            raise DemoExceptionUserAlreadyHaveInstanceImage()
+        elif active_instance >= image['max_instance']:
+            raise DemoExceptionToMuchInstanceImage()
         else:
             # Add a demand
             database_instance = Instance()
@@ -111,34 +115,24 @@ class Demo():
             self.database.session.add(database_instance)
             self.database.session.commit()
 
-            active_instance = self.database_count_active_instance(image_key)
-            image = self.config.images[image_key]
-            if active_instance <= image.max_instance:
-                new_instance_id = self.provider.create_instance(image)
-                life_time = image.instance_time
-                if time is not None and image.instance_time_max is not None:
-                    # Check the defined time is good or hack attempt
-                    if time <= image.instance_time_max:
-                        life_time = time
-                    else:
-                        raise_exception = DemoExceptionInvalidImageTime(time)
-            else:
-                raise_exception = DemoExceptionToMuchInstanceImage()
+            new_instance_id = self.provider.create_instance(image)
 
-        if not raise_exception:
-            # No Exception go create instance
-            self.database_insert_server(new_instance_id, status='CREATED',
-                                        life_time=life_time,
-                                        image_key=image_key, token=token)
+            # If more than max go to max
+            life_time = image['time_default']
+            if time <= image['time_max'] or time is None:
+                life_time = time
 
-        # Remove the demand
-        self.database.session.delete(database_instance)
-        self.database.session.commit()
+            self.database_insert_server(
+                new_instance_id, status='CREATED',
+                life_time=life_time,
+                image_key=image_key, token=token
+            )
 
-        if raise_exception:
-            raise raise_exception
+            # Remove the demand
+            self.database.session.delete(database_instance)
+            self.database.session.commit()
 
-        return new_instance_id
+            return new_instance_id
 
     def instance_is_up(self, instance_id):
         if self.provider.instance_is_up(instance_id):
@@ -148,10 +142,10 @@ class Demo():
 
     def check_system_up(self, instance_id):
         image = self.config.images[self.get_type(instance_id)]
-        if image.instance_check_url is None:
+        if image['check_url'] is None:
             return True
         url = self.placeholder_apply(
-            image.instance_check_url,
+            image['check_url'],
             instance_id
         )
         try:

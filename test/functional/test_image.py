@@ -18,4 +18,19 @@ class ImageTest(DemoTestCase):
     def test_get_image_info(self):
         r = self.get('/api/image/SUGAR')
         rep = self.rep_to_dict(r.text)
+
         self.assertEqual(200, r.status_code)
+        self.assertEqual('Sugar', rep['name'])
+        self.assertEqual('SugarCRM', rep['desc'])
+        self.assertEqual('Les identifiants', rep['info'])
+        self.assertEqual('/instance_image/sugar.jpg', rep['img'])
+
+    def test_default_value(self):
+        r = self.get('/api/image/GITLAB')
+        rep = self.rep_to_dict(r.text)
+
+        self.assertEqual(200, r.status_code)
+        self.assertEqual('Gitlab', rep['name'])
+        self.assertEqual('no desc', rep['desc'])
+        self.assertEqual(2, rep['default_time'])
+        self.assertEqual('\'image with no info\'', rep['info'])
