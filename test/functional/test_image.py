@@ -25,6 +25,15 @@ class ImageTest(DemoTestCase):
         self.assertEqual('Les identifiants', rep['info'])
         self.assertEqual('/instance_image/sugar.jpg', rep['img'])
 
+    def test_get_image_info2(self):
+        r = self.get('/api/image/BI')
+        rep = self.rep_to_dict(r.text)
+
+        self.assertEqual(200, r.status_code)
+        self.assertEqual('BI2', rep['name'])
+        self.assertEqual('Baam', rep['desc'])
+        self.assertEqual(80, rep['max_time'])
+
     def test_default_value(self):
         r = self.get('/api/image/GITLAB')
         rep = self.rep_to_dict(r.text)

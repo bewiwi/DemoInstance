@@ -102,7 +102,8 @@ class Demo():
 
         if self.check_user_own_instance_type(token, image_key):
             raise DemoExceptionUserAlreadyHaveInstanceImage()
-        elif active_instance >= image['max_instance']:
+        elif 'max_instance' in image\
+                and active_instance >= image['max_instance']:
             raise DemoExceptionToMuchInstanceImage()
         else:
             # Add a demand
@@ -119,7 +120,8 @@ class Demo():
 
             # If more than max go to max
             life_time = image['time_default']
-            if time <= image['time_max'] or time is None:
+            if time is not None and 'time_max' in image and\
+                    time <= image['time_max']:
                 life_time = time
 
             self.database_insert_server(
@@ -215,16 +217,21 @@ class Demo():
         logging.debug('%s actives instances for %s', query.count(), image_key)
         return query.count()
 
-    def instance_add_time(self, openstack_id, add_time):
+    def instance_add_time(self, instance_id, add_time):
+
         query = self.database.session.query(Instance).filter(
-            Instance.openstack_id == openstack_id
+            Instance.openstack_id == instance_id
         )
         data_instance = query.first()
-        total_time = data_instance.life_time + add_time
 
         image = self.config.images[data_instance.image_key]
-        if total_time > image.instance_time_max:
-            total_time = image.instance_time_max
+        if 'time_max' not in image:
+            raise DemoExceptionNonUpdatableInstance
+
+        total_time = data_instance.life_time + add_time
+
+        if total_time > image['time_max']:
+            total_time = image['time_max']
 
         data_instance.life_time = total_time
         self.database.session.merge(data_instance)

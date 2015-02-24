@@ -69,6 +69,11 @@ class Handler(BaseHTTPRequestHandler, object):
         return
 
     def instance_info(self, instance_id):
+        self.demo.check_user_own_instance(
+            self.user.token,
+            instance_id,
+            raise_exception=True
+        )
         if not self.demo.provider.instance_exist(instance_id):
             raise DemoExceptionInstanceNotFound()
 
@@ -120,7 +125,7 @@ class Handler(BaseHTTPRequestHandler, object):
         for name in self.config.images.keys():
             image = self.config.images[name]
             time_max = None
-            if time_max in image:
+            if 'time_max' in image:
                 time_max = image['time_max']
             data = {
                 'name': image['name'],
@@ -141,7 +146,7 @@ class Handler(BaseHTTPRequestHandler, object):
         image = self.config.images[image_key]
 
         time_max = None
-        if time_max in image:
+        if 'time_max' in image:
             time_max = image['time_max']
 
         data = {
@@ -230,6 +235,8 @@ class Handler(BaseHTTPRequestHandler, object):
             self.send_http_error(404, 'No action')
         except DemoExceptionInstanceNotFound as e:
             self.send_http_error(404, e.message)
+        except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
+            self.send_http_error(401, e.message)
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(503, e.message, str(type(e)))
         except Exception as e:
@@ -271,7 +278,7 @@ class Handler(BaseHTTPRequestHandler, object):
             self.send_http_error(404, e.message)
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(400, e.message)
-        except DemoExceptionErrorAuth as e:
+        except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
             self.send_http_error(401, e.message)
         except Exception as e:
             self.send_http_error(500, e.message, str(type(e)))
@@ -309,7 +316,9 @@ class Handler(BaseHTTPRequestHandler, object):
             self.send_http_error(404, 'No action')
         except DemoExceptionInstanceNotFound as e:
             self.send_http_error(404, e.message)
-        except DemoExceptionErrorAuth as e:
+        except DemoExceptionNonUpdatableInstance as e:
+            self.send_http_error(400, e.message)
+        except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
             self.send_http_error(401, e.message)
         except Exception as e:
             self.send_http_error(500, e.message)
@@ -333,6 +342,8 @@ class Handler(BaseHTTPRequestHandler, object):
             self.send_http_error(404, 'No action')
         except DemoExceptionInstanceNotFound as e:
             self.send_http_error(404, e.message)
+        except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
+            self.send_http_error(401, e.message)
         except Exception as e:
             self.send_http_error(500, e.message)
         return
