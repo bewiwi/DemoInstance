@@ -6,12 +6,7 @@ install:
     - pip install -r requirements.txt
     - pip install -r ./test/requirements.txt
 
-before_script:
-    - echo '127.0.0.1 db' | sudo tee /etc/hosts
-    - mysql -e 'create database demo;'
-    - echo "USE mysql;\nUPDATE user SET password=PASSWORD('password') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
-
 script:
     - python demo.py -c test/samples/config/config-fake.ini &
-    - sleep 10
+    - sleep 2
     - python test.py -u -f -U http://127.0.0.1:8080

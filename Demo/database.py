@@ -7,7 +7,12 @@ Base = declarative_base()
 
 
 class DemoData():
-    def __init__(self, config):
+    session = None
+
+    @staticmethod
+    def get_session(config):
+        if DemoData.session is not None:
+            return DemoData.session
         engine = create_engine(config.database_connection, echo=False)
         Base.metadata.create_all(engine)
         Base.metadata.bind = engine
@@ -15,7 +20,8 @@ class DemoData():
             bind=engine, autocommit=False,
             autoflush=True, expire_on_commit=True
         )
-        self.session = Session()
+        DemoData.session = Session()
+        return DemoData.session
 
 
 class Instance(Base):

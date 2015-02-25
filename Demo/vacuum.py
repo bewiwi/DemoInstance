@@ -17,7 +17,7 @@ class Vacuum(threading.Thread):
 
     def check_old_instance(self):
         logging.debug('CHECK OLD INSTANCE')
-        query = self.database.session\
+        query = self.database\
             .query(Instance)\
             .filter(Instance.status != 'DELETED')
         logging.debug("%s count", query.count())
@@ -47,7 +47,7 @@ class Vacuum(threading.Thread):
                     data_instance.id
                 )
                 self.demo.database_remove_server(data_instance.openstack_id)
-        self.database.session.close()
+        self.database.close()
 
     def run(self):
         time_between_vacuum = 60
@@ -56,7 +56,7 @@ class Vacuum(threading.Thread):
                 self.check_old_instance()
             except Exception as e:
                 logging.error("Vaccum Raise Execption %s", e.message)
-                self.database.session.close()
+                self.database.close()
                 raise
             i = 0
             while i < time_between_vacuum:

@@ -10,3 +10,4 @@ web/instance_image/*
 !web/instance_image/example.png
 web/node_modules/
 web/public
+/*.sqlite

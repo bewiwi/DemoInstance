@@ -13,7 +13,7 @@ import os
 class Demo():
     def __init__(self, config):
         self.config = config
-        self.database = DemoData(self.config)
+        self.database = DemoData.get_session(self.config)
 
         # Security Email
         if self.config.security_type == "email":
@@ -64,7 +64,7 @@ class Demo():
         return output
 
     def get_type(self, instance_id):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.openstack_id == instance_id
         )
         data_instance = query.first()
@@ -76,7 +76,7 @@ class Demo():
             instance)
 
     def get_life_time(self, id):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.openstack_id == id
         )
         data_instance = query.first()
@@ -89,7 +89,7 @@ class Demo():
         return int(self._get_total_seconds(delta)/60)
 
     def get_ask_time(self, id):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.openstack_id == id
         )
         data_instance = query.first()
@@ -113,8 +113,8 @@ class Demo():
             database_instance.life_time = 10
             database_instance.image_key = image_key
             database_instance.token = '0'
-            self.database.session.add(database_instance)
-            self.database.session.commit()
+            self.database.add(database_instance)
+            self.database.commit()
 
             new_instance_id = self.provider.create_instance(image)
 
@@ -131,8 +131,8 @@ class Demo():
             )
 
             # Remove the demand
-            self.database.session.delete(database_instance)
-            self.database.session.commit()
+            self.database.delete(database_instance)
+            self.database.commit()
 
             return new_instance_id
 
@@ -165,7 +165,7 @@ class Demo():
                                life_time=None, image_key=None, token=None):
         logging.debug('Insert instance %s', instance_id)
 
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.openstack_id == instance_id
         )
 
@@ -187,8 +187,8 @@ class Demo():
         if token is not None:
             data_instance.token = token
 
-        self.database.session.merge(data_instance)
-        self.database.session.commit()
+        self.database.merge(data_instance)
+        self.database.commit()
         return data_instance
 
     def database_remove_server(self, id):
@@ -201,16 +201,16 @@ class Demo():
             logging.debug('Instance %s not in cloud', id)
 
         # database
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.openstack_id == id
         )
         database_instance = query.first()
         database_instance.status = 'DELETED'
-        self.database.session.merge(database_instance)
-        self.database.session.commit()
+        self.database.merge(database_instance)
+        self.database.commit()
 
     def database_count_active_instance(self, image_key):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.status != 'DELETED',
             Instance.image_key == image_key
         )
@@ -219,7 +219,7 @@ class Demo():
 
     def instance_add_time(self, instance_id, add_time):
 
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.openstack_id == instance_id
         )
         data_instance = query.first()
@@ -234,8 +234,8 @@ class Demo():
             total_time = image['time_max']
 
         data_instance.life_time = total_time
-        self.database.session.merge(data_instance)
-        self.database.session.commit()
+        self.database.merge(data_instance)
+        self.database.commit()
         return data_instance.life_time
     # END DATABASE #
 
@@ -248,7 +248,7 @@ class Demo():
                 raise DemoExceptionInvalidEmail(email)
 
             # User already exist ?
-            query = self.database.session.query(User).filter(
+            query = self.database.query(User).filter(
                 User.email == email
             )
             if query.count() >= 1:
@@ -258,12 +258,12 @@ class Demo():
         user.generate_token()
         user.last_connection = datetime.datetime.now()
 
-        self.database.session.merge(user)
-        self.database.session.commit()
+        self.database.merge(user)
+        self.database.commit()
         return user
 
     def get_user_by_token(self, token):
-        query = self.database.session.query(User).filter(
+        query = self.database.query(User).filter(
             User.token == token
         )
 
@@ -277,13 +277,13 @@ class Demo():
 
         user.last_connection = datetime.datetime.now()
 
-        self.database.session.merge(user)
-        self.database.session.commit()
+        self.database.merge(user)
+        self.database.commit()
         return user
 
     def check_user_own_instance(self, token,
                                 openstack_id, raise_exception=True):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.openstack_id == openstack_id
         )
         instance = query.first()
@@ -295,7 +295,7 @@ class Demo():
             return False
 
     def check_user_own_instance_type(self, token, image_key):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.image_key == image_key,
             Instance.token == token,
             Instance.status != 'DELETED'
@@ -305,7 +305,7 @@ class Demo():
         return False
 
     def get_user_instance_database(self, token):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.token == token,
         ).order_by(desc(Instance.id))
         logging.debug("%s instances for user %s", query.count(), token)
