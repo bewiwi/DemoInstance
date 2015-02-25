@@ -12,8 +12,8 @@ RUN mkdir /opt/demoinstance
 VOLUME /opt/demoinstance
 
 WORKDIR /opt/demoinstance
-ENTRYPOINT pip install -r requirement.txt &&\
-    pip install -r test/requirement.txt &&\
+ENTRYPOINT pip install -r requirements.txt &&\
+    pip install -r test/requirements.txt &&\
     cd /opt/demoinstance/web &&\
     npm install &&\
     bower install --allow-root &&\

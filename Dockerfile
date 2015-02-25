@@ -6,7 +6,7 @@ RUN npm install -g bower grunt-cli
 RUN mkdir /opt/demoinstance 
 COPY ./ /opt/demoinstance
 WORKDIR /opt/demoinstance
-RUN pip install -r requirement.txt
+RUN pip install -r requirements.txt
 WORKDIR /opt/demoinstance/web
 RUN npm install
 RUN bower install --allow-root
