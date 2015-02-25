@@ -3,16 +3,12 @@ import argparse
 from test.DemoTestCase import DemoTestCase
 
 
-def run_unit_test():
-    test_suite = unittest.TestLoader().discover('test/unit')
-    test_runner = unittest.runner.TextTestRunner(verbosity=3)
-    test_runner.run(test_suite)
+def get_unit_test():
+    return unittest.TestLoader().discover('test/unit')
 
 
-def run_functional_test():
-    test_suite = unittest.TestLoader().discover('test/functional')
-    test_runner = unittest.runner.TextTestRunner(verbosity=3)
-    test_runner.run(test_suite)
+def get_functional_test():
+    return unittest.TestLoader().discover('test/functional')
 
 
 if __name__ == '__main__':
@@ -32,7 +28,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     DemoTestCase.config['demo_url'] = args.url
+    test_suite = unittest.TestSuite()
     if args.unit:
-        run_unit_test()
+        test_suite.addTest(get_unit_test())
     if args.functional:
-        run_functional_test()
+        test_suite.addTest(get_functional_test())
+
+    runner = unittest.runner.TextTestRunner(verbosity=3)
+    result = runner.run(test_suite)
+    if not result.wasSuccessful():
+        exit(1)
