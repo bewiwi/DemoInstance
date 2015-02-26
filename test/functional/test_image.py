@@ -1,4 +1,4 @@
-from test.DemoTestCase import DemoTestCase
+from test.demo_test_case import DemoTestCase
 
 
 class ImageTest(DemoTestCase):

@@ -1,5 +1,5 @@
 import pep8
-from test.DemoTestCase import DemoTestCase
+from test.demo_test_case import DemoTestCase
 
 
 class SyntaxTest(DemoTestCase):

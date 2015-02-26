@@ -1,6 +1,6 @@
 import unittest
 import argparse
-from test.DemoTestCase import DemoTestCase
+from test.demo_test_case import DemoTestCase
 
 
 def get_unit_test():

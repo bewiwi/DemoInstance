@@ -1,4 +1,3 @@
-from novaclient.client import Client
 from database import DemoData, Instance, User
 from sqlalchemy import desc
 import logging

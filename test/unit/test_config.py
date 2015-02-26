@@ -1,4 +1,4 @@
-from test.DemoTestCase import DemoTestCase
+from test.demo_test_case import DemoTestCase
 from Demo.demo_config import DemoConfig
 from Demo.demo_exception import DemoExceptionConfigNotFound
 
