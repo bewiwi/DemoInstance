@@ -54,6 +54,9 @@ class Demo():
         )
         self.provider = prov_class(self.config.provider_data)
 
+    def __del__(self):
+        self.database.close()
+
     @staticmethod
     def get_class_name(mod_name):
         output = ""

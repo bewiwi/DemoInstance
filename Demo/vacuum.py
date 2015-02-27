@@ -10,18 +10,19 @@ import logging
 class Vacuum(threading.Thread):
     def __init__(self):
         self.config = DemoConfig()
-        self.demo = Demo(self.config)
-        self.database = self.demo.database
         self.stop = False
         threading.Thread.__init__(self)
 
     def check_old_instance(self):
+        demo = Demo(self.config)
+        database = demo.database
+
         logging.debug('CHECK OLD INSTANCE')
-        query = self.database\
+        query = database\
             .query(Instance)\
             .filter(Instance.status != 'DELETED')
         logging.debug("%s count", query.count())
-        instances = self.demo.provider.get_instances()
+        instances = demo.provider.get_instances()
         for data_instance in query.all():
             destroy_at = data_instance.launched_at\
                         + datetime.timedelta(
@@ -34,7 +35,7 @@ class Vacuum(threading.Thread):
             )
             if destroy_at < datetime.datetime.now():
                 logging.info('%s is to old', data_instance.openstack_id)
-                self.demo.database_remove_server(data_instance.openstack_id)
+                demo.database_remove_server(data_instance.openstack_id)
 
             on_cloud = False
             for id in instances:
@@ -46,8 +47,7 @@ class Vacuum(threading.Thread):
                     '%s is not present on cloud anymore',
                     data_instance.id
                 )
-                self.demo.database_remove_server(data_instance.openstack_id)
-        self.database.close()
+                demo.database_remove_server(data_instance.openstack_id)
 
     def run(self):
         time_between_vacuum = 60
@@ -56,8 +56,6 @@ class Vacuum(threading.Thread):
                 self.check_old_instance()
             except Exception as e:
                 logging.error("Vaccum Raise Execption %s", e.message)
-                self.database.close()
-                raise
             i = 0
             while i < time_between_vacuum:
                 if self.stop:

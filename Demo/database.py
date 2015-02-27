@@ -7,21 +7,27 @@ Base = declarative_base()
 
 
 class DemoData():
-    session = None
+    Session = None
 
     @staticmethod
     def get_session(config):
-        if DemoData.session is not None:
-            return DemoData.session
-        engine = create_engine(config.database_connection, echo=False)
+        if DemoData.Session is not None:
+            return DemoData.Session()
+        connect_args = {}
+        if config.database_connection.startswith('sqlite://'):
+            connect_args = {'check_same_thread': False}
+        engine = create_engine(
+            config.database_connection,
+            echo=False,
+            connect_args=connect_args
+        )
         Base.metadata.create_all(engine)
         Base.metadata.bind = engine
-        Session = sessionmaker(
+        DemoData.Session = sessionmaker(
             bind=engine, autocommit=False,
             autoflush=True, expire_on_commit=True
         )
-        DemoData.session = Session()
-        return DemoData.session
+        return DemoData.Session()
 
 
 class Instance(Base):
