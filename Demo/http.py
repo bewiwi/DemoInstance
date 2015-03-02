@@ -236,7 +236,11 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionInstanceNotFound as e:
             self.send_http_error(404, e.message)
         except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
-            self.send_http_error(401, e.message)
+            if self.config.security_type == 'email':
+                type = 'email'
+            else:
+                type = 'auth'
+            self.send_http_error(401, e.message, type)
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(503, e.message, str(type(e)))
         except Exception as e:
@@ -281,7 +285,11 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(400, e.message)
         except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
-            self.send_http_error(401, e.message)
+            if self.config.security_type == 'email':
+                type = 'email'
+            else:
+                type = 'auth'
+            self.send_http_error(401, e.message, type)
         except Exception as e:
             if self.config.dev:
                 raise
@@ -324,7 +332,11 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionNonUpdatableInstance as e:
             self.send_http_error(400, e.message)
         except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
-            self.send_http_error(401, e.message)
+            if self.config.security_type == 'email':
+                type = 'email'
+            else:
+                type = 'auth'
+            self.send_http_error(401, e.message, type)
         except Exception as e:
             if self.config.dev:
                 raise
@@ -350,7 +362,11 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionInstanceNotFound as e:
             self.send_http_error(404, e.message)
         except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
-            self.send_http_error(401, e.message)
+            if self.config.security_type == 'email':
+                type = 'email'
+            else:
+                type = 'auth'
+            self.send_http_error(401, e.message, type)
         except Exception as e:
             if self.config.dev:
                 raise
