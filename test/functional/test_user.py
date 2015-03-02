@@ -26,4 +26,4 @@ class UserTest(DemoTestCase):
         rep = self.rep_to_dict(r.text)
 
         self.assertEqual(200, r.status_code)
-        self.assertEqual('admin@fake.com', rep['email'])
+        self.assertEqual('admin', rep['login'])

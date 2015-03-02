@@ -1,6 +1,8 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 import smtplib
 import logging
+import re
+from demo_exception import DemoExceptionInvalidEmail
 
 
 class DemoMail():
@@ -27,6 +29,10 @@ class DemoMail():
 
     def send_token_mail(self, mail, token, url):
         logging.debug('Send token mail to %s with token %s', mail, token)
+        # Email is valid
+        if not DemoMail.check_email(mail):
+            raise DemoExceptionInvalidEmail(mail)
+
         header = str('To:' + mail + '\n' +
                      'From: ' + self.from_mail + '\n' +
                      'Subject:testing \n')
@@ -37,7 +43,15 @@ class DemoMail():
         smtp_server.close()
 
     def get_token_mail_body(self, token, url):
-        return "Bonjour\n" \
-               "Voici le lien qui vous permettra" +\
-               "d'accéder à vos instances de démonstrations\n" \
-               + url + "#/login/" + token
+        body = "Bonjour\n" \
+               "Voici le lien qui vous permettra"\
+               "d'accéder à vos instances de démonstrations\n"\
+               + url + "#/login/" + token.encode("utf-8")
+        return body
+
+    @staticmethod
+    def check_email(email):
+        pattern = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+        if re.match(pattern, email):
+            return True
+        return False

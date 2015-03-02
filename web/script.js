@@ -7,10 +7,13 @@
             });
 
             $rootScope.user = {};
-            $rootScope.getUser = function() {
+            $rootScope.getUser = function(callback) {
                 $http.get('/api/user').
                     success(function(data) {
                         $rootScope.user = data;
+                        if (! angular.isUndefined(callback)){
+                            callback();
+                        }
                     });
             };
 
@@ -38,9 +41,13 @@
             })
 
             .when('/login/:token', {
-                controller : function($routeParams, $cookies, $location){
+                controller : function($routeParams, $cookies, $location, $rootScope){
                     $cookies.token = $routeParams.token;
-                    $location.path('/');
+                    $rootScope.getUser(
+                        function($location){
+                            $location.path('/');
+                        }
+                    );
                 },
                 template : ''
             })

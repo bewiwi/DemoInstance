@@ -4,7 +4,7 @@ demoApp.controller('loginMailController', function($scope, $http) {
         console.log(error)
     };
 
-    $scope.user = { 'email': '' };
+    $scope.user = { 'login': '' };
 
     $scope.addUser = function () {
         $http.put('/api/user',$scope.user).
@@ -22,7 +22,7 @@ demoApp.controller('loginAuthController', function($scope, $http, $location, $ro
         console.log(error)
     };
 
-    $scope.user = { 'user': '', 'password':'' };
+    $scope.user = { 'login': '', 'password':'' };
 
     $scope.connect = function () {
         $http.post('/api/connect',$scope.user).

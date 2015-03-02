@@ -95,7 +95,7 @@ class Handler(BaseHTTPRequestHandler, object):
     def get_user(self):
         info = {
             'token': self.user.token,
-            'email': self.user.email
+            'login': self.user.login,
         }
         self.headers_to_send['Content-type'] = 'application/json'
         self.send_all_header(200)
@@ -109,7 +109,7 @@ class Handler(BaseHTTPRequestHandler, object):
         info = []
         for instance in instances:
             info.append({
-                'id': instance.openstack_id,
+                'id': instance.provider_id,
                 'status': instance.status,
                 'type': instance.image_key,
                 'launched_at': str(instance.launched_at),
@@ -261,7 +261,7 @@ class Handler(BaseHTTPRequestHandler, object):
                     url = 'http://'+self.headers.getheader('Host')+'/'
                     email = put_vars['email']
                     user = self.demo.create_user(email)
-                    self.demo.mail.send_token_mail(user.email, user.token, url)
+                    self.demo.mail.send_token_mail(user.login, user.token, url)
                     self.send_all_header()
                     return
                 else:
@@ -350,12 +350,12 @@ class Handler(BaseHTTPRequestHandler, object):
 
             match = re.match("/api/instance/(.*)", self.path)
             if match:
-                openstack_id = match.group(1)
+                provider_id = match.group(1)
                 self.demo.check_user_own_instance(
                     self.user.token,
-                    openstack_id
+                    provider_id
                 )
-                self.demo.database_remove_server(openstack_id)
+                self.demo.database_remove_server(provider_id)
                 self.send_http_message(200, 'ok')
                 return
             self.send_http_error(404, 'No action')

@@ -33,7 +33,7 @@ class DemoData():
 class Instance(Base):
     __tablename__ = 'instance'
     id = Column(types.Integer, primary_key=True)
-    openstack_id = Column(String(255), unique=True)
+    provider_id = Column(String(255), unique=True)
     name = Column(String(255))
     image_key = Column(String(255))
     status = Column(String(255), nullable=False)
@@ -45,7 +45,7 @@ class Instance(Base):
 class User(Base):
     __tablename__ = 'user'
     token = Column(String(255), primary_key=True)
-    email = Column(String(255), unique=True)
+    login = Column(String(255), unique=True)
     last_connection = Column(types.DATETIME)
 
     def generate_token(self):

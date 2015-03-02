@@ -5,7 +5,6 @@ import urllib2
 import datetime
 from demo_exception import *
 from demo_mail import DemoMail
-import re
 import os
 
 
@@ -67,7 +66,7 @@ class Demo():
 
     def get_type(self, instance_id):
         query = self.database.query(Instance).filter(
-            Instance.openstack_id == instance_id
+            Instance.provider_id == instance_id
         )
         data_instance = query.first()
         return data_instance.image_key
@@ -79,7 +78,7 @@ class Demo():
 
     def get_life_time(self, id):
         query = self.database.query(Instance).filter(
-            Instance.openstack_id == id
+            Instance.provider_id == id
         )
         data_instance = query.first()
         delta = (
@@ -92,7 +91,7 @@ class Demo():
 
     def get_ask_time(self, id):
         query = self.database.query(Instance).filter(
-            Instance.openstack_id == id
+            Instance.provider_id == id
         )
         data_instance = query.first()
         return data_instance.life_time
@@ -168,7 +167,7 @@ class Demo():
         logging.debug('Insert instance %s', instance_id)
 
         query = self.database.query(Instance).filter(
-            Instance.openstack_id == instance_id
+            Instance.provider_id == instance_id
         )
 
         if query.count() > 0:
@@ -177,7 +176,7 @@ class Demo():
             data_instance = Instance()
             data_instance.launched_at = datetime.datetime.now()
 
-        data_instance.openstack_id = instance_id
+        data_instance.provider_id = instance_id
         data_instance.status = status
 
         if image_key:
@@ -204,7 +203,7 @@ class Demo():
 
         # database
         query = self.database.query(Instance).filter(
-            Instance.openstack_id == id
+            Instance.provider_id == id
         )
         database_instance = query.first()
         database_instance.status = 'DELETED'
@@ -222,7 +221,7 @@ class Demo():
     def instance_add_time(self, instance_id, add_time):
 
         query = self.database.query(Instance).filter(
-            Instance.openstack_id == instance_id
+            Instance.provider_id == instance_id
         )
         data_instance = query.first()
 
@@ -242,21 +241,17 @@ class Demo():
     # END DATABASE #
 
     # USER #
-    def create_user(self, email=None):
+    def create_user(self, login=None):
         user = User()
-        if email is not None:
-            # Email is valid
-            if not self.check_email(email):
-                raise DemoExceptionInvalidEmail(email)
-
+        if login is not None:
             # User already exist ?
             query = self.database.query(User).filter(
-                User.email == email
+                User.login == login
             )
             if query.count() >= 1:
                 return query.first()
 
-        user.email = email
+        user.login = login
         user.generate_token()
         user.last_connection = datetime.datetime.now()
 
@@ -284,9 +279,9 @@ class Demo():
         return user
 
     def check_user_own_instance(self, token,
-                                openstack_id, raise_exception=True):
+                                provider_id, raise_exception=True):
         query = self.database.query(Instance).filter(
-            Instance.openstack_id == openstack_id
+            Instance.provider_id == provider_id
         )
         instance = query.first()
         if instance is not None and instance.token == token:
@@ -318,12 +313,6 @@ class Demo():
         ip = self.provider.get_instance_ip(instance_id)
         param = param.replace("%ip%", ip)
         return param
-
-    def check_email(self, email):
-        pattern = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-        if re.match(pattern, email):
-            return True
-        return False
 
     # Python 2.6 hook
     def _get_total_seconds(self, td):
