@@ -295,7 +295,8 @@ class Handler(BaseHTTPRequestHandler, object):
 
             # Public
             if self.path == '/api/connect':
-                if 'user' in put_vars and 'password' in put_vars and self.demo.auth:
+                if 'user' in put_vars and 'password' in put_vars and\
+                        self.demo.auth:
                     self.connect(put_vars['user'], put_vars['password'])
                     return
                 self.send_http_error(404, 'No action')

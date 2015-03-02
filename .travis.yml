@@ -7,6 +7,6 @@ install:
     - pip install -r ./test/requirements.txt
 
 script:
-    - python demo.py -c test/samples/config/config-fake.ini &
+    - python demo.py -c test/samples/config/config-fake.ini > /dev/null 2>&1 &
     - sleep 2
     - python test.py -u -f -U http://127.0.0.1:8080
