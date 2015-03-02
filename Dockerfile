@@ -1,6 +1,8 @@
 FROM ubuntu:14.04
 MAINTAINER Loïc PORTE
-RUN apt-get update && apt-get install git python python-dev python-pip mysql-client libmysqlclient-dev nodejs npm -y
+RUN apt-get update && apt-get install git python python-dev\
+ python-pip mysql-client libmysqlclient-dev nodejs npm\
+  libldap2-dev libsasl2-dev libssl-dev -y
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN npm install -g bower grunt-cli
 RUN mkdir /opt/demoinstance 
