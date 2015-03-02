@@ -29,6 +29,11 @@ class DemoConfig():
             )
         self.provider = self.config.get("DEFAULT", "provider")
 
+        if self.config.has_option("DEFAULT", "dev"):
+            self.dev = self.config.getboolean("DEFAULT", "dev")
+        else:
+            self.dev = False
+
         # HTTP
         self.http_port = self.config.getint("HTTP", "port")
 

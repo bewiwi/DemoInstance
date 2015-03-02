@@ -43,6 +43,7 @@ security_type=open
 | log_level | No | list of value here https://docs.python.org/2/library/logging.html#logging-levels |
 | security_type | No | Values "open" (public), "email" (check email before access), "auth_ldap" or "auth_fake" (test only) |
 | provider | No | Values "openstack" or "fake" (test only) |
+| dev | Yes | Default to False, raise http exception |
 
 ### MAIL
 ```

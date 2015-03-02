@@ -240,6 +240,8 @@ class Handler(BaseHTTPRequestHandler, object):
         except DemoExceptionToMuchInstanceImage as e:
             self.send_http_error(503, e.message, str(type(e)))
         except Exception as e:
+            if self.config.dev:
+                raise
             self.send_http_error(500, e.message, str(type(e)))
         return
 
@@ -281,6 +283,8 @@ class Handler(BaseHTTPRequestHandler, object):
         except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
             self.send_http_error(401, e.message)
         except Exception as e:
+            if self.config.dev:
+                raise
             self.send_http_error(500, e.message, str(type(e)))
         return
 
@@ -291,7 +295,7 @@ class Handler(BaseHTTPRequestHandler, object):
 
             # Public
             if self.path == '/api/connect':
-                if 'user' in put_vars and 'password' in put_vars:
+                if 'user' in put_vars and 'password' in put_vars and self.demo.auth:
                     self.connect(put_vars['user'], put_vars['password'])
                     return
                 self.send_http_error(404, 'No action')
@@ -321,6 +325,8 @@ class Handler(BaseHTTPRequestHandler, object):
         except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
             self.send_http_error(401, e.message)
         except Exception as e:
+            if self.config.dev:
+                raise
             self.send_http_error(500, e.message)
         return
 
@@ -345,6 +351,8 @@ class Handler(BaseHTTPRequestHandler, object):
         except (DemoExceptionErrorAuth, DemoExceptionInvalidOwner) as e:
             self.send_http_error(401, e.message)
         except Exception as e:
+            if self.config.dev:
+                raise
             self.send_http_error(500, e.message)
         return
 
