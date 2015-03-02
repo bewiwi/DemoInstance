@@ -1,4 +1,3 @@
-from novaclient.client import Client
 from database import DemoData, Instance, User
 from sqlalchemy import desc
 import logging
@@ -13,14 +12,9 @@ import os
 class Demo():
     def __init__(self, config):
         self.config = config
-        self.database = DemoData(self.config)
-        self.nova = Client(
-            2, config.user, config.password,
-            config.tenant, config.url,
-            region_name=config.region
-        )
+        self.database = DemoData.get_session(self.config)
 
-        #Security Email
+        # Security Email
         if self.config.security_type == "email":
             self.mail = DemoMail(
                 host=self.config.mail_host,
@@ -33,15 +27,35 @@ class Demo():
         else:
             self.mail = None
 
-        #Security Auth
+        # Security Auth
         if self.config.security_type.startswith('auth_'):
             path = os.path.join(os.path.dirname(__file__), "auth")
             mod_name = self.config.security_type
-            auth_mod = __import__('auth.'+mod_name, globals(), locals(), fromlist=[mod_name])
+            auth_mod = __import__(
+                'auth.'+mod_name,
+                globals(), locals(),
+                fromlist=[mod_name]
+            )
             auth_class = getattr(auth_mod, Demo.get_class_name(mod_name))
             self.auth = auth_class(self.config.auth)
         else:
             self.auth = False
+
+        # Provider
+        path = os.path.join(os.path.dirname(__file__), "provider")
+        prov_name = 'prov_'+self.config.provider
+        prov_mod = __import__(
+            'provider.'+prov_name,
+            globals(), locals(),
+            fromlist=[prov_name]
+        )
+        prov_class = getattr(
+            prov_mod, Demo.get_class_name(self.config.provider)
+        )
+        self.provider = prov_class(self.config.provider_data)
+
+    def __del__(self):
+        self.database.close()
 
     @staticmethod
     def get_class_name(mod_name):
@@ -51,157 +65,110 @@ class Demo():
             output += word.title()
         return output
 
-    def get_instance_info(self, instance):
-        return instance._info.copy()
-
-    def get_instance_ip(self,instance):
-        info = self.get_instance_info(instance)
-        interfaces = info['addresses'].keys()
-        return info['addresses'][interfaces[0]][0]['addr']
-
-    def get_instance_type(self, instance):
-        info = self.get_instance_info(instance)
-        query = self.database.session.query(Instance).filter(
-            Instance.openstack_id == info['id']
+    def get_type(self, instance_id):
+        query = self.database.query(Instance).filter(
+            Instance.openstack_id == instance_id
         )
         data_instance = query.first()
         return data_instance.image_key
 
-    def get_instance_soft_address(self,instance):
+    def get_soft_address(self, instance):
         return self.placeholder_apply(
-            self.config.images[self.get_instance_type(instance)].instance_soft_url,
+            self.config.images[self.get_type(instance)]['soft_url'],
             instance)
 
-    def get_instance_life_time(self, instance):
-        info = self.get_instance_info(instance)
-        query = self.database.session.query(Instance).filter(
-            Instance.openstack_id == info['id']
+    def get_life_time(self, id):
+        query = self.database.query(Instance).filter(
+            Instance.openstack_id == id
         )
         data_instance = query.first()
         delta = (
-            data_instance.launched_at
-            + datetime.timedelta(0, 0, 0, 0, data_instance.life_time)
+            data_instance.launched_at +
+            datetime.timedelta(
+                0, 0, 0, 0, data_instance.life_time
+            )
         ) - datetime.datetime.now()
         return int(self._get_total_seconds(delta)/60)
 
-    def get_instance_ask_time(self, instance):
-        info = self.get_instance_info(instance)
-        query = self.database.session.query(Instance).filter(
-            Instance.openstack_id == info['id']
+    def get_ask_time(self, id):
+        query = self.database.query(Instance).filter(
+            Instance.openstack_id == id
         )
         data_instance = query.first()
         return data_instance.life_time
 
-    def get_instances(self):
-        return self.nova.servers.list()
-
-    def get_instance(self, id):
-        for instance in self.get_instances():
-            if id == self.get_instance_info(instance)['id']:
-                return instance
-        return False
-
-    def instance_is_up(self, instance):
-        logging.info('Check started %s', instance)
-        info = self.get_instance_info(instance)
-        if info['status'] == 'ACTIVE' \
-                and info['OS-EXT-STS:task_state'] is None:
-            self.database_insert_server(instance, 'UP')
-            return True
-        else:
-            return False
-
     def create_instance(self, image_key, time, token):
         logging.info("Create Instance")
-        logging.debug("Image config : %s", self.config.images[image_key].image_id)
-        matches = self.nova.images.findall(name=self.config.images[image_key].image_id)
-        if len(matches) == 0:
-            #If no match name check id
-            image = self.nova.images.find(id=self.config.images[image_key].image_id)
+        image = self.config.images[image_key]
+        active_instance = self.database_count_active_instance(image_key)
+
+        if self.check_user_own_instance_type(token, image_key):
+            raise DemoExceptionUserAlreadyHaveInstanceImage()
+        elif 'max_instance' in image\
+                and active_instance >= image['max_instance']:
+            raise DemoExceptionToMuchInstanceImage()
         else:
-            #Get first name matching
-            image = matches[0]
-        logging.debug("Image id : %s", image.id)
-        logging.debug("Flavor config : %s", self.config.images[image_key].flavor_id)
-
-        matches = self.nova.flavors.findall(name=self.config.images[image_key].flavor_id)
-        if len(matches) == 0:
-            flavor = self.nova.flavors.find(id=self.config.images[image_key].flavor_id)
-        else:
-            flavor = matches[0]
-
-        logging.debug("Flavor id : %s", flavor.id)
-
-        raise_exception = False
-        if not self.check_user_own_instance_type(token, image_key):
-            #Add a demand
+            # Add a demand
             database_instance = Instance()
             database_instance.status = 'ASK'
             database_instance.launched_at = datetime.datetime.now()
             database_instance.life_time = 10
             database_instance.image_key = image_key
             database_instance.token = '0'
-            self.database.session.add(database_instance)
-            self.database.session.commit()
+            self.database.add(database_instance)
+            self.database.commit()
 
-            if self.database_count_active_instance(image_key) <= self.config.images[image_key].max_instance:
-                    new_instance = self.nova.servers.create(
-                        self.config.images[image_key].instance_prefix + 'test',
-                        image.id,
-                        flavor.id,
-                        userdata=self.config.images[image_key].user_data
-                    )
-                    life_time = self.config.images[image_key].instance_time
-                    if time is not None and self.config.images[image_key].instance_time_max is not None:
-                        #Check the defined time is good or hack attempt
-                        if time <= self.config.images[image_key].instance_time_max:
-                            life_time = time
-                        else:
-                            raise_exception = DemoExceptionInvalidImageTime(time)
-            else:
-                raise_exception = DemoExceptionToMuchInstanceImage()
-        else:
-            raise_exception = DemoExceptionUserAlreadyHaveInstanceImage()
+            new_instance_id = self.provider.create_instance(image)
 
-        if not raise_exception:
-            #No Exception go create instance
-            self.database_insert_server(new_instance, status='CREATED',
-                                        life_time=life_time,
-                                        image_key=image_key, token=token)
+            # If more than max go to max
+            life_time = image['time_default']
+            if time is not None and 'time_max' in image and\
+                    time <= image['time_max']:
+                life_time = time
 
-        #Remove the demand
-        self.database.session.delete(database_instance)
-        self.database.session.commit()
+            self.database_insert_server(
+                new_instance_id, status='CREATED',
+                life_time=life_time,
+                image_key=image_key, token=token
+            )
 
-        if raise_exception:
-            raise raise_exception
+            # Remove the demand
+            self.database.delete(database_instance)
+            self.database.commit()
 
-        return self.get_instance_info(new_instance)['id']
+            return new_instance_id
 
-    def check_system_up(self, instance):
-        ip = self.get_instance_ip(instance)
+    def instance_is_up(self, instance_id):
+        if self.provider.instance_is_up(instance_id):
+            self.database_insert_server(instance_id, 'UP')
+            return True
+        return False
 
+    def check_system_up(self, instance_id):
+        image = self.config.images[self.get_type(instance_id)]
+        if image['check_url'] is None:
+            return True
         url = self.placeholder_apply(
-            self.config.images[self.get_instance_type(instance)].instance_check_url,
-            instance)
-
+            image['check_url'],
+            instance_id
+        )
         try:
             code = urllib2.urlopen(url).getcode()
         except:
             return False
 
         if code == 200:
-            self.database_insert_server(instance, 'DONE')
+            self.database_insert_server(instance_id, 'DONE')
             return True
         return False
 
-    ### DATABASE ###
-    def database_insert_server(self, instance, status=None, life_time=None,image_key=None, token=None):
-        info = self.get_instance_info(instance)
-        logging.debug('Insert instance %s', info['id'])
+    # DATABASE #
+    def database_insert_server(self, instance_id, status=None,
+                               life_time=None, image_key=None, token=None):
+        logging.debug('Insert instance %s', instance_id)
 
-        query = self.database.session.query(Instance).filter(
-            Instance.openstack_id == info['id']
+        query = self.database.query(Instance).filter(
+            Instance.openstack_id == instance_id
         )
 
         if query.count() > 0:
@@ -210,11 +177,8 @@ class Demo():
             data_instance = Instance()
             data_instance.launched_at = datetime.datetime.now()
 
-        data_instance.openstack_id = info['id']
+        data_instance.openstack_id = instance_id
         data_instance.status = status
-
-        if info.has_key('name'):
-            data_instance.name = info['name']
 
         if image_key:
             data_instance.image_key = image_key
@@ -225,62 +189,68 @@ class Demo():
         if token is not None:
             data_instance.token = token
 
-        self.database.session.merge(data_instance)
-        self.database.session.commit()
+        self.database.merge(data_instance)
+        self.database.commit()
         return data_instance
 
-    def database_remove_server(self, openstack_id):
-        logging.info('DELETE instance %s', openstack_id)
+    def database_remove_server(self, id):
+        logging.info('DELETE instance %s', id)
 
         # nova
-        instance = self.get_instance(openstack_id)
-        if instance:
-            instance.delete()
+        if self.provider.instance_is_up(id):
+            self.provider.remove_instance(id)
         else:
-            logging.debug('Instance %s not in cloud', openstack_id)
+            logging.debug('Instance %s not in cloud', id)
 
-        #database
-        query = self.database.session.query(Instance).filter(
-            Instance.openstack_id == openstack_id
+        # database
+        query = self.database.query(Instance).filter(
+            Instance.openstack_id == id
         )
         database_instance = query.first()
         database_instance.status = 'DELETED'
-        self.database.session.merge(database_instance)
-        self.database.session.commit()
+        self.database.merge(database_instance)
+        self.database.commit()
 
     def database_count_active_instance(self, image_key):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.status != 'DELETED',
             Instance.image_key == image_key
         )
-        logging.debug('%s actives instances for %s', query.count(),image_key)
+        logging.debug('%s actives instances for %s', query.count(), image_key)
         return query.count()
 
-    def instance_add_time(self, openstack_id, add_time):
-        query = self.database.session.query(Instance).filter(
-            Instance.openstack_id == openstack_id
+    def instance_add_time(self, instance_id, add_time):
+
+        query = self.database.query(Instance).filter(
+            Instance.openstack_id == instance_id
         )
         data_instance = query.first()
+
+        image = self.config.images[data_instance.image_key]
+        if 'time_max' not in image:
+            raise DemoExceptionNonUpdatableInstance
+
         total_time = data_instance.life_time + add_time
-        if total_time > self.config.images[data_instance.image_key].instance_time_max:
-            total_time = self.config.images[data_instance.image_key].instance_time_max
+
+        if total_time > image['time_max']:
+            total_time = image['time_max']
 
         data_instance.life_time = total_time
-        self.database.session.merge(data_instance)
-        self.database.session.commit()
+        self.database.merge(data_instance)
+        self.database.commit()
         return data_instance.life_time
-    ### END DATABASE ###
+    # END DATABASE #
 
-    ### USER ###
+    # USER #
     def create_user(self, email=None):
         user = User()
         if email is not None:
-            #Email is valid
+            # Email is valid
             if not self.check_email(email):
                 raise DemoExceptionInvalidEmail(email)
 
-            #User already exist ?
-            query = self.database.session.query(User).filter(
+            # User already exist ?
+            query = self.database.query(User).filter(
                 User.email == email
             )
             if query.count() >= 1:
@@ -290,12 +260,12 @@ class Demo():
         user.generate_token()
         user.last_connection = datetime.datetime.now()
 
-        self.database.session.merge(user)
-        self.database.session.commit()
+        self.database.merge(user)
+        self.database.commit()
         return user
 
     def get_user_by_token(self, token):
-        query = self.database.session.query(User).filter(
+        query = self.database.query(User).filter(
             User.token == token
         )
 
@@ -309,12 +279,13 @@ class Demo():
 
         user.last_connection = datetime.datetime.now()
 
-        self.database.session.merge(user)
-        self.database.session.commit()
+        self.database.merge(user)
+        self.database.commit()
         return user
 
-    def check_user_own_instance(self, token, openstack_id, raise_exception = True):
-        query = self.database.session.query(Instance).filter(
+    def check_user_own_instance(self, token,
+                                openstack_id, raise_exception=True):
+        query = self.database.query(Instance).filter(
             Instance.openstack_id == openstack_id
         )
         instance = query.first()
@@ -326,7 +297,7 @@ class Demo():
             return False
 
     def check_user_own_instance_type(self, token, image_key):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.image_key == image_key,
             Instance.token == token,
             Instance.status != 'DELETED'
@@ -336,15 +307,16 @@ class Demo():
         return False
 
     def get_user_instance_database(self, token):
-        query = self.database.session.query(Instance).filter(
+        query = self.database.query(Instance).filter(
             Instance.token == token,
         ).order_by(desc(Instance.id))
         logging.debug("%s instances for user %s", query.count(), token)
         return query.all()
-    ### END USER ###
+    # END USER #
 
-    def placeholder_apply(self, param, instance):
-        param = param.replace("%ip%", self.get_instance_ip(instance))
+    def placeholder_apply(self, param, instance_id):
+        ip = self.provider.get_instance_ip(instance_id)
+        param = param.replace("%ip%", ip)
         return param
 
     def check_email(self, email):
@@ -353,6 +325,10 @@ class Demo():
             return True
         return False
 
-    #Python 2.6 hook
+    # Python 2.6 hook
     def _get_total_seconds(self, td):
-        return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 1e6) / 1e6
+        return (
+                   td.microseconds +
+                   (td.seconds + td.days * 24 * 3600) *
+                   1e6
+               ) / 1e6

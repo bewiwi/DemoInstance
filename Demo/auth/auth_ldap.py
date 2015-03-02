@@ -17,7 +17,11 @@ class AuthLdap(DemoAuth):
             ld = ldap.initialize(self.host)
             ld.simple_bind_s(self.bind_user, self.bind_password)
             search_filter = self.login_attribute+"="+user
-            res = ld.search_s(self.search_base, ldap.SCOPE_SUBTREE, search_filter)
+            res = ld.search_s(
+                self.search_base,
+                ldap.SCOPE_SUBTREE,
+                search_filter
+            )
             ld.unbind_s()
         except ldap.INVALID_CREDENTIALS as e:
             return False

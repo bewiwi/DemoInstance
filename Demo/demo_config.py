@@ -1,37 +1,46 @@
 import ConfigParser
+import os
 from copy import copy
 from demo_exception import *
+
 IMAGE_CONF_PREFIX = 'IMAGE_'
+IMAGE_INT_PARAM = [
+    'time_default', 'max_instance', 'time_max', 'time_default'
+]
 
 
 class DemoConfig():
-    def __init__(self,config_file='./config.ini'):
-        self.config = ConfigParser.ConfigParser()
-        self.config.read(config_file)
+    config_file = './config.ini'
 
-        #Default
+    def __init__(self):
+        if not os.path.isfile(DemoConfig.config_file):
+            raise DemoExceptionConfigNotFound()
+        self.config = ConfigParser.ConfigParser()
+        self.config.read(DemoConfig.config_file)
+
+        # Default
         self.log_level = self.config.get("DEFAULT", "log_level")
         self.security_type = self.config.get("DEFAULT", "security_type")
-        if self.security_type not in ('open','email') and not self.security_type.startswith('auth_'):
-            raise DemoExceptionBadConfigValue('security_type', self.security_type)
+        if self.security_type not in ('open', 'email')\
+                and not self.security_type.startswith('auth_'):
+            raise DemoExceptionBadConfigValue(
+                'security_type',
+                self.security_type
+            )
+        self.provider = self.config.get("DEFAULT", "provider")
 
-        #Openstack
-        self.user = self.config.get("OPENSTACK", "user")
-        self.password = self.config.get("OPENSTACK", "password")
-        self.tenant = self.config.get("OPENSTACK", "tenant")
-        self.url = self.config.get("OPENSTACK", "url")
-        if self.config.has_option("OPENSTACK", "region"):
-            self.region = self.config.get("OPENSTACK", "region")
+        if self.config.has_option("DEFAULT", "dev"):
+            self.dev = self.config.getboolean("DEFAULT", "dev")
         else:
-            self.region = None
+            self.dev = False
 
-        #HTTP
+        # HTTP
         self.http_port = self.config.getint("HTTP", "port")
 
-        #Database
+        # Database
         self.database_connection = self.config.get("DATABASE", "connection")
 
-        #EMAIL CONF
+        # EMAIL CONF
         if self.security_type == 'email':
             self.mail_host = self.config.get("MAIL", "host")
             if self.config.has_option("MAIL", "port"):
@@ -59,87 +68,51 @@ class DemoConfig():
             else:
                 self.mail_tls = False
 
-        #Auth Conf
+        # Auth Conf
         if self.security_type.startswith('auth_'):
             self.auth = {}
-            if self.config.has_section(self.security_type.upper()):
-                for name, value in self.config.items(self.security_type.upper()):
+            section = self.security_type.upper()
+            if self.config.has_section(section):
+                for name, value in self.config.items(section):
                     self.auth[name] = value
 
-        #IMAGE CONF
+        # Prov Conf
+        self.provider_data = {}
+        section = 'PROV_'+self.provider.upper()
+        if self.config.has_section(section):
+            for name, value in self.config.items(section):
+                self.provider_data[name] = value
+
+        # IMAGE CONF
         self.images = {}
         template_image = self.get_image_by_section('IMAGE')
         for section in self.config.sections():
             if not section.startswith(IMAGE_CONF_PREFIX):
                 continue
-            image = self.get_image_by_section(section, template_image=template_image)
+            image = self.get_image_by_section(
+                section,
+                template_image=template_image
+            )
             key_name = section[len(IMAGE_CONF_PREFIX):]
-            image.check()
+            self.check_image(image)
             self.images[key_name] = image
 
     def get_image_by_section(self, section, template_image=None):
         if template_image is None:
-            image = DemoConfigImage()
+            image = {}
         else:
             image = copy(template_image)
-        if self.config.has_option(section, "image_id"):
-            image.image_id = self.config.get(section, "image_id")
-        if self.config.has_option(section, "name"):
-            image.name = self.config.get(section, "name")
-        if self.config.has_option(section, "desc"):
-            image.desc = self.config.get(section, "desc")
-        if self.config.has_option(section, 'img'):
-            image.img = self.config.get(section, 'img')
-        if self.config.has_option(section, 'info'):
-            image.info = self.config.get(section, 'info')
-        if self.config.has_option(section, "flavor_id"):
-            image.flavor_id = self.config.get(section, "flavor_id")
-        if self.config.has_option(section, "prefix"):
-            image.instance_prefix = self.config.get(section, "prefix")
-        if self.config.has_option(section, "check_url"):
-            image.instance_check_url = self.config.get(section, "check_url")
-        if self.config.has_option(section, "soft_url"):
-            image.instance_soft_url = self.config.get(section, "soft_url")
-        if self.config.has_option(section, "time_default"):
-            image.instance_time = self.config.getint(section, "time_default")
-        if self.config.has_option(section, "time_max"):
-            image.instance_time_max = self.config.getint(section, "time_max")
-        if self.config.has_option(section, "max_instance"):
-            image.max_instance = self.config.getint(section, "max_instance")
-        if self.config.has_option(section, "user_data"):
-            image.user_data = self.config.get(section, "user_data")
+        for name, value in self.config.items(section):
+            if name in IMAGE_INT_PARAM:
+                value = int(value)
+            image[name] = value
         return image
 
-
-class DemoConfigImage():
-    def __init__(self):
-        self.image_id = None
-        self.flavor_id = None
-        self.instance_prefix = None
-        self.instance_check_url = None
-        self.instance_soft_url = None
-        self.instance_time = None
-        self.instance_time_max = None
-        self.max_instance = None
-        self.name = None
-        self.desc = None
-        self.info = None
-        self.img = None
-        self.user_data = None
-
-    def check(self):
-        if self.image_id is None:
-            raise DemoExceptionInvalidImage('image_id')
-        if self.flavor_id is None:
-            raise DemoExceptionInvalidImage('flavor_id')
-        if self.instance_prefix is None:
-            raise DemoExceptionInvalidImage('instance_prefix')
-        if self.instance_check_url is None:
-            raise DemoExceptionInvalidImage('instance_check_url')
-        if self.instance_soft_url is None:
-            raise DemoExceptionInvalidImage('instance_soft_url')
-        if self.instance_time is None:
-            raise DemoExceptionInvalidImage('instance_time')
-        if self.max_instance is None:
-            raise DemoExceptionInvalidImage('max_instance')
+    def check_image(self, image):
+        if 'name' not in image:
+            raise DemoExceptionInvalidImage('name')
+        if 'soft_url' not in image:
+            raise DemoExceptionInvalidImage('soft_url')
+        if 'time_default' not in image:
+            raise DemoExceptionInvalidImage('time_default')
         return True

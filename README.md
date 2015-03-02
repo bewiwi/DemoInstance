@@ -41,7 +41,9 @@ security_type=open
 | Argument | Optional | Description |
 | -------- | -------- | -------- |
 | log_level | No | list of value here https://docs.python.org/2/library/logging.html#logging-levels |
-| security_type | No | Values "open" (public), "email" (check email before access) or "auth_ldap" |
+| security_type | No | Values "open" (public), "email" (check email before access), "auth_ldap" or "auth_fake" (test only) |
+| provider | No | Values "openstack" or "fake" (test only) |
+| dev | Yes | Default to False, raise http exception |
 
 ### MAIL
 ```
@@ -62,15 +64,18 @@ tls=yes
 | from | Yes | From mail default demoinstance@localhost |
 | tls | Yes | SMTP is tls default no |
 
-### LDAP
+### AUTH_LDAP
+If you use **security_type = auth_ldap**
+
 ```
+[AUTH_LDAP]
 host=ldap://ldapOrActiveDirectoyHostname
 bind_user=cn=read,OU=Users,dc=mydomain,dc=local
 bind_password=readpassword
 search_base=OU=Users,dc=abc-objectif,dc=local
 login_attribute=sAMAccountName
 email_attribute=mail
-``
+```
 | Argument | Optional | Description |
 | -------- | -------- | -------- |
 | host | No | Ldap Host |
@@ -80,9 +85,11 @@ email_attribute=mail
 | login_attribute | Yes | Ldap attribute to use to login |
 | email_attribute | Yes | Ldap attribute of email |
 
-### OPENSTACK
+### PROV_OPENSTACK
+If you use **provider = openstack**
+
 ```
-[OPENSTACK]
+[PROV_OPENSTACK]
 user=user
 password=password
 tenant=project
@@ -116,11 +123,13 @@ Argument|Optional|Description
 --------|--------|--------
 connection |No|SQLAlchemy connection string of database
 
-Only tested with MySQL
+Only tested with MySQL and SQLite
 
 ### IMAGE
 [IMAGE] section is the template of any [IMAGE\_].  
-You can define in this section variable shared with all [IMAGE\_]. The [IMAGE] section do not define a runnable image only section with [IMAGE\__ImageName_] format define runnable image
+You can define in this section variable shared with all [IMAGE\_]. The [IMAGE] section do not define a runnable image, only section with [IMAGE\__ImageName_] format define runnable image.
+
+Parameter in this section depends on which provider you are using. Moreover some parameters are used by DemoInstance itself
 
 ##### config
 Argument|Optional|Description
@@ -130,13 +139,19 @@ desc |No|Little descrition like "This app is so cooooooool"
 info |No|info display after the creation like : "Login/Password are\<br />test/test""
 time_default |No|Default instance life time in minute
 time_max=80 |Yes|Max instance time life (activate time selection for user)
-img |Yes|url of picture. Can be in /instance_image or external link
-image_id |No| Openstack image id or name
-flavor_id |No|Openstack flavor id or name
-prefix |No|Openstack prefix name 
 check_url |No|url to call to check if app is ready (%ip% is a placeholder with instance address)
 soft_url |No|url of the app to redirect the user
 max_instance |No|max number of instance
+img |Yes|url of picture. Can be in /instance_image or external link
+
+##### Openstack image parameter
+If you use **provider = openstack** you must / can add this parameter to your image configuration
+
+Argument|Optional|Description
+--------|--------|--------
+image_id |No| Openstack image id or name
+flavor_id |No|Openstack flavor id or name
+prefix |No|Openstack prefix name 
 user_data|yes|nova userdata to inject in the instance
 
 #### example
@@ -241,6 +256,12 @@ fig up
 ```
 If you don't have docker you can directly install needed lib on your hosts, it works well to
 
+### Run test
+To run test just run this command on with an URL od demoinstance run with test/samples/config/config-fake.ini
+```
+python test.py -u -f -U http://127.0.0.1:8080
+```
+
 ### Add auth system
 To add a new auth system is really simple, just add a class in Demo/auth directory which is son of DemoAuth
 and just add 2 functions with this prototype :
@@ -259,3 +280,6 @@ init parameter is just "config" which is a dictionnary of your config section.
 Config section name must be your filename (without '.py') uppercase and your class name must be a transformation 
 of your filename like this :
 'auth_ldap.py => AuthLdap'
+
+### Add a new provider
+To add a new provider, write a class in Demo/provider which herit from DemoProv.

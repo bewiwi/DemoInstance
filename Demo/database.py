@@ -1,18 +1,33 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine, types, Column,String
+from sqlalchemy import create_engine, types, Column, String
 import uuid
 
 Base = declarative_base()
 
 
 class DemoData():
-    def __init__(self,config):
-        engine = create_engine(config.database_connection, echo=False)
+    Session = None
+
+    @staticmethod
+    def get_session(config):
+        if DemoData.Session is not None:
+            return DemoData.Session()
+        connect_args = {}
+        if config.database_connection.startswith('sqlite://'):
+            connect_args = {'check_same_thread': False}
+        engine = create_engine(
+            config.database_connection,
+            echo=False,
+            connect_args=connect_args
+        )
         Base.metadata.create_all(engine)
         Base.metadata.bind = engine
-        Session = sessionmaker(bind=engine, autocommit=False,autoflush=True,expire_on_commit=True)
-        self.session = Session()
+        DemoData.Session = sessionmaker(
+            bind=engine, autocommit=False,
+            autoflush=True, expire_on_commit=True
+        )
+        return DemoData.Session()
 
 
 class Instance(Base):

@@ -1,6 +1,6 @@
 Vagrantfile
 .vagrant
-*.ini
+/*.ini
 !config-dist.ini
 *.pyc
 .DS_Store
@@ -10,3 +10,4 @@ web/instance_image/*
 !web/instance_image/example.png
 web/node_modules/
 web/public
+/*.sqlite

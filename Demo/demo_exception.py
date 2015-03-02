@@ -53,7 +53,7 @@ class DemoExceptionInvalidEmail(DemoException):
 
 
 class DemoExceptionInvalidImage(Exception):
-    def __init__(self,image_var):
+    def __init__(self, image_var):
         self.value = "Image Invalid %s" % image_var
         self.message = self.value
 
@@ -88,6 +88,15 @@ class DemoExceptionUserInstanceTypeAlreadyExist(Exception):
         return repr(self.value)
 
 
+class DemoExceptionNonUpdatableInstance(Exception):
+    def __init__(self):
+        self.value = "You can't update this instance"
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class DemoExceptionUserTokenInvalid(Exception):
     def __init__(self, time):
         self.value = "User token is invalid"
@@ -100,6 +109,15 @@ class DemoExceptionUserTokenInvalid(Exception):
 class DemoExceptionErrorAuth(Exception):
     def __init__(self):
         self.value = "Invalid user/password"
+        self.message = self.value
+
+    def __str__(self):
+        return repr(self.value)
+
+
+class DemoExceptionConfigNotFound(Exception):
+    def __init__(self):
+        self.value = "Invalid config file"
         self.message = self.value
 
     def __str__(self):
