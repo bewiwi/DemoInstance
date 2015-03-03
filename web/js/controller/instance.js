@@ -1,4 +1,4 @@
-demoApp.controller('instanceController', function($scope, $http, $timeout, $routeParams, $location, $sce, $rootScope, favicoService) {
+demoApp.controller('instanceController', function($scope, $http, $timeout, $routeParams, $location, $sce, $rootScope, favicoService, instanceService) {
     var errorCallback = function(error) {
         $scope.error = error;
     };
@@ -18,17 +18,20 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
 
 
     //Check if instance already exist
-    $http.get('/api/myinstance').
-        success(function(data) {
-            var instances = data;
-            angular.forEach(instances, function(instance) {
-                if (instance.status != 'DELETED' && instance.type == $routeParams.image_name){
-                    $location.path('/instance/'+instance.type+'/'+instance.id);
-                }
-            })
-            $scope.instance_ready = true;
-        }).
-        error(errorCallback);
+    if (! $routeParams.id) {
+        $http.get('/api/myinstance').
+            success(function(data) {
+                var instances = data;
+                angular.forEach(instances, function(instance) {
+                    if (instance.status != 'DELETED' && instance.type == $routeParams.image_name){
+                        $location.path('/instance/'+instance.type+'/'+instance.id);
+                    }
+                })
+            }).
+            error(errorCallback);
+    }
+    $scope.instance_ready = true;
+
 
     $http.get('/api/image/'+$routeParams.image_name).
         success(function(data) {
@@ -60,19 +63,19 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
                         if ($scope.state.system_up) {
                             refreshDelay = 60000;                                                
                         }
-                        if ($scope.state.life_time === 0 ) {
+                        if ($scope.state.dead_time === 0 ) {
                             refreshDelay = 10000;
                         }
 
                         var title = $scope.image.name;
 
-                        if($scope.state.life_time !== false){
+                        if($scope.state.dead_time !== false){
                             var color = '#5CB85C';
-                            if ( $scope.state.life_time < 5 ) {
+                            if ( $scope.state.dead_time < 5 ) {
                                 color = '#d00';
                                 title = 'TIMEOUT !!';
                             }
-                            favicoService.badge($scope.state.life_time,{'bgColor' : color});
+                            favicoService.badge($scope.state.dead_time,{'bgColor' : color});
                         }
                         $rootScope.app_title = title;
                         refreshTimeout = $timeout(refreshCallback, refreshDelay)
@@ -113,11 +116,11 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
     };
 
     $scope.deleteInstance = function() {
-        $http.delete('/api/instance/'+ $routeParams.id).
-            success(function(data) {
-                $location.path('/');
-            }).
-            error(errorCallback);
+        instanceService.deleteInstance(
+            $routeParams.id,
+            function(){$location.path('/');},
+            errorCallback
+        );
     };
 
     $scope.post_load = false;
@@ -128,15 +131,18 @@ demoApp.controller('instanceController', function($scope, $http, $timeout, $rout
 
     $scope.postInstance = function() {
         $scope.post_load = true;
-        $http.post('/api/instance/'+ $routeParams.image_name, $scope.edit_instance).
-            success(function(data) {
+        instanceService.addTimeInstance(
+            $scope.edit_instance.id,
+            $scope.edit_instance.add_time,
+            function(data){
                 refreshCallback();
                 $scope.post_load = false;
                 $scope.edit_instance.add_time = 0;
-            }).
-            error(function(error){
+            },
+            function(error){
                 $scope.post_load = false;
                 errorCallback(error);
-            });
+            }
+        );
     }
 });

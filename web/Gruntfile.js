@@ -25,7 +25,9 @@ module.exports = function(grunt) {
                     'bower_components/angular-translate/angular-translate.js',
                     'bower_components/favico.js/favico.js',
                     'bower_components/bootstrap/dist/js/bootstrap.js',
-                    'bower_components/angular-slider/slider.js'
+                    'bower_components/angular-slider/slider.js',
+                    'bower_components/ng-table/dist/ng-table.js',
+                    'bower_components/angular-xeditable/dist/js/xeditable.js'
                 ],
                 dest: 'public/js/vendor.js'
             },
@@ -42,7 +44,9 @@ module.exports = function(grunt) {
                 src: [
                     'bower_components/bootstrap/dist/css/bootstrap.css',
                     'bower_components/components-font-awesome/css/font-awesome.css',
-                    'bower_components/angular-slider/slider.css'
+                    'bower_components/angular-slider/slider.css',
+                    'bower_components/ng-table/dist/ng-table.css',
+                    'bower_components/angular-xeditable/dist/css/xeditable.css'
                 ],
                 dest: 'public/css/vendor.css'
             }

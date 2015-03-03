@@ -18,8 +18,11 @@
                 <li>
                     <a href="#list"><i class="fa fa-list-alt"></i>{{ 'LIST_INSTANCE'|translate }}</a>
                 </li>
+                <li ng-show="user.admin">
+                    <a href="#admin"><i class="fa fa-lock"></i>{{'ADMINISTRATION'|translate }} </a>
+                </li>
                 <li ng-show="user.login">
-                    <a href="#" ng-click="disconnect()"><i class="fa fa-sign-out"></i>{{ user.login }} </a>
+                    <a href="#" ng-click="disconnect()"><i class="fa fa-sign-out"></i>{{'DISCONNECT'|translate }} ({{ user.login }})</a>
                 </li>
             </ul>
         </div>

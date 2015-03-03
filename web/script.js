@@ -1,5 +1,8 @@
 	// create the module and name it demoApp
-	var demoApp = angular.module('demoApp', ['ngRoute', 'ngCookies','pascalprecht.translate', 'ui.slider'])
+	var demoApp = angular.module('demoApp', [
+        'ngRoute', 'ngCookies','pascalprecht.translate',
+        'ui.slider', 'ngTable', 'xeditable'
+    ])
         .run(function($rootScope, favicoService, $http, $cookies, $location){
             $rootScope.$on('$routeChangeStart',function(){
                 $rootScope.app_title = 'DemoInstance';
@@ -11,9 +14,6 @@
                 $http.get('/api/user').
                     success(function(data) {
                         $rootScope.user = data;
-                        if (! angular.isUndefined(callback)){
-                            callback();
-                        }
                     });
             };
 
@@ -43,17 +43,17 @@
             .when('/login/:token', {
                 controller : function($routeParams, $cookies, $location, $rootScope){
                     $cookies.token = $routeParams.token;
-                    $rootScope.getUser(
-                        function($location){
-                            $location.path('/');
-                        }
-                    );
+                    $rootScope.getUser();
                 },
                 template : ''
             })
 
             .when('/list', {
                 templateUrl : 'pages/list.html'
+            })
+        
+            .when('/admin', {
+                templateUrl : 'pages/admin.html'
             })
 
             .when('/instance/:image_name', {
@@ -100,6 +100,7 @@
             ARE_YOU_SURE:'Are you sure ?',
             FOR:'for',
             ERROR:'ERROR',
+            USER:'User',
 
             TIME:'Time',
             ADD_TIME:'Extend lifetime (min.)',
@@ -108,6 +109,8 @@
             DESTROY: 'Destroy instance',
 
             LOGIN:'Please log in',
+            DISCONNECT: 'disconnect',
+            ADMINISTRATION:'Administration',
             LIST_INSTANCE:'History',
             EMAIL_SEND:'SEND',
             EMAIL_INFO:'An email will be send with your link',
@@ -115,8 +118,10 @@
 
             INSTANCE_LAUNCHED_AT: 'Startup time',
             INSTANCE_LIFE_TIME: 'Life time  (min.)',
+            INSTANCE_DEAD_TIME: 'Time before remove (min.)',
             INSTANCE_ACTIONS: 'Actions',
 
+            INSTANCE_TYPE : 'Type',
             INSTANCE_STATUS : 'Status',
             INSTANCE_DELETED: 'Deleted',
             INSTANCE_CREATED: 'Instance démarrée',
@@ -136,6 +141,7 @@
             ARE_YOU_SURE:'Etes vous sur ?',
             FOR:'pour',
             ERROR:'ERREUR',
+            USER:'Utilisateur',
 
             TIME:'Temps',
             ADD_TIME: 'Prolonger (min.)',
@@ -144,6 +150,8 @@
             DESTROY: 'Détruire l\'instance',
 
             LOGIN:'Connectez vous',
+            DISCONNECT: 'Déconnection',
+            ADMINISTRATION:'Administration',
             LIST_INSTANCE:'Historique',
             EMAIL_SEND:'Envoyer',
             EMAIL_INFO:'Un email va vous être envoyé avec votre lien pour vous connecter',
@@ -151,8 +159,10 @@
 
             INSTANCE_LAUNCHED_AT: 'Jour / heure de démarrage',
             INSTANCE_LIFE_TIME: 'Durée de vie (min.)',
+            INSTANCE_DEAD_TIME: 'Durée avant destruction (min.)',
             INSTANCE_ACTIONS: 'Actions',
 
+            INSTANCE_TYPE : 'Type',
             INSTANCE_STATUS : 'Etat',
             INSTANCE_DELETED: 'Supprimée',
             INSTANCE_CREATED: 'Instance démarrée',

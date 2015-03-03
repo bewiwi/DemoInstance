@@ -58,14 +58,14 @@
             <div ng-show="state.demo_address && state.system_up" class="alert alert-success state">
                 <p>{{'YOU_CAN_CONNECT'|translate}} <a class="alert-link" target="_blank" href="{{ state.demo_address }}">{{ state.demo_address }}</a></p>
                 <p>{{ 'YOUR_INSTANCE_FINISH'|translate }}
-                    <span class="Time">{{ state.life_time }}</span>
-                    <span ng-show="edit_instance.add_time != 0 && image.max_time && image.max_time > state.ask_time" style="color: green">(+{{ edit_instance.add_time }})</span> minutes
+                    <span class="Time">{{ state.dead_time }}</span>
+                    <span ng-show="edit_instance.add_time != 0 && image.max_time && image.max_time > state.life_time" style="color: green">(+{{ edit_instance.add_time }})</span> minutes
                 </p>
-                <div ng-show="image.max_time && image.max_time > state.ask_time" ng-init="post_load=false" class="col-sm-2 col-md-offset-5">
+                <div ng-show="image.max_time && image.max_time > state.life_time" ng-init="post_load=false" class="col-sm-2 col-md-offset-5">
                     <p style="text-align:left;margin-bottom:-1rem;">
                         <span class="glyphicon glyphicon-time"></span> {{'ADD_TIME'|translate}} :
                     </p>
-                    <slider floor="0" ceiling="{{ image.max_time - state.ask_time }}" step="1" precision="0" ng-model="edit_instance.add_time"></slider>
+                    <slider floor="0" ceiling="{{ image.max_time - state.life_time }}" step="1" precision="0" ng-model="edit_instance.add_time"></slider>
                     <button ng-disabled="post_load" class="btn btn-default btn-lg" ng-click="postInstance();">{{ 'SUBMIT'|translate }}</button>
                 </div>
             </div>

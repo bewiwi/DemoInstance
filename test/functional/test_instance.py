@@ -50,7 +50,7 @@ class InstanceTest(DemoTestCase):
         rep_get = self.rep_to_dict(r.text)
 
         self.assertEqual(200, r.status_code)
-        self.assertEqual(2, rep_get['ask_time'])
+        self.assertEqual(2, rep_get['life_time'])
 
     def test_create_instance_overtime(self):
         instance = self.create_instance('CIRROS3', 9999)
@@ -60,7 +60,7 @@ class InstanceTest(DemoTestCase):
         rep_get = self.rep_to_dict(r.text)
 
         self.assertEqual(200, r.status_code)
-        self.assertEqual(22, rep_get['ask_time'])
+        self.assertEqual(22, rep_get['life_time'])
 
     def test_get_instance_from_other_user(self):
         instance = self.create_instance('CIRROS3', 9999)
@@ -71,7 +71,7 @@ class InstanceTest(DemoTestCase):
 
         self.assertEqual(401, r.status_code)
 
-    def test_delete_instance_from_other_user(self):
+    def test_delete_instance_from_other_user_non_admin(self):
         instance = self.create_instance('CIRROS3', 9999)
         self.login('test', 'test')
 
@@ -85,6 +85,21 @@ class InstanceTest(DemoTestCase):
             '/api/instance/' + instance['id']
         )
         self.assertEqual(200, r.status_code)
+
+    def test_delete_instance_from_other_user_admin(self):
+        self.login('test', 'test')
+        instance = self.create_instance('CIRROS3', 9999)
+
+        self.login('admin', 'admin')
+        r_del = self.delete(
+            '/api/instance/' + instance['id']
+        )
+        self.assertEqual(200, r_del.status_code)
+
+        r = self.get(
+            '/api/instance/' + instance['id']
+        )
+        self.assertEqual(404, r.status_code)
 
     def test_update_time_instance(self):
         instance = self.create_instance('BI', 10)
@@ -100,7 +115,7 @@ class InstanceTest(DemoTestCase):
         rep_get = self.rep_to_dict(r.text)
 
         self.assertEqual(200, r.status_code)
-        self.assertEqual(18, rep_get['ask_time'])
+        self.assertEqual(18, rep_get['life_time'])
 
     def test_update_time_from_other_user_instance(self):
         instance = self.create_instance('BI', 10)
@@ -117,7 +132,7 @@ class InstanceTest(DemoTestCase):
         rep_get = self.rep_to_dict(r.text)
 
         self.assertEqual(200, r.status_code)
-        self.assertEqual(10, rep_get['ask_time'])
+        self.assertEqual(10, rep_get['life_time'])
 
     def test_update_time_of_nonupdatable_instance(self):
         instance = self.create_instance('CIRROS2')
@@ -129,7 +144,7 @@ class InstanceTest(DemoTestCase):
         rep_get = self.rep_to_dict(r.text)
 
         self.assertEqual(200, r.status_code)
-        self.assertEqual(20, rep_get['ask_time'])
+        self.assertEqual(20, rep_get['life_time'])
 
         # Try Update
         r = self.post(
@@ -145,4 +160,36 @@ class InstanceTest(DemoTestCase):
         rep_get = self.rep_to_dict(r.text)
 
         self.assertEqual(200, r.status_code)
-        self.assertEqual(20, rep_get['ask_time'])
+        self.assertEqual(20, rep_get['life_time'])
+
+    def test_get_all_instance_from_non_admin(self):
+        self.login('test', 'test')
+        r = self.get(
+            '/api/allinstance'
+        )
+
+        self.assertEqual(404, r.status_code)
+
+    def test_get_all_instance_from_admin(self):
+        self.login('test', 'test')
+        instance = self.create_instance('CIRROS2', 30)
+        self.login('admin', 'admin')
+        r = self.get(
+            '/api/allinstance'
+        )
+
+        self.assertEqual(200, r.status_code)
+
+    def test_set_instance_time_from_admin(self):
+        instance = self.create_instance('CIRROS2', 30)
+        r = self.post(
+            '/api/instance/' + instance['id'],
+            {'id': instance['id'], 'time': 600}
+        )
+        r = self.get(
+            '/api/instance/' + instance['id']
+        )
+        rep_get = self.rep_to_dict(r.text)
+
+        self.assertEqual(200, r.status_code)
+        self.assertEqual(600, rep_get['life_time'])
