@@ -19,7 +19,8 @@ class Vacuum(threading.Thread):
         logging.debug('CHECK OLD INSTANCE')
         query = database\
             .query(Instance)\
-            .filter(Instance.status != 'DELETED')
+            .filter(Instance.status != 'DELETED')\
+            .filter(Instance.status != 'POOL')
         logging.debug("%s count", query.count())
         instances = demo.provider.get_instances()
         for data_instance in query.all():

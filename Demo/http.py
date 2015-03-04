@@ -121,6 +121,13 @@ class Handler(BaseHTTPRequestHandler, object):
         self.wfile.write(json.dumps(instances))
         return
 
+    def pool_instances_info(self):
+        instances = self.demo.get_pooled_instance_database()
+        self.headers_to_send['Content-type'] = 'application/json'
+        self.send_all_header(200)
+        self.wfile.write(json.dumps(instances))
+        return
+
     def images_info(self):
         http_images = {}
         for name in self.config.images.keys():
@@ -241,6 +248,10 @@ class Handler(BaseHTTPRequestHandler, object):
 
             if self.path == "/api/allinstance":
                 self.all_instances_info()
+                return
+
+            if self.path == "/api/poolinstance":
+                self.pool_instances_info()
                 return
 
             self.send_http_error(404, 'No action')

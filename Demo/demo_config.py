@@ -5,7 +5,7 @@ from demo_exception import *
 
 IMAGE_CONF_PREFIX = 'IMAGE_'
 IMAGE_INT_PARAM = [
-    'time_default', 'max_instance', 'time_max', 'time_default'
+    'time_default', 'max_instance', 'time_max', 'time_default', 'pool'
 ]
 
 

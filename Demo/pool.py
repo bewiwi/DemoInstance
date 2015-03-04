@@ -6,53 +6,65 @@ from time import sleep
 import logging
 
 
-class Vacuum(threading.Thread):
+class Pool(threading.Thread):
     def __init__(self):
         self.config = DemoConfig()
         self.stop = False
         threading.Thread.__init__(self)
 
-    def check_old_instance(self):
+    def check_pool(self):
         demo = Demo(self.config)
         database = demo.database
 
-        logging.debug('CHECK OLD INSTANCE')
-        query = database\
-            .query(Instance)\
-            .filter(Instance.status != 'DELETED')
-        logging.debug("%s count", query.count())
-        instances = demo.provider.get_instances()
-        for data_instance in query.all():
-            if data_instance.get_dead_time() == -1:
-                logging.info('%s is to old', data_instance.provider_id)
-                demo.database_remove_server(data_instance.provider_id)
+        logging.debug('CHECK POOL INSTANCE')
+        images_pool = {}
+        instances_pool = {}
 
-            on_cloud = False
-            for id in instances:
-                if data_instance.provider_id == id:
-                    on_cloud = True
-                    break
-            if not on_cloud and data_instance.provider_id:
-                logging.info(
-                    '%s is not present on cloud anymore',
-                    data_instance.id
-                )
-                demo.database_remove_server(data_instance.provider_id)
+        # Get image key with pool value
+        for key, image in self.config.images.items():
+                images_pool[key] = {'need': 0, 'instances': []}
+                if 'pool' in image:
+                    images_pool[key]['need'] = image['pool']
+
+        # Get all pooled instance
+        for instance in demo.get_pooled_instance_database():
+            # Type in database but not in config
+            if instance['type'] not in images_pool:
+                images_pool[instance['type']] = {'need': 0, 'instances': []}
+            images_pool[instance['type']]['instances'].append(instance)
+
+        for key, image_pool in images_pool.items():
+            count_pool_instance = len(image_pool['instances'])
+            # Remove overpopulated pool
+            if image_pool['need'] < count_pool_instance:
+                logging.debug('Pool %s is overpopulated', key)
+                while count_pool_instance > image_pool['need']:
+                    instance_to_remove = image_pool['instances'].pop()
+                    demo.database_remove_server(instance_to_remove['id'])
+                    count_pool_instance -= 1
+            elif image_pool['need'] > count_pool_instance:
+                logging.debug('Pool %s is underpopulated', key)
+                while count_pool_instance < image_pool['need']:
+                    logging.debug('Pool create %s', key)
+                    demo.create_pool_instance(key)
+                    count_pool_instance += 1
+            else:
+                logging.debug('Pool %s is ok', key)
 
     def run(self):
-        time_between_vacuum = 60
+        time_between_iter = 60
         while True:
             try:
-                self.check_old_instance()
+                self.check_pool()
             except Exception as e:
                 if self.config.dev:
                     raise
-                logging.error("Vaccum Raise Execption %s", e.message)
+                logging.error("Pool Raise Execption %s", e.message)
             i = 0
-            while i < time_between_vacuum:
+            while i < time_between_iter:
                 if self.stop:
-                    logging.info('Stop vacuum')
+                    logging.info('Stop pool')
                     return
                 i += 1
                 sleep(1)
-        logging.error('Vacuum is stop')
+        logging.error('Pool is stop')

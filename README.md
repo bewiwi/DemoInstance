@@ -154,6 +154,7 @@ image_id |No| Openstack image id or name
 flavor_id |No|Openstack flavor id or name
 prefix |No|Openstack prefix name 
 user_data|yes|nova userdata to inject in the instance
+pool|yes|(int) Pre start N instance, default 0
 
 #### example
 Example with only one instance:
@@ -173,6 +174,7 @@ prefix=myapp_
 check_url=http://%ip%/ok
 soft_url=http://%ip%/
 max_instance=10
+pool=2
 ```
 
 Example with three instances

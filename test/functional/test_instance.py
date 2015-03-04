@@ -193,3 +193,38 @@ class InstanceTest(DemoTestCase):
 
         self.assertEqual(200, r.status_code)
         self.assertEqual(600, rep_get['life_time'])
+
+    def test_max_instance(self):
+        self.create_instance('CIRROS2', 30)
+        self.login('test', 'test')
+        r = self.put(
+            '/api/instance/CIRROS2',
+            {'image_name': 'CIRROS2', 'time': '2'}
+        )
+        self.assertEqual(400, r.status_code)
+
+    def test_pool_admin(self):
+        self.login('admin', 'admin')
+        r = self.get(
+            '/api/poolinstance'
+        )
+        rep_get = self.rep_to_dict(r.text)
+        self.assertEqual(200, r.status_code)
+        result = [item for item in rep_get if 'POOL' in item['type']]
+        self.assertEqual(2, len(result))
+        self.create_instance('POOL', 30)
+        r = self.get(
+            '/api/poolinstance'
+        )
+        rep_get = self.rep_to_dict(r.text)
+        self.assertEqual(200, r.status_code)
+        result = [item for item in rep_get if 'POOL' in item['type']]
+        self.assertEqual(1, len(result))
+
+    def test_pool_non_admin(self):
+        self.login('test', 'test')
+        r = self.get(
+            '/api/poolinstance'
+        )
+        rep_get = self.rep_to_dict(r.text)
+        self.assertEqual(404, r.status_code)

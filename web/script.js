@@ -124,9 +124,10 @@
             INSTANCE_TYPE : 'Type',
             INSTANCE_STATUS : 'Status',
             INSTANCE_DELETED: 'Deleted',
-            INSTANCE_CREATED: 'Instance démarrée',
-            INSTANCE_DONE: 'Application démarrée',
-            INSTANCE_UP : 'Instance running'
+            INSTANCE_CREATED: 'Instance created',
+            INSTANCE_DONE: 'Application running',
+            INSTANCE_UP : 'Instance running',
+            INSTANCE_POOL: 'Waiting'
         });
         $translateProvider.translations('fr', {
             NEW_INSTANCE: 'Instances',
@@ -167,7 +168,8 @@
             INSTANCE_DELETED: 'Supprimée',
             INSTANCE_CREATED: 'Instance démarrée',
             INSTANCE_DONE: 'Application démarrée',
-            INSTANCE_UP : 'Instance en cours'
+            INSTANCE_UP : 'Instance en cours',
+            INSTANCE_POOL: 'En attente'
         });
         $translateProvider.preferredLanguage('fr');
     });
