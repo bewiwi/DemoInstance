@@ -1,4 +1,5 @@
 from Demo.demo_config import DemoConfig
+from Demo.database import DemoData
 from Demo.http import ThreadedHTTPServer, Handler
 from Demo.vacuum import Vacuum
 from Demo.pool import Pool
@@ -12,6 +13,11 @@ if __name__ == '__main__':
 
     DemoConfig.config_file = args.c
     config = DemoConfig()
+
+    # create table
+    session = DemoData.get_session(config)
+    session.close()
+
     logging.basicConfig(level=config.log_level)
     vacuum = Vacuum()
     pool = Pool()
