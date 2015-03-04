@@ -81,19 +81,7 @@ class Demo():
             Instance.provider_id == id
         )
         data_instance = query.first()
-        return self.__get_time_from_date(
-            data_instance.launched_at,
-            data_instance.life_time
-        )
-
-    def __get_time_from_date(self, date, time):
-        delta = (
-            date +
-            datetime.timedelta(
-                0, 0, 0, 0, time
-            )
-        ) - datetime.datetime.now()
-        return int(self._get_total_seconds(delta)/60)
+        return data_instance.get_dead_time()
 
     def get_life_time(self, id):
         query = self.database.query(Instance).filter(
@@ -334,10 +322,7 @@ class Demo():
                 'type': instance.image_key,
                 'launched_at': str(instance.launched_at),
                 'life_time': instance.life_time,
-                'dead_time': self.__get_time_from_date(
-                    instance.launched_at,
-                    instance.life_time
-                )
+                'dead_time': instance.get_dead_time()
             })
         return info
 
@@ -355,10 +340,7 @@ class Demo():
                 'launched_at': str(instance.launched_at),
                 'life_time': instance.life_time,
                 'user': login,
-                'dead_time': self.__get_time_from_date(
-                    instance.launched_at,
-                    instance.life_time
-                )
+                'dead_time': instance.get_dead_time()
             })
         return info
 
@@ -368,11 +350,3 @@ class Demo():
         ip = self.provider.get_instance_ip(instance_id)
         param = param.replace("%ip%", ip)
         return param
-
-    # Python 2.6 hook
-    def _get_total_seconds(self, td):
-        return (
-                   td.microseconds +
-                   (td.seconds + td.days * 24 * 3600) *
-                   1e6
-               ) / 1e6

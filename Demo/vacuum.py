@@ -2,7 +2,6 @@ from database import Instance
 from demo_config import DemoConfig
 from demo import Demo
 import threading
-import datetime
 from time import sleep
 import logging
 
@@ -24,16 +23,7 @@ class Vacuum(threading.Thread):
         logging.debug("%s count", query.count())
         instances = demo.provider.get_instances()
         for data_instance in query.all():
-            destroy_at = data_instance.launched_at\
-                        + datetime.timedelta(
-                            0, 0, 0, 0,
-                            data_instance.life_time
-                        )
-            logging.debug(
-                '%s must be destroy at %s',
-                data_instance.provider_id, destroy_at
-            )
-            if destroy_at < datetime.datetime.now():
+            if data_instance.get_dead_time() == -1:
                 logging.info('%s is to old', data_instance.provider_id)
                 demo.database_remove_server(data_instance.provider_id)
 
