@@ -2,6 +2,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, types, Column, String
 import uuid
+import datetime
 
 Base = declarative_base()
 
@@ -40,6 +41,26 @@ class Instance(Base):
     launched_at = Column(types.DATETIME)
     life_time = Column(types.Integer, nullable=False)
     token = Column(String(255), nullable=False)
+
+    def get_dead_time(self):
+        delta = (
+            self.launched_at +
+            datetime.timedelta(
+                0, 0, 0, 0, self.life_time
+            )
+        ) - datetime.datetime.now()
+        min = int(self._get_total_seconds(delta)/60)
+        if min < 0:
+            return -1
+        return min
+
+    # Python 2.6 hook
+    def _get_total_seconds(self, td):
+        return (
+                   td.microseconds +
+                   (td.seconds + td.days * 24 * 3600) *
+                   1e6
+               ) / 1e6
 
 
 class User(Base):

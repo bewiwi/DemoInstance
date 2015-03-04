@@ -4,23 +4,61 @@
         <i id="warning" class="fa fa-warning"></i> {{'ERROR'|translate}} : {{ error.error }}
     </div>
 
-    <table class="table table-striped">
+    <table ng-table="tableParams" class="table" >
+
         <thead>
-            <tr>
-                <td>{{ 'INSTANCE_STATUS'|translate }}</td>
-                <td>{{ 'INSTANCE_LAUNCHED_AT'|translate }}</td>
-                <td>{{ 'INSTANCE_LIFE_TIME'|translate }}</td>
-                <td>{{ 'INSTANCE_ACTIONS'|translate }}</td>
-            </tr>
+        <tr>
+            <th class="sortable" ng-class="{
+                    'sort-asc': tableParams.isSortBy('status', 'asc'),
+                    'sort-desc': tableParams.isSortBy('status', 'desc')
+                  }"
+                ng-click="tableParams.sorting({'status' : tableParams.isSortBy('status', 'asc') ? 'desc' : 'asc'})">
+                {{ 'INSTANCE_STATUS'|translate }}
+            </th>
+            <th class="sortable" ng-class="{
+                    'sort-asc': tableParams.isSortBy('type', 'asc'),
+                    'sort-desc': tableParams.isSortBy('type', 'desc')
+                  }"
+                ng-click="tableParams.sorting({'type' : tableParams.isSortBy('type', 'asc') ? 'desc' : 'asc'})">
+                {{ 'INSTANCE_TYPE'|translate }}
+            </th>
+            <th class="sortable" ng-class="{
+                    'sort-asc': tableParams.isSortBy('launched_at', 'asc'),
+                    'sort-desc': tableParams.isSortBy('launched_at', 'desc')
+                  }"
+                ng-click="tableParams.sorting({'launched_at' : tableParams.isSortBy('launched_at', 'asc') ? 'desc' : 'asc'})">
+                {{ 'INSTANCE_LAUNCHED_AT'|translate }}
+            </th>
+            <th  class="sortable" ng-class="{
+                    'sort-asc': tableParams.isSortBy('life_time', 'asc'),
+                    'sort-desc': tableParams.isSortBy('life_time', 'desc')
+                  }"
+                 ng-click="tableParams.sorting({'life_time' : tableParams.isSortBy('life_time', 'asc') ? 'desc' : 'asc'})">
+                {{ 'INSTANCE_LIFE_TIME'|translate }}
+            </th>
+            <th  class="sortable" ng-class="{
+                    'sort-asc': tableParams.isSortBy('dead_time', 'asc'),
+                    'sort-desc': tableParams.isSortBy('dead_time', 'desc')
+                  }"
+                 ng-click="tableParams.sorting({'dead_time' : tableParams.isSortBy('dead_time', 'asc') ? 'desc' : 'asc'})">
+                {{ 'INSTANCE_DEAD_TIME'|translate }}
+            </th>
+            <th>
+                {{ 'INSTANCE_ACTIONS'|translate }}
+            </th>
+        </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="instance in instances">
-                <td>{{ 'INSTANCE_' + instance.status|translate }}</td>
-                <td>{{ instance.launched_at }}</td>
-                <td>{{ instance.life_time }}</td>
-                <td><span ng-show="instance.status != 'DELETED'" ng-click="go_to_instance(instance)" class="glyphicon glyphicon glyphicon-eye-open"></span></td>
-                </td>
-            </tr>
+        <tr ng-repeat="instance in $data">
+            <td data-title="'status'" sortable="'status'">{{ 'INSTANCE_' + instance.status|translate }}</td>
+            <td data-title="'type'" sortable="'type'">{{ instance.type }}</td>
+            <td data-title="'launched_at'" sortable="'launched_at'">{{ instance.launched_at }}</td>
+            <td data-title="'life_time'" sortable="'life_time'">{{ instance.life_time }}</td>
+            <td data-title="'dead_time'" sortable="'dead_time'">{{ instance.dead_time }}</td>
+            <td data-title="'action'">
+                <span ng-show="instance.status != 'DELETED'" ng-click="go_to_instance(instance)" class="glyphicon glyphicon glyphicon-eye-open"></span>
+            </td>
+        </tr>
         </tbody>
     </table>
 

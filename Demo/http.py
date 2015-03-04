@@ -84,7 +84,7 @@ class Handler(BaseHTTPRequestHandler, object):
             info['address'] = self.demo.provider.get_instance_ip(instance_id)
             info['demo_address'] = self.demo.get_soft_address(instance_id)
             info['life_time'] = self.demo.get_life_time(instance_id)
-            info['ask_time'] = self.demo.get_ask_time(instance_id)
+            info['dead_time'] = self.demo.get_dead_time(instance_id)
             if self.demo.check_system_up(instance_id):
                 info['system_up'] = True
         self.headers_to_send['Content-type'] = 'application/json'
@@ -93,9 +93,11 @@ class Handler(BaseHTTPRequestHandler, object):
         return
 
     def get_user(self):
+        is_admin = self.demo.auth.is_admin(self.user.login)
         info = {
             'token': self.user.token,
             'login': self.user.login,
+            'admin': is_admin
         }
         self.headers_to_send['Content-type'] = 'application/json'
         self.send_all_header(200)
@@ -106,18 +108,17 @@ class Handler(BaseHTTPRequestHandler, object):
             self.send_http_error(404, 'User not found')
 
         instances = self.demo.get_user_instance_database(self.user.token)
-        info = []
-        for instance in instances:
-            info.append({
-                'id': instance.provider_id,
-                'status': instance.status,
-                'type': instance.image_key,
-                'launched_at': str(instance.launched_at),
-                'life_time': instance.life_time
-            })
+
         self.headers_to_send['Content-type'] = 'application/json'
         self.send_all_header(200)
-        self.wfile.write(json.dumps(info))
+        self.wfile.write(json.dumps(instances))
+        return
+
+    def all_instances_info(self):
+        instances = self.demo.get_all_instance_database()
+        self.headers_to_send['Content-type'] = 'application/json'
+        self.send_all_header(200)
+        self.wfile.write(json.dumps(instances))
         return
 
     def images_info(self):
@@ -208,6 +209,7 @@ class Handler(BaseHTTPRequestHandler, object):
 
             # Private URL
             if not self.cookie_session():
+                self.send_http_error(404, 'No action')
                 return
 
             if self.path == "/api/user":
@@ -230,6 +232,15 @@ class Handler(BaseHTTPRequestHandler, object):
             match = re.match("/api/image/(.*)", self.path)
             if match:
                 self.image_info(match.group(1))
+                return
+
+            # Admin url
+            if not self.demo.auth.is_admin(self.user.login):
+                self.send_http_error(404, 'No action')
+                return
+
+            if self.path == "/api/allinstance":
+                self.all_instances_info()
                 return
 
             self.send_http_error(404, 'No action')
@@ -315,7 +326,6 @@ class Handler(BaseHTTPRequestHandler, object):
 
             match = re.match("/api/instance", self.path)
             if match:
-                time = None
                 if 'id' in put_vars:
                     id = put_vars['id']
                     if 'add_time' in put_vars:
@@ -325,6 +335,16 @@ class Handler(BaseHTTPRequestHandler, object):
                             int(put_vars['add_time'])
                         )
                         self.instance_info(id)
+                        return
+                    # Admin url
+                    if not self.demo.auth.is_admin(self.user.login):
+                        self.send_http_error(404, 'No action')
+                        return
+                    if 'time' in put_vars:
+                        self.demo.instance_set_life_time(
+                            id, int(put_vars['time'])
+                        )
+                        self.send_http_message(200, 'ok')
                         return
             self.send_http_error(404, 'No action')
         except DemoExceptionInstanceNotFound as e:
@@ -378,6 +398,7 @@ class Handler(BaseHTTPRequestHandler, object):
         if token is not None:
             self.user = self.demo.get_user_by_token(token)
             if self.user:
+                self.demo.update_user_last_connection(self.user.login)
                 # Update session time
                 self.write_cookie(COOKIE_SESSION_NAME, self.user.token)
                 if self.user:
@@ -391,7 +412,7 @@ class Handler(BaseHTTPRequestHandler, object):
                 type = 'email'
             else:
                 type = 'auth'
-            self.send_http_error(401, 'Please Login', type)
+            raise DemoExceptionErrorAuth
             return False
         return True
 

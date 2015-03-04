@@ -76,20 +76,14 @@ class Demo():
             self.config.images[self.get_type(instance)]['soft_url'],
             instance)
 
-    def get_life_time(self, id):
+    def get_dead_time(self, id):
         query = self.database.query(Instance).filter(
             Instance.provider_id == id
         )
         data_instance = query.first()
-        delta = (
-            data_instance.launched_at +
-            datetime.timedelta(
-                0, 0, 0, 0, data_instance.life_time
-            )
-        ) - datetime.datetime.now()
-        return int(self._get_total_seconds(delta)/60)
+        return data_instance.get_dead_time()
 
-    def get_ask_time(self, id):
+    def get_life_time(self, id):
         query = self.database.query(Instance).filter(
             Instance.provider_id == id
         )
@@ -238,6 +232,18 @@ class Demo():
         self.database.merge(data_instance)
         self.database.commit()
         return data_instance.life_time
+
+    def instance_set_life_time(self, instance_id, time):
+
+        query = self.database.query(Instance).filter(
+            Instance.provider_id == instance_id
+        )
+        data_instance = query.first()
+
+        data_instance.life_time = time
+        self.database.merge(data_instance)
+        self.database.commit()
+        return data_instance.life_time
     # END DATABASE #
 
     # USER #
@@ -263,29 +269,31 @@ class Demo():
         query = self.database.query(User).filter(
             User.token == token
         )
-
         if query.count() == 0:
             return False
+        return query.first()
 
-        user = query.first()
-
-        if user is None:
-            raise DemoExceptionUserTokenInvalid
-
+    def update_user_last_connection(self, login):
+        user = self.database.query(User).filter(
+            User.login == login
+        ).first()
         user.last_connection = datetime.datetime.now()
 
         self.database.merge(user)
         self.database.commit()
-        return user
 
     def check_user_own_instance(self, token,
                                 provider_id, raise_exception=True):
+        user = self.get_user_by_token(token)
+        if self.auth.is_admin(user.login):
+            return True
         query = self.database.query(Instance).filter(
             Instance.provider_id == provider_id
         )
         instance = query.first()
         if instance is not None and instance.token == token:
             return True
+
         if raise_exception:
             raise DemoExceptionInvalidOwner()
         else:
@@ -306,18 +314,39 @@ class Demo():
             Instance.token == token,
         ).order_by(desc(Instance.id))
         logging.debug("%s instances for user %s", query.count(), token)
-        return query.all()
+        info = []
+        for instance in query.all():
+            info.append({
+                'id': instance.provider_id,
+                'status': instance.status,
+                'type': instance.image_key,
+                'launched_at': str(instance.launched_at),
+                'life_time': instance.life_time,
+                'dead_time': instance.get_dead_time()
+            })
+        return info
+
+    def get_all_instance_database(self):
+        query = self.database.query(Instance, User.login)\
+            .join(User, Instance.token == User.token)\
+            .order_by(desc(Instance.id))
+
+        info = []
+        for instance, login in query.all():
+            info.append({
+                'id': instance.provider_id,
+                'status': instance.status,
+                'type': instance.image_key,
+                'launched_at': str(instance.launched_at),
+                'life_time': instance.life_time,
+                'user': login,
+                'dead_time': instance.get_dead_time()
+            })
+        return info
+
     # END USER #
 
     def placeholder_apply(self, param, instance_id):
         ip = self.provider.get_instance_ip(instance_id)
         param = param.replace("%ip%", ip)
         return param
-
-    # Python 2.6 hook
-    def _get_total_seconds(self, td):
-        return (
-                   td.microseconds +
-                   (td.seconds + td.days * 24 * 3600) *
-                   1e6
-               ) / 1e6
