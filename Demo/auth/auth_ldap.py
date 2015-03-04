@@ -10,6 +10,9 @@ class AuthLdap(DemoAuth):
         self.bind_password = config['bind_password']
         self.search_base = config['search_base']
         self.login_attribute = config['login_attribute']
+        self.admin = []
+        if 'admin' in config:
+            self.admin = config['admin'].split(',')
 
     def check_auth(self, user, password):
         try:
@@ -31,11 +34,16 @@ class AuthLdap(DemoAuth):
             raise ldap.INVALID_CREDENTIALS
 
         dn, attributes = res[0]
-        if not self.try_bind(dn, password):
+        if not self.__try_bind(dn, password):
             return False
         return user
 
-    def try_bind(self, dn, password):
+    def is_admin(self, user):
+        if user in self.admin:
+            return True
+        return False
+
+    def __try_bind(self, dn, password):
         ld = ldap.initialize(self.host)
         try:
             ld.simple_bind_s(dn, password)

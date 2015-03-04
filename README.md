@@ -84,6 +84,7 @@ email_attribute=mail
 | search_base | Yes | Limit valid user with this branch |
 | login_attribute | Yes | Ldap attribute to use to login |
 | email_attribute | Yes | Ldap attribute of email |
+| admin | Yes | List of admin login separate by coma |
 
 ### PROV_OPENSTACK
 If you use **provider = openstack**
