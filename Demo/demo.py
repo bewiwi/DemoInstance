@@ -111,7 +111,11 @@ class Demo():
             self.database.add(database_instance)
             self.database.commit()
 
-            new_instance_id = self.provider.create_instance(image)
+            pool = self.get_pooled_instance_database(image_key)
+            if len(pool) > 0:
+                new_instance_id = pool.pop(0)['id']
+            else:
+                new_instance_id = self.provider.create_instance(image)
 
             # If more than max go to max
             life_time = image['time_default']
@@ -122,7 +126,8 @@ class Demo():
             self.database_insert_server(
                 new_instance_id, status='CREATED',
                 life_time=life_time,
-                image_key=image_key, token=token
+                image_key=image_key, token=token,
+                launched_at=datetime.datetime.now()
             )
 
             # Remove the demand
@@ -130,6 +135,16 @@ class Demo():
             self.database.commit()
 
             return new_instance_id
+
+    def create_pool_instance(self, image_key):
+        image = self.config.images[image_key]
+        new_instance_id = self.provider.create_instance(image)
+        self.database_insert_server(
+                new_instance_id, status='POOL',
+                life_time=0, token=-1,
+                image_key=image_key
+            )
+        return new_instance_id
 
     def instance_is_up(self, instance_id):
         if self.provider.instance_is_up(instance_id):
@@ -157,7 +172,8 @@ class Demo():
 
     # DATABASE #
     def database_insert_server(self, instance_id, status=None,
-                               life_time=None, image_key=None, token=None):
+                               launched_at=None, life_time=None,
+                               image_key=None, token=None):
         logging.debug('Insert instance %s', instance_id)
 
         query = self.database.query(Instance).filter(
@@ -175,6 +191,10 @@ class Demo():
 
         if image_key:
             data_instance.image_key = image_key
+
+        # Overwrite launched
+        if launched_at is not None:
+            data_instance.launched_at = launched_at
 
         if life_time is not None:
             data_instance.life_time = life_time
@@ -207,6 +227,7 @@ class Demo():
     def database_count_active_instance(self, image_key):
         query = self.database.query(Instance).filter(
             Instance.status != 'DELETED',
+            Instance.status != 'POOL',
             Instance.image_key == image_key
         )
         logging.debug('%s actives instances for %s', query.count(), image_key)
@@ -344,6 +365,24 @@ class Demo():
             })
         return info
 
+    def get_pooled_instance_database(self, image_key=None):
+        query = self.database.query(Instance)\
+            .filter(Instance.status == 'POOL')
+
+        if image_key is not None:
+            query = query.filter(Instance.image_key == image_key)
+
+        info = []
+        for instance in query.all():
+            info.append({
+                'id': instance.provider_id,
+                'status': instance.status,
+                'type': instance.image_key,
+                'launched_at': str(instance.launched_at),
+                'life_time': instance.life_time,
+                'dead_time': instance.get_dead_time()
+            })
+        return info
     # END USER #
 
     def placeholder_apply(self, param, instance_id):

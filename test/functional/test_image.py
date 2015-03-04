@@ -13,7 +13,7 @@ class ImageTest(DemoTestCase):
         rep = self.rep_to_dict(r.text)
 
         self.assertEqual(200, r.status_code)
-        self.assertEqual(5, len(rep))
+        self.assertEqual(6, len(rep))
 
     def test_get_image_info(self):
         r = self.get('/api/image/SUGAR')

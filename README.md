@@ -84,6 +84,7 @@ email_attribute=mail
 | search_base | Yes | Limit valid user with this branch |
 | login_attribute | Yes | Ldap attribute to use to login |
 | email_attribute | Yes | Ldap attribute of email |
+| admin | Yes | List of admin login separate by coma |
 
 ### PROV_OPENSTACK
 If you use **provider = openstack**
@@ -153,6 +154,7 @@ image_id |No| Openstack image id or name
 flavor_id |No|Openstack flavor id or name
 prefix |No|Openstack prefix name 
 user_data|yes|nova userdata to inject in the instance
+pool|yes|(int) Pre start N instance, default 0
 
 #### example
 Example with only one instance:
@@ -172,6 +174,7 @@ prefix=myapp_
 check_url=http://%ip%/ok
 soft_url=http://%ip%/
 max_instance=10
+pool=2
 ```
 
 Example with three instances
