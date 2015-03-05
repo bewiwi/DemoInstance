@@ -15,6 +15,6 @@ RUN bower install --allow-root
 RUN grunt
 WORKDIR /opt/demoinstance/
 VOLUME /opt/demoinstance/config.ini
-VOLUME /opt/demoinstance/instance_image/
+VOLUME /opt/demoinstance/instance_image
 CMD python demo.py
 EXPOSE 8080
