@@ -81,11 +81,19 @@ class Openstack(DemoProv):
         if 'user_data' in image_conf:
             user_data = image_conf['user_data']
 
+        meta = {}
+        if 'meta' in image_conf:
+            for tmp_meta in image_conf['meta'].split(','):
+                key = tmp_meta.split('=')[0]
+                value = tmp_meta.split('=')[1]
+                meta[key] = value
+
         instance = self.nova.servers.create(
             instance_prefix + 'test',
             image.id,
             flavor.id,
-            userdata=user_data
+            userdata=user_data,
+            meta=meta
         )
         return self.__get_instance_info(instance)['id']
 

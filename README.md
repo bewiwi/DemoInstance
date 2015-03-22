@@ -144,6 +144,7 @@ check_url |No|url to call to check if app is ready (%ip% is a placeholder with i
 soft_url |No|url of the app to redirect the user
 max_instance |No|max number of instance
 img |Yes|url of picture. Can be in /instance_image or external link
+pool|yes|(int) Pre start N instance, default 0
 
 ##### Openstack image parameter
 If you use **provider = openstack** you must / can add this parameter to your image configuration
@@ -154,7 +155,7 @@ image_id |No| Openstack image id or name
 flavor_id |No|Openstack flavor id or name
 prefix |No|Openstack prefix name 
 user_data|yes|nova userdata to inject in the instance
-pool|yes|(int) Pre start N instance, default 0
+meta|yes|Add meta to instance
 
 #### example
 Example with only one instance:
@@ -175,6 +176,7 @@ check_url=http://%ip%/ok
 soft_url=http://%ip%/
 max_instance=10
 pool=2
+meta=disk=ssd,ram=ECC
 ```
 
 Example with three instances
