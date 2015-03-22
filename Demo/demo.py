@@ -306,7 +306,7 @@ class Demo():
     def check_user_own_instance(self, token,
                                 provider_id, raise_exception=True):
         user = self.get_user_by_token(token)
-        if self.auth.is_admin(user.login):
+        if self.auth and self.auth.is_admin(user.login):
             return True
         query = self.database.query(Instance).filter(
             Instance.provider_id == provider_id
