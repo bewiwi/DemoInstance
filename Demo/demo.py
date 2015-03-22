@@ -154,7 +154,7 @@ class Demo():
 
     def check_system_up(self, instance_id):
         image = self.config.images[self.get_type(instance_id)]
-        if image['check_url'] is None:
+        if 'check_url' not in image:
             return True
         url = self.placeholder_apply(
             image['check_url'],
