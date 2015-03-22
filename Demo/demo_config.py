@@ -99,7 +99,7 @@ class DemoConfig():
 
     def get_image_by_section(self, section, template_image=None):
         if template_image is None:
-            image = {}
+            image = {'img': ''}
         else:
             image = copy(template_image)
         for name, value in self.config.items(section):
